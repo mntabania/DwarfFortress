@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Biomes : MonoBehaviour {
 	public static Biomes Instance;
@@ -8,6 +9,12 @@ public class Biomes : MonoBehaviour {
 	public float initialTemperature2;
 	public float intervalTemperature;
 
+	public List<HexTile> snowHexTiles;
+	public List<HexTile> tundraHexTiles;
+	public List<HexTile> grasslandHexTiles;
+	public List<HexTile> woodsHexTiles;
+	public List<HexTile> forestHexTiles;
+	public List<HexTile> desertHexTiles;
 
 	void Awake(){
 		Instance = this;
@@ -16,32 +23,34 @@ public class Biomes : MonoBehaviour {
 	internal void GenerateBiome(){
 		CalculateTemperature();
 		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
-			GridMap.Instance.listHexes[i].GetComponent<HexTile>().biomeType = GetBiomeSimple(GridMap.Instance.listHexes[i]);
-			if(	GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationType == ELEVATION.WATER){
+			GameObject currentHexTileGO = GridMap.Instance.listHexes[i];
+			HexTile currentHexTile = GridMap.Instance.listHexes[i].GetComponent<HexTile>();
+			currentHexTile.biomeType = GetBiomeSimple(currentHexTileGO);
+			if(currentHexTile.elevationType == ELEVATION.WATER){
 				continue;
 			}
-			switch(GridMap.Instance.listHexes[i].GetComponent<HexTile>().biomeType){
+			AssignHexTileToList (currentHexTile);
+			switch(currentHexTile.biomeType){
 			case BIOMES.SNOW:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = Color.white;
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.white;
 				break;
 			case BIOMES.TUNDRA:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = Color.gray;
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.gray;
 				break;
 			case BIOMES.DESERT:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(223f/255f,152f/255f,0f/255f);
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(223f/255f,152f/255f,0f/255f);
 				break;
 			case BIOMES.GRASSLAND:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(165f/255f,42f/255f,42f/255f);
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(165f/255f,42f/255f,42f/255f);
 				break;
 			case BIOMES.WOODLAND:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(194f/255f,213f/255f,168f/255f);
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(194f/255f,213f/255f,168f/255f);
 				break;
 			case BIOMES.FOREST:
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(156f/255f,188f/255f,167f/255f);
+				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(156f/255f,188f/255f,167f/255f);
 				break;
 			}
 		}
-
 	}
 
 	internal void GenerateElevation(){
@@ -62,6 +71,7 @@ public class Biomes : MonoBehaviour {
 			}
 		}
 	}
+
 	private void CalculateElevationAndMoisture(){
 		float elevationFrequency = UnityEngine.Random.Range(0.1f,7f);
 		float moistureFrequency = UnityEngine.Random.Range(0.1f,5f);
@@ -85,6 +95,7 @@ public class Biomes : MonoBehaviour {
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise = Mathf.PerlinNoise(nx * moistureFrequency, ny * moistureFrequency);
 		}
 	}
+
 	private void CalculateTemperature(){
 		int distanceUp = 0;
 		int distanceDown = 0;
@@ -143,6 +154,7 @@ public class Biomes : MonoBehaviour {
 			}
 
 		}
+
 		if(equatorLine == EQUATOR_LINE.VERTICAL || equatorLine == EQUATOR_LINE.DIAGONAL_RIGHT || equatorLine == EQUATOR_LINE.DIAGONAL_LEFT){
 
 			string[] splitted = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
@@ -190,6 +202,7 @@ public class Biomes : MonoBehaviour {
 
 		}
 	}
+
 	private ELEVATION GetElevationType(float elevationNoise){
 		if(elevationNoise >= 0f && elevationNoise <= 0.30f){
 			return ELEVATION.WATER;
@@ -199,6 +212,7 @@ public class Biomes : MonoBehaviour {
 			return ELEVATION.MOUNTAIN;
 		}
 	}
+
 	private BIOMES GetBiomeSimple(GameObject goHex){
 		float moistureNoise = goHex.GetComponent<HexTile>().moistureNoise;
 		float temperature = goHex.GetComponent<HexTile>().temperature;
@@ -241,6 +255,35 @@ public class Biomes : MonoBehaviour {
 			}
 		}
 		return BIOMES.SNOW;
+	}
+
+	/*
+	 * Place each hexagon tile in their respective
+	 * biome lists for easy access to each specific biomes
+	 * tiles.
+	 * */
+	void AssignHexTileToList(HexTile tile){
+		BIOMES biomeType = tile.biomeType;
+		switch (biomeType) {
+		case BIOMES.SNOW:
+			snowHexTiles.Add(tile);
+			break;
+		case BIOMES.TUNDRA:
+			tundraHexTiles.Add(tile);
+			break;
+		case BIOMES.GRASSLAND:
+			grasslandHexTiles.Add(tile);
+			break;
+		case BIOMES.WOODLAND:
+			woodsHexTiles.Add(tile);
+			break;
+		case BIOMES.FOREST:
+			forestHexTiles.Add(tile);
+			break;
+		case BIOMES.DESERT:
+			desertHexTiles.Add(tile);
+			break;
+		}
 	}
 }
 
