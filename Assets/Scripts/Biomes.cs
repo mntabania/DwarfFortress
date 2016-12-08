@@ -42,6 +42,8 @@ public class Biomes : MonoBehaviour {
 			}
 		}
 
+		GenerateBareBiome();
+
 	}
 
 	internal void GenerateElevation(){
@@ -91,9 +93,9 @@ public class Biomes : MonoBehaviour {
 		int distanceRight = 0;
 		int distanceLeft = 0;
 
-		int hexDistance1 = 7;
-		int hexDistance2 = 14;
-		int hexDistance3 = 20;
+		int hexDistance1 = 13;
+		int hexDistance2 = 20;
+		int hexDistance3 = 35;
 
 		EQUATOR_LINE equatorLine = EquatorGenerator.Instance.equatorLine;
 
@@ -208,9 +210,9 @@ public class Biomes : MonoBehaviour {
 				return BIOMES.DESERT;
 			}else if(moistureNoise > 0.20f && moistureNoise <= 0.40f){
 				return BIOMES.GRASSLAND;
-			}else if(moistureNoise > 0.40f && moistureNoise <= 0.60f){
+			}else if(moistureNoise > 0.40f && moistureNoise <= 0.55f){
 				return BIOMES.WOODLAND;
-			}else if(moistureNoise > 0.60f){
+			}else if(moistureNoise > 0.55f){
 				return BIOMES.FOREST;
 			}
 		}else if(temperature > 0.25f && temperature <= 0.50f){
@@ -218,9 +220,9 @@ public class Biomes : MonoBehaviour {
 				return BIOMES.DESERT;
 			}else if(moistureNoise > 0.20f && moistureNoise <= 0.30f){
 				return BIOMES.GRASSLAND;
-			}else if(moistureNoise > 0.30f && moistureNoise <= 0.60f){
+			}else if(moistureNoise > 0.30f && moistureNoise <= 0.55f){
 				return BIOMES.WOODLAND;
-			}else if(moistureNoise > 0.60f){
+			}else if(moistureNoise > 0.55f){
 				return BIOMES.FOREST;
 			}
 		}else if(temperature > 0.50f && temperature <= 0.75f){
@@ -241,6 +243,20 @@ public class Biomes : MonoBehaviour {
 			}
 		}
 		return BIOMES.SNOW;
+	}
+
+	internal void GenerateBareBiome(){
+		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
+			ELEVATION elevationType = GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationType;
+			float moisture = GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise;
+
+			if(elevationType == ELEVATION.WATER){
+				if(moisture <= 0.35f){
+					GridMap.Instance.listHexes[i].GetComponent<HexTile>().biomeType = BIOMES.BARE;
+					GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(186f/255f, 154f/255f, 154f/255f);
+				}
+			}
+		}
 	}
 }
 

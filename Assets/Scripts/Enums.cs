@@ -27,6 +27,7 @@ public enum BIOMES{
 	GRASSLAND,
 	WOODLAND,
 	FOREST,
+	BARE,
 }
 
 public enum ELEVATION{
