@@ -9,6 +9,7 @@ public class HexTile : MonoBehaviour {
 
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
+	public bool isCity;
 
 
 //		switch(biomeType){

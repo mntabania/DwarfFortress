@@ -267,21 +267,27 @@ public class Biomes : MonoBehaviour {
 		switch (biomeType) {
 		case BIOMES.SNOW:
 			snowHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		case BIOMES.TUNDRA:
 			tundraHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		case BIOMES.GRASSLAND:
 			grasslandHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		case BIOMES.WOODLAND:
 			woodsHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		case BIOMES.FOREST:
 			forestHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		case BIOMES.DESERT:
 			desertHexTiles.Add(tile);
+			CityGenerator.Instance.tilesElligibleForCities.Add(tile);
 			break;
 		}
 	}
