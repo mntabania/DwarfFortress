@@ -7,22 +7,29 @@ public class CityGenerator : MonoBehaviour {
 	public static CityGenerator Instance = null;
 
 	public int intCityCount;
+	public float fltMinCityDistance;
 
+	[HideInInspector]
 	public List<HexTile> tilesElligibleForCities;
 
+	public List<HexTile> cities;
 	Dictionary<BIOMES, int> elligibleBiomes;
-	HexTile[] cities;
+
 
 	void Awake(){
 		Instance = this;
 	}
 
+	/*
+	 * Generate Cities then generate
+	 * each cities' connections
+	 * */
 	public void GenerateCities(){
-		cities = new HexTile[intCityCount];
+		cities = new List<HexTile>();
 		CheckForUnelligibleBiomes ();
 		for (int i = 0; i < intCityCount; i++) {
 			BIOMES chosenBiome = RollForCityBiome();
-//			Debug.Log ("Chosen Biome-" + i + ": " + chosenBiome);
+			//Debug.Log ("Chosen Biome-" + i + ": " + chosenBiome);
 			if (chosenBiome == BIOMES.SNOW) {
 				PlaceCityOnBiomeTile (Biomes.Instance.snowHexTiles);
 			} else if (chosenBiome == BIOMES.TUNDRA) {
@@ -37,6 +44,40 @@ public class CityGenerator : MonoBehaviour {
 				PlaceCityOnBiomeTile (Biomes.Instance.desertHexTiles);
 			}
 		}
+		GenerateCityConnections();
+	}
+
+	void GenerateCityConnections(){
+		int randomCityIndex = Random.Range(0, cities.Count);
+		HexTile currentCity = cities [randomCityIndex];
+		HexTile nextCity;
+		CityTile cityTile = currentCity.gameObject.GetComponent<CityTile>();
+
+		int linesRandomizer = Random.Range (0, 101);
+		int numberOfLines = 0;
+		if (linesRandomizer >= 0 && linesRandomizer < 11) {
+			numberOfLines = 1;
+		} else if (linesRandomizer >= 11 && linesRandomizer < 81) {
+			numberOfLines = 2;
+		} else if (linesRandomizer >= 81 && linesRandomizer < 101) {
+			numberOfLines = 3;
+		}
+
+		cityTile.cityAttributes.numOfRoads = numberOfLines;
+
+		for (int i = 0; i < numberOfLines; i++) {
+			nextCity = cities [Random.Range(0, cities.Count)];
+			if (nextCity != currentCity) {
+				GLDebug.DrawLine (currentCity.transform.position, nextCity.transform.position, Color.black, 1000f);
+				cityTile.cityAttributes.connectedCities.Add(nextCity.gameObject.GetComponent<CityTile>());
+			} else {
+				i--;
+			}
+		}
+
+
+//		GLDebug.DrawLine (cities [0].transform.position, cities [1].transform.position, Color.black, 10f);
+//		GLDebug.DrawLine (cities [1].transform.position, cities [2].transform.position, Color.black, 10f);
 	}
 
 	/*
@@ -106,25 +147,29 @@ public class CityGenerator : MonoBehaviour {
 	 * biome, and mark it as a city
 	 * */
 	void PlaceCityOnBiomeTile(List<HexTile> biomeTiles){
-		int randomTileIndex = Random.Range (0, biomeTiles.Count);
-		HexTile chosenTile = biomeTiles [randomTileIndex];
+		bool choosingCity = true;
 
+		while (choosingCity) {
+			int randomTileIndex = Random.Range (0, biomeTiles.Count);
+			HexTile chosenTile = biomeTiles [randomTileIndex];
 
-		//TODO: Need to Optimize this code, could produce infinite loop
-		if (!tilesElligibleForCities.Contains(chosenTile)) {
-			PlaceCityOnBiomeTile (biomeTiles);
-		} else {
-			chosenTile.gameObject.GetComponent<SpriteRenderer> ().color = Color.black;
-			chosenTile.isCity = true;
+			if (tilesElligibleForCities.Contains (chosenTile)) {
+				choosingCity = false;
+				chosenTile.gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+				chosenTile.isCity = true;
+				chosenTile.gameObject.AddComponent<CityTile>();
+				chosenTile.gameObject.GetComponent<CityTile>().cityAttributes = new City(chosenTile, chosenTile.biomeType);
+				cities.Add(chosenTile);
 
-			HexTile[] neighborTiles = GetTilesInRange (chosenTile, 1.5f);
-			for (int i = 0; i < neighborTiles.Length; i++) {
-				if (tilesElligibleForCities.Contains (neighborTiles [i])) {
-					tilesElligibleForCities.Remove (neighborTiles [i]);
+				HexTile[] neighborTiles = GetTilesInRange (chosenTile, fltMinCityDistance);
+				for (int i = 0; i < neighborTiles.Length; i++) {
+					if (tilesElligibleForCities.Contains (neighborTiles [i])) {
+						tilesElligibleForCities.Remove (neighborTiles [i]);
+					}
 				}
 			}
 		}
-	}
+	}	 
 
 	/*
 	 * Returns true if tile in question,
@@ -132,7 +177,7 @@ public class CityGenerator : MonoBehaviour {
 	 * */
 	bool IsTileNearCity(HexTile tile){
 		//Change 1.5f to change radius of distance
-		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(tile.transform.position.x, tile.transform.position.y), 1.5f);
+		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(tile.transform.position.x, tile.transform.position.y), fltMinCityDistance);
 		for (int i = 0; i < nearHexes.Length; i++) {
 			nearHexes[i].gameObject.GetComponent<SpriteRenderer> ().color = Color.yellow;
 			if (nearHexes[i].gameObject.GetComponent<HexTile> ().isCity) {
