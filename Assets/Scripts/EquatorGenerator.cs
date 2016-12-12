@@ -98,6 +98,7 @@ public class EquatorGenerator : MonoBehaviour {
 	}
 
 	internal string GetHexEquatorName(){
+		return 0 + "," + ((int)GridMap.Instance.height / 2);
 		if(this.equatorLine == EQUATOR_LINE.HORIZONTAL){
 			int randomY = UnityEngine.Random.Range(0, (int)GridMap.Instance.height);
 			return 0 + "," + randomY;
@@ -114,6 +115,8 @@ public class EquatorGenerator : MonoBehaviour {
 		return string.Empty;
 	}
 	private EQUATOR_LINE GetEquatorLine(){
+		return EQUATOR_LINE.HORIZONTAL;
+
 		int randomLine = UnityEngine.Random.Range(0,4);
 		if(randomLine == 0){
 			return EQUATOR_LINE.HORIZONTAL;

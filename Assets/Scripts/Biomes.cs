@@ -9,6 +9,11 @@ public class Biomes : MonoBehaviour {
 	public float initialTemperature2;
 	public float intervalTemperature;
 
+	public float temperature;
+
+	public int[] hexInterval;
+	public float[] temperatureInterval;
+
 	public List<HexTile> snowHexTiles;
 	public List<HexTile> tundraHexTiles;
 	public List<HexTile> grasslandHexTiles;
@@ -21,7 +26,7 @@ public class Biomes : MonoBehaviour {
 	}
 
 	internal void GenerateBiome(){
-		CalculateTemperature();
+		CalculateNewTemperature();
 		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
 			GameObject currentHexTileGO = GridMap.Instance.listHexes[i];
 			HexTile currentHexTile = GridMap.Instance.listHexes[i].GetComponent<HexTile>();
@@ -76,29 +81,77 @@ public class Biomes : MonoBehaviour {
 	}
 
 	private void CalculateElevationAndMoisture(){
-		float elevationFrequency = UnityEngine.Random.Range(0.1f,7f);
-		float moistureFrequency = UnityEngine.Random.Range(0.1f,5f);
+		float elevationFrequency = UnityEngine.Random.Range(2.5f,3.5f);
+		float moistureFrequency = UnityEngine.Random.Range(1f,5f);
 
-		float xRand = UnityEngine.Random.Range(1f,3f);
-		float yRand = UnityEngine.Random.Range(0.1f,0.5f);
+		float elevationRand = UnityEngine.Random.Range(500f,1000f);
+		float moistureRand = UnityEngine.Random.Range(500f,1000f);
 
 
 		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
 			string[] splittedName = GridMap.Instance.listHexes[i].name.Split(new char[]{','});
 			int[] xy = {int.Parse(splittedName[0]), int.Parse(splittedName[1])};
 
-			float nx = ((float)xy[0]/GridMap.Instance.width) - xRand;
-			float ny = ((float)xy[1]/GridMap.Instance.height) - yRand;
+			float nx = ((float)xy[0]/GridMap.Instance.width);
+			float ny = ((float)xy[1]/GridMap.Instance.height);
 
-			float elevationNoise = Mathf.PerlinNoise(nx * elevationFrequency, ny * elevationFrequency);
+			float elevationNoise = Mathf.PerlinNoise((nx + elevationRand) * elevationFrequency, (ny + elevationRand) * elevationFrequency);
 			ELEVATION elevationType = GetElevationType(elevationNoise);
 
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationNoise = elevationNoise;
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationType = elevationType;
-			GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise = Mathf.PerlinNoise(nx * moistureFrequency, ny * moistureFrequency);
+			GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise = Mathf.PerlinNoise((nx + moistureRand) * moistureFrequency, (ny + moistureRand) * moistureFrequency);
 		}
 	}
 
+	private void CalculateNewTemperature(){
+
+		for(int i = 0; i < EquatorGenerator.Instance.listEquator.Count; i++){
+			float temperature = this.temperature;
+
+			string[] splittedName = EquatorGenerator.Instance.listEquator[i].name.Split(new char[]{','});
+			int[] xy = {int.Parse(splittedName[0]), int.Parse(splittedName[1])};
+
+			float tempCount = 0f;
+			int hexCount = 0;
+			int count = 0;
+
+			for(int up = xy[1]; up < GridMap.Instance.height; up++){
+
+				GridMap.Instance.GetHex(xy[0] + "," + up).GetComponent<HexTile>().temperature = temperature;
+
+				hexCount++;
+				if(hexCount > hexInterval[count]){
+					count++;
+					if(count >= hexInterval.Length){
+						count = hexInterval.Length - 1;
+					}
+				}
+				tempCount = temperatureInterval [count];
+				temperature += tempCount;
+			}
+
+			tempCount = 0f;
+			hexCount = 0;
+			count = 0;
+			temperature = this.temperature;
+			for(int down = xy[1]; down >= 0; down--){
+				GridMap.Instance.GetHex(xy[0] + "," + down).GetComponent<HexTile>().temperature = temperature;
+
+				hexCount++;
+				if(hexCount > hexInterval[count]){
+					count++;
+					if(count >= hexInterval.Length){
+						count = hexInterval.Length - 1;
+					}
+				}
+				tempCount = temperatureInterval [count];
+				temperature += tempCount;
+
+
+			}
+		}
+	}
 	private void CalculateTemperature(){
 		int distanceUp = 0;
 		int distanceDown = 0;
@@ -113,8 +166,8 @@ public class Biomes : MonoBehaviour {
 
 		if(equatorLine == EQUATOR_LINE.HORIZONTAL){
 			
-			string[] splitted = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
-			int[] split = {int.Parse(splitted[0]), int.Parse(splitted[1])};
+//			string[] splitted = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
+//			int[] split = {int.Parse(splitted[0]), int.Parse(splitted[1])};
 			
 			for(int i = 0; i < EquatorGenerator.Instance.listEquator.Count; i++){
 				float temperature = initialTemperature;
@@ -160,8 +213,8 @@ public class Biomes : MonoBehaviour {
 
 		if(equatorLine == EQUATOR_LINE.VERTICAL || equatorLine == EQUATOR_LINE.DIAGONAL_RIGHT || equatorLine == EQUATOR_LINE.DIAGONAL_LEFT){
 
-			string[] splitted = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
-			int[] split = {int.Parse(splitted[0]), int.Parse(splitted[1])};
+//			string[] splitted = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
+//			int[] split = {int.Parse(splitted[0]), int.Parse(splitted[1])};
 
 			for(int i = 0; i < EquatorGenerator.Instance.listEquator.Count; i++){
 				float temperature = initialTemperature;
@@ -257,7 +310,7 @@ public class Biomes : MonoBehaviour {
 				return BIOMES.SNOW;
 			}
 		}
-		return BIOMES.SNOW;
+		return BIOMES.DESERT;
 	}
 
 	internal void GenerateBareBiome(){
