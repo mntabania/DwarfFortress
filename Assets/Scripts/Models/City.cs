@@ -11,6 +11,7 @@ public class City : ICity{
 	public int richnessLevel;
 	public int numOfRoads;
 	public int population;
+	public bool hasKingdom;
 	public List<CityTile> connectedCities;
 	public KingdomTile kingdomTile;
 
@@ -46,10 +47,10 @@ public class City : ICity{
 
 	public int GenerateNumberOfRoads(){
 		int linesRandomizer = Random.Range (0, 101);
-		if (linesRandomizer >= 0 && linesRandomizer < 11) {
+		if (linesRandomizer >= 0 && linesRandomizer < 10) {
 			this.numOfRoads = 1;
 			return 1;
-		} else if (linesRandomizer >= 11 && linesRandomizer < 81) {
+		} else if (linesRandomizer >= 10 && linesRandomizer < 70) {
 			this.numOfRoads = 2;
 			return 2;
 		} else {
@@ -60,6 +61,7 @@ public class City : ICity{
 
 	public void AddCityAsConnected(CityTile cityTile){
 		this.connectedCities.Add(cityTile);
+		this.numOfRoads = connectedCities.Count;
 	}
 
 
