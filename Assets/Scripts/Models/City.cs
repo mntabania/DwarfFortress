@@ -11,7 +11,6 @@ public class City : ICity{
 	public int richnessLevel;
 	public int numOfRoads;
 	public int population;
-	public bool hasKingdom;
 	public List<CityTile> connectedCities;
 	public KingdomTile kingdomTile;
 

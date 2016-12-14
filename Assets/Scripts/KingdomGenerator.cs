@@ -54,6 +54,11 @@ public class KingdomGenerator : MonoBehaviour {
 		capitalCities.Add (cityHexes[3].gameObject.GetComponent<CityTile> ());
 		capitalCities.Add (cityHexes[5].gameObject.GetComponent<CityTile> ());
 		capitalCities.Add (cityHexes[7].gameObject.GetComponent<CityTile> ());
+
+		capitalCities [0].cityAttributes.population = capitalCities [0].cityAttributes.GeneratePopulation();
+		capitalCities [1].cityAttributes.population = capitalCities [1].cityAttributes.GeneratePopulation();
+		capitalCities [2].cityAttributes.population = capitalCities [2].cityAttributes.GeneratePopulation();
+		capitalCities [3].cityAttributes.population = capitalCities [3].cityAttributes.GeneratePopulation();
 	}
 
 	internal void GenerateInitialKingdoms(){
@@ -71,7 +76,7 @@ public class KingdomGenerator : MonoBehaviour {
 		DrawConnections ();
 	}
 	internal void OnTurn(){
-		
+		TriggerEvents ();
 	}
 	private void TriggerEvents(){
 		GrowPopulation ();
@@ -79,14 +84,16 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void TriggerExpandEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			City city = GetCityWithMostPopulation(this.kingdoms[i].kingdom);
-			List<CityTile> citiesForExpansion = GetCitiesForExpansion (city);
-			int randomCity = UnityEngine.Random.Range (0, citiesForExpansion.Count);
-
-			Expand (this.kingdoms[i], citiesForExpansion[randomCity]);
+			CityTile fromCityTile = GetCityWithMostPopulation(this.kingdoms[i].kingdom);
+			List<CityTile> citiesForExpansion = new List<CityTile>();
+			citiesForExpansion = GetCitiesForExpansion (fromCityTile.cityAttributes);
+			if(citiesForExpansion.Count > 0){
+				int randomCity = UnityEngine.Random.Range (0, citiesForExpansion.Count);
+				Expand (this.kingdoms[i], fromCityTile, citiesForExpansion[randomCity]);
+			}
 		}
 	}
-	private new List<CityTile> GetCitiesForExpansion(City city){
+	private List<CityTile> GetCitiesForExpansion(City city){
 		List<CityTile> citiesForExpansion = new List<CityTile> ();
 		for(int j = 0; j < city.connectedCities.Count; j++){
 			if(city.connectedCities[j].cityAttributes.kingdomTile == null){
@@ -95,22 +102,24 @@ public class KingdomGenerator : MonoBehaviour {
 		}
 		return citiesForExpansion;
 	}
-	private City GetCityWithMostPopulation(Kingdom kingdom){
+	private CityTile GetCityWithMostPopulation(Kingdom kingdom){
 		int highestPopulation = 0;
-		City cityWithHighestPopulation = null;
+		CityTile cityWithHighestPopulation = null;
 		for(int i = 0; i < kingdom.cities.Count; i++){
 			int currentPopulation = kingdom.cities [i].cityAttributes.population;
 			if(highestPopulation < currentPopulation){
 				highestPopulation = currentPopulation;
-				cityWithHighestPopulation = kingdom.cities [i].cityAttributes;
+				cityWithHighestPopulation = kingdom.cities [i];
 			}
 		}
 		return cityWithHighestPopulation;
 	}
-	private void Expand(KingdomTile kingdomTile, CityTile cityTile){
-		cityTile.cityAttributes.kingdomTile = kingdomTile;
-		kingdomTile.kingdom.cities.Add (cityTile);
-
+	private void Expand(KingdomTile kingdomTile, CityTile fromCityTile, CityTile toCityTile){
+		toCityTile.cityAttributes.kingdomTile = kingdomTile;
+		kingdomTile.kingdom.cities.Add (toCityTile);
+		int populationDecrease = (int)(fromCityTile.cityAttributes.population * 0.2f);
+		toCityTile.cityAttributes.population += populationDecrease;
+		fromCityTile.cityAttributes.population -= populationDecrease;
 	}
 	private void GrowPopulation(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
