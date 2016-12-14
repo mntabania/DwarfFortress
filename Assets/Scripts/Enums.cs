@@ -47,3 +47,17 @@ public enum CITY_TYPE{
 	NORMAL,
 	CAPITAL
 }
+
+public enum RACE{
+	HUMANS,
+	ELVES,
+	MINGONS,
+	CROMADS,
+}
+
+public enum EVENTS{
+	EXPAND,
+	DECLARE_WAR,
+	DECLARE_PEACE,
+	GENERATE_ARMY,
+}

@@ -11,8 +11,8 @@ public class City : ICity{
 	public int richnessLevel;
 	public int numOfRoads;
 	public int population;
-	public bool hasKingdom;
 	public List<CityTile> connectedCities;
+	public KingdomTile kingdomTile;
 
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
@@ -22,6 +22,7 @@ public class City : ICity{
 		this.population = 0;
 		this.numOfRoads = 0;
 		this.connectedCities = new List<CityTile>();
+		this.kingdomTile = null;
 	}
 
 	public int GeneratePopulation(){
