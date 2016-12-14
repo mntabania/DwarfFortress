@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class City : ICity {
+public class City : ICity{
 
-	public HexTile hexTile { get; set; }
-	public BIOMES biomeType { get; set; }
-	public CITY_TYPE cityType { get; set; }
-	public int richnessLevel { get; set; }
-	public int numOfRoads { get; set; }
-	public int population { get; set; }
-	public List<CityTile> connectedCities { get; set; }
+	public HexTile hexTile;
+	public BIOMES biomeType;
+	public CITY_TYPE cityType;
+	public int richnessLevel;
+	public int numOfRoads;
+	public int population;
+	public List<CityTile> connectedCities;
 
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
@@ -40,6 +40,24 @@ public class City : ICity {
 		}
 		return Random.Range (40, 101);
 
+	}
+
+	public int GenerateNumberOfRoads(){
+		int linesRandomizer = Random.Range (0, 101);
+		if (linesRandomizer >= 0 && linesRandomizer < 11) {
+			this.numOfRoads = 1;
+			return 1;
+		} else if (linesRandomizer >= 11 && linesRandomizer < 81) {
+			this.numOfRoads = 2;
+			return 2;
+		} else {
+			this.numOfRoads = 3;
+			return 3;
+		}
+	}
+
+	public void AddCityAsConnected(CityTile cityTile){
+		this.connectedCities.Add(cityTile);
 	}
 
 
