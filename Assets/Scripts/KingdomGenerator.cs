@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 
 public class KingdomGenerator : MonoBehaviour {
 	public static KingdomGenerator Instance;
@@ -84,13 +86,17 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void TriggerExpandEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			CityTile fromCityTile = GetCityWithMostPopulation(this.kingdoms[i].kingdom);
+			List<CityTile> fromCityTile = GetCitiesInOrderOfPopulation(this.kingdoms[i].kingdom);
 			List<CityTile> citiesForExpansion = new List<CityTile>();
-			citiesForExpansion = GetCitiesForExpansion (fromCityTile.cityAttributes);
-			if(citiesForExpansion.Count > 0){
-				int randomCity = UnityEngine.Random.Range (0, citiesForExpansion.Count);
-				Expand (this.kingdoms[i], fromCityTile, citiesForExpansion[randomCity]);
+			for(int j = 0; j < fromCityTile.Count; j++){
+				citiesForExpansion = GetCitiesForExpansion (fromCityTile[j].cityAttributes);
+				if(citiesForExpansion.Count > 0){
+					int randomCity = UnityEngine.Random.Range (0, citiesForExpansion.Count);
+					Expand (this.kingdoms[i], fromCityTile[j], citiesForExpansion[randomCity]);
+					break;
+				}
 			}
+
 		}
 	}
 	private List<CityTile> GetCitiesForExpansion(City city){
@@ -102,17 +108,23 @@ public class KingdomGenerator : MonoBehaviour {
 		}
 		return citiesForExpansion;
 	}
-	private CityTile GetCityWithMostPopulation(Kingdom kingdom){
-		int highestPopulation = 0;
-		CityTile cityWithHighestPopulation = null;
-		for(int i = 0; i < kingdom.cities.Count; i++){
-			int currentPopulation = kingdom.cities [i].cityAttributes.population;
-			if(highestPopulation < currentPopulation){
-				highestPopulation = currentPopulation;
-				cityWithHighestPopulation = kingdom.cities [i];
-			}
+	private List<CityTile> GetCitiesInOrderOfPopulation(Kingdom kingdom){
+		List<CityTile> orderedCity = new List<CityTile> ();
+		for (int i = 0; i < kingdom.cities.Count; i++) {
+			orderedCity.Add (kingdom.cities [i]);
 		}
-		return cityWithHighestPopulation;
+		orderedCity = orderedCity.OrderByDescending (i => i.cityAttributes.population).ToList ();
+		return orderedCity;
+//		int highestPopulation = 0;
+//		CityTile cityWithHighestPopulation = null;
+//		for(int i = 0; i < kingdom.cities.Count; i++){
+//			int currentPopulation = kingdom.cities [i].cityAttributes.population;
+//			if(highestPopulation < currentPopulation){
+//				highestPopulation = currentPopulation;
+//				cityWithHighestPopulation = kingdom.cities [i];
+//			}
+//		}
+//		return cityWithHighestPopulation;
 	}
 	private void Expand(KingdomTile kingdomTile, CityTile fromCityTile, CityTile toCityTile){
 		toCityTile.cityAttributes.kingdomTile = kingdomTile;
