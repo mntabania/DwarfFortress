@@ -42,3 +42,8 @@ public enum EQUATOR_LINE{
 	DIAGONAL_LEFT,
 	DIAGONAL_RIGHT,
 }
+
+public enum CITY_TYPE{
+	NORMAL,
+	CAPITAL
+}

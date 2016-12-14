@@ -70,6 +70,10 @@ public class HexTile : MonoBehaviour {
 //		}
 //	}
 
+	public void SetTileColor(Color color){
+		gameObject.GetComponent<SpriteRenderer> ().color = color;
+	}
+
 	private BIOME GetBiome(){
 
 		if(elevationNoise <= 0.35f){

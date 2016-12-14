@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
 public class City : ICity {
 
 	public HexTile hexTile { get; set; }
 	public BIOMES biomeType { get; set; }
+	public CITY_TYPE cityType { get; set; }
 	public int richnessLevel { get; set; }
 	public int numOfRoads { get; set; }
 	public int population { get; set; }
@@ -14,10 +16,11 @@ public class City : ICity {
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
 		this.biomeType = biomeType;
+		this.cityType = CITY_TYPE.NORMAL;
 		this.richnessLevel = GenerateRichness();
 		this.population = GeneratePopulation();
-		numOfRoads = 0;
-		connectedCities = new List<CityTile>();
+		this.numOfRoads = 0;
+		this.connectedCities = new List<CityTile>();
 	}
 
 	public int GeneratePopulation(){
