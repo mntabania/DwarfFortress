@@ -20,11 +20,11 @@ public class City : ICity {
 		connectedCities = new List<CityTile>();
 	}
 
-	int GeneratePopulation(){
+	public int GeneratePopulation(){
 		return Random.Range(5000, 10001);
 	}
 
-	int GenerateRichness(){
+	public int GenerateRichness(){
 		float rand = Random.value;
 		if (rand <= .1f) {
 			return Random.Range (0, 31);

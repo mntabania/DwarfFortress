@@ -11,5 +11,7 @@ public interface ICity {
 	int population { get; set; }
 	List<CityTile> connectedCities { get; set; }
 
+	int GeneratePopulation();
 	int GenerateRichness();
+
 }
