@@ -12,15 +12,17 @@ public class City : ICity{
 	public int numOfRoads;
 	public int population;
 	public List<CityTile> connectedCities;
+	public KingdomTile kingdomTile;
 
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
 		this.biomeType = biomeType;
 		this.cityType = CITY_TYPE.NORMAL;
 		this.richnessLevel = GenerateRichness();
-		this.population = GeneratePopulation();
+		this.population = 0;
 		this.numOfRoads = 0;
 		this.connectedCities = new List<CityTile>();
+		this.kingdomTile = null;
 	}
 
 	public int GeneratePopulation(){
