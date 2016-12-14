@@ -8,17 +8,23 @@ public class City : ICity {
 	public BIOMES biomeType { get; set; }
 	public int richnessLevel { get; set; }
 	public int numOfRoads { get; set; }
+	public int population { get; set; }
 	public List<CityTile> connectedCities { get; set; }
 
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
 		this.biomeType = biomeType;
 		this.richnessLevel = GenerateRichness();
+		this.population = GeneratePopulation();
 		numOfRoads = 0;
 		connectedCities = new List<CityTile>();
 	}
 
-	public int GenerateRichness(){
+	int GeneratePopulation(){
+		return Random.Range(5000, 10001);
+	}
+
+	int GenerateRichness(){
 		float rand = Random.value;
 		if (rand <= .1f) {
 			return Random.Range (0, 31);

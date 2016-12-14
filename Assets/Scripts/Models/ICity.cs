@@ -8,6 +8,7 @@ public interface ICity {
 	BIOMES biomeType { get; set; }
 	int richnessLevel { get; set; }
 	int numOfRoads { get; set; }
+	int population { get; set; }
 	List<CityTile> connectedCities { get; set; }
 
 	int GenerateRichness();
