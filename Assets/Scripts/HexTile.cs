@@ -74,6 +74,22 @@ public class HexTile : MonoBehaviour {
 		gameObject.GetComponent<SpriteRenderer> ().color = color;
 	}
 
+	/*
+	 * Returns all Hex tiles within a radius
+	 * */
+	public HexTile[] GetTilesInRange(float radius){
+		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(transform.position.x, transform.position.y), radius);
+		HexTile[] nearTiles = new HexTile[nearHexes.Length];
+		for (int i = 0; i < nearTiles.Length; i++) {
+			nearTiles[i] = nearHexes[i].gameObject.GetComponent<HexTile> ();
+		}
+		return nearTiles;
+	}
+
+	public CityTile GetCityTile(){
+		return gameObject.GetComponent<CityTile>();
+	}
+
 	private BIOME GetBiome(){
 
 		if(elevationNoise <= 0.35f){

@@ -15,6 +15,7 @@ public class CityGenerator : MonoBehaviour {
 
 	public List<HexTile> cities;
 	public List<CityTile> capitalCities;
+	public List<CityTile> pendingCityTiles;
 	Dictionary<BIOMES, int> elligibleBiomes;
 
 
@@ -47,36 +48,53 @@ public class CityGenerator : MonoBehaviour {
 			}
 		}
 		SetCapitalCities();
-//		GenerateCityConnections();
+		GenerateCityConnections();
 	}
 
 	void GenerateCityConnections(){
-		int randomCityIndex = Random.Range(0, cities.Count);
-		HexTile currentCity = cities [randomCityIndex];
-		HexTile nextCity;
-		CityTile cityTile = currentCity.gameObject.GetComponent<CityTile>();
+		pendingCityTiles = new List<CityTile>();
+		pendingCityTiles.Add(capitalCities[0]);
+		for (int i = 0; i < pendingCityTiles.Count; i++) {
+			
+			CityTile currentCityTile = pendingCityTiles[i];
+			HexTile currentHexTile = currentCityTile.cityAttributes.hexTile;
+			int numberOfRoads = currentCityTile.cityAttributes.GenerateNumberOfRoads();
+			List<HexTile> listOrderedByDistance = currentCityTile.GetAllCitiesByDistance();
 
-		int linesRandomizer = Random.Range (0, 101);
-		int numberOfLines = 0;
-		if (linesRandomizer >= 0 && linesRandomizer < 11) {
-			numberOfLines = 1;
-		} else if (linesRandomizer >= 11 && linesRandomizer < 81) {
-			numberOfLines = 2;
-		} else if (linesRandomizer >= 81 && linesRandomizer < 101) {
-			numberOfLines = 3;
-		}
+			if (numberOfRoads > currentCityTile.cityAttributes.connectedCities.Count) { 
+				/*
+				 * if generated number of roads is greater than the current connected cities, add connections
+				 * */
+				numberOfRoads = numberOfRoads - currentCityTile.cityAttributes.connectedCities.Count;
 
-		cityTile.cityAttributes.numOfRoads = numberOfLines;
-
-		for (int i = 0; i < numberOfLines; i++) {
-			nextCity = cities [Random.Range(0, cities.Count)];
-			if (nextCity != currentCity) {
-				GLDebug.DrawLine (currentCity.transform.position, nextCity.transform.position, Color.black, 10000f);
-				cityTile.cityAttributes.connectedCities.Add(nextCity.gameObject.GetComponent<CityTile>());
-			} else {
-				i--;
+				for (int j = 0; j < numberOfRoads; j++) {
+					if (currentCityTile.cityAttributes.connectedCities.Contains(listOrderedByDistance[j].GetCityTile()) ||
+						listOrderedByDistance[j].GetCityTile().cityAttributes.connectedCities.Count == 3) {
+						listOrderedByDistance.RemoveAt(j);
+						j--;
+						continue;
+					} else {
+						GLDebug.DrawLine (currentCityTile.transform.position, listOrderedByDistance [j].transform.position, Color.black, 10000f); //Draw Line Between 2 Cities
+						currentCityTile.cityAttributes.AddCityAsConnected (listOrderedByDistance [j].GetCityTile ());
+						listOrderedByDistance [j].GetCityTile ().cityAttributes.AddCityAsConnected (currentCityTile);
+						/*
+						 * if List<CityTile> pendingCityTiles does not contain the 
+						 * connected city, add it to the list
+						 * */
+						if (!pendingCityTiles.Contains (listOrderedByDistance [j].GetCityTile ())) {
+							pendingCityTiles.Add (listOrderedByDistance [j].GetCityTile ());
+						}
+					}
+				}
+			} else if (numberOfRoads < currentCityTile.cityAttributes.connectedCities.Count) { 
+				/*
+				 * if generated number of roads is less than current connected cities, 
+				 * set number of cities to be equal the number of connected cities
+				 * */
+				currentCityTile.cityAttributes.numOfRoads = currentCityTile.cityAttributes.connectedCities.Count;
 			}
 		}
+		Debug.Log("PENDING CITY TILES: " + pendingCityTiles.Count);
 	}
 
 	/*
@@ -107,6 +125,7 @@ public class CityGenerator : MonoBehaviour {
 			int capitalCityIndex = lastIndex - j;
 			//Debug.Log ("Capital City is: " + cities [capitalCityIndex].gameObject.name + " richness: " + cities [capitalCityIndex].gameObject.GetComponent<CityTile> ().cityAttributes.richnessLevel.ToString ());
 			cities[capitalCityIndex].GetComponent<CityTile>().cityAttributes.cityType = CITY_TYPE.CAPITAL;
+			cities [capitalCityIndex].GetCityTile().cityAttributes.population = cities [capitalCityIndex].GetCityTile ().cityAttributes.GeneratePopulation ();
 			cities[capitalCityIndex].SetTileColor(Color.yellow);
 			capitalCities.Add(cities[capitalCityIndex].GetComponent<CityTile>());
 		}
@@ -149,7 +168,7 @@ public class CityGenerator : MonoBehaviour {
 	 * Grassland - 40% - 15~54
 	 * Woods - 30% - 55~84
 	 * Forest - 10% - 85~94
-	 * Desert - 5% - 95~100
+	 * Desert - 5% - 95~99
 	 * */
 	BIOMES RollForCityBiome(){
 		//Get total percentage
@@ -157,7 +176,7 @@ public class CityGenerator : MonoBehaviour {
 		foreach (int value in elligibleBiomes.Values) {
 			total += value;
 		}
-		int roll = Random.Range (0, (total+1));
+		int roll = Random.Range (0, total);
 		int lowerBound = 0;
 		int upperBound = 0;
 
@@ -165,7 +184,7 @@ public class CityGenerator : MonoBehaviour {
 			BIOMES biome = keyValue.Key;
 			int biomeChance = keyValue.Value;
 			upperBound += biomeChance;
-			if (roll >= lowerBound && roll < (upperBound + 1)) {
+			if (roll >= lowerBound && roll < upperBound ) {
 				return biome;
 			} else {
 				lowerBound += biomeChance;
@@ -194,12 +213,13 @@ public class CityGenerator : MonoBehaviour {
 				chosenTile.gameObject.GetComponent<CityTile>().cityAttributes = new City(chosenTile, chosenTile.biomeType);
 				cities.Add(chosenTile);
 
-				HexTile[] neighborTiles = GetTilesInRange (chosenTile, minCityDistance);
+				HexTile[] neighborTiles = chosenTile.GetTilesInRange(minCityDistance);
 				for (int i = 0; i < neighborTiles.Length; i++) {
 					if (tilesElligibleForCities.Contains (neighborTiles [i])) {
 						tilesElligibleForCities.Remove (neighborTiles [i]);
 					}
 				}
+				tilesElligibleForCities.Remove(chosenTile);
 			}
 		}
 	}	 
@@ -212,28 +232,11 @@ public class CityGenerator : MonoBehaviour {
 		//Change 1.5f to change radius of distance
 		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(tile.transform.position.x, tile.transform.position.y), minCityDistance);
 		for (int i = 0; i < nearHexes.Length; i++) {
-			nearHexes[i].gameObject.GetComponent<SpriteRenderer> ().color = Color.yellow;
-			if (nearHexes[i].gameObject.GetComponent<HexTile> ().isCity) {
+			nearHexes[i].gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
+			if (nearHexes[i].gameObject.GetComponent<HexTile>().isCity) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-	/*
-	 * Returns all Hex tiles within a radius
-	 * */
-	HexTile[] GetTilesInRange(HexTile centerTile, float radius){
-		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(centerTile.transform.position.x, centerTile.transform.position.y), radius);
-		HexTile[] nearTiles = new HexTile[nearHexes.Length];
-		for (int i = 0; i < nearTiles.Length; i++) {
-			nearTiles [i] = nearHexes [i].gameObject.GetComponent<HexTile> ();
-		}
-		return nearTiles;
-	}
-
-
-
-
-
 }

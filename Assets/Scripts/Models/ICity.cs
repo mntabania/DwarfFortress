@@ -14,5 +14,6 @@ public interface ICity {
 
 	int GeneratePopulation();
 	int GenerateRichness();
+	void AddCityAsConnected (CityTile cityTile);
 
 }
