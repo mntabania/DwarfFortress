@@ -7,6 +7,7 @@ public class LineDrawer : MonoBehaviour {
 	public static LineDrawer Instance = null;
 
 	public Material lineMat;
+	public GameObject linePrefab;
 	List<Vector3> startPoints;
 	List<Vector3> endPoints;
 
@@ -32,19 +33,35 @@ public class LineDrawer : MonoBehaviour {
 		}
 	}
 
-	public void DrawLine(Vector3 startPoint, Vector3 endPoint){
-		startPoints.Add (startPoint);
-		endPoints.Add (endPoint);
-		Debug.Log ("DRAW LINEE!");
+	public GameObject DrawLine(Transform parentObj, Vector3 startPoint, Vector3 endPoint){
+//		startPoints.Add (startPoint);
+//		endPoints.Add (endPoint);
+
+		GameObject lineGO = Instantiate(linePrefab);
+		lineGO.transform.parent = parentObj;
+		lineGO.transform.localPosition = Vector3.zero;
+		Vector3 diff =  lineGO.transform.position - endPoint;
+		diff.Normalize ();
+		float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+		lineGO.transform.rotation = Quaternion.Euler (0f, 0f, rot_z);
+
+		Vector3 newSize = Vector3.one;
+		newSize.x = Vector3.Distance(endPoint, startPoint)/2.45f;
+		lineGO.transform.localScale = newSize;
+
+		lineGO.GetComponent<Line>().startPoint = startPoint;
+		lineGO.GetComponent<Line> ().endPoint = endPoint;
+
+		return lineGO;
 	}
 
 	// To show the lines in the game window whne it is running
-	void OnPostRender() {
-		RenderLines();
-	}
+//	void OnPostRender() {
+//		RenderLines();
+//	}
 
 	// To show the lines in the editor
-	void OnDrawGizmos() {
-		RenderLines();
-	}
+//	void OnDrawGizmos() {
+//		RenderLines();
+//	}
 }

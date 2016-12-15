@@ -15,7 +15,16 @@ public class CityTile : MonoBehaviour {
 		).ToList();
 		allCityTiles.Remove(cityAttributes.hexTile);
 		cityTilesByDistance = allCityTiles;
-		Debug.Log ("All City Tiles: " + allCityTiles.Count);
 		return allCityTiles;
+	}
+
+	public HexTile FindNearestCityWithConnection(){
+		GetAllCitiesByDistance ();
+		for (int i = 0; i < cityTilesByDistance.Count; i++) {
+			if (cityTilesByDistance [i].GetCityTile ().cityAttributes.numOfRoads > 0) {
+				return cityTilesByDistance [i];
+			}
+		}
+		return cityTilesByDistance [0];
 	}
 }
