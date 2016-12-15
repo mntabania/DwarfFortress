@@ -26,7 +26,7 @@ public class Biomes : MonoBehaviour {
 	}
 
 	internal void GenerateBiome(){
-		CalculateNewTemperature();
+		//CalculateNewTemperature();
 		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
 			GameObject currentHexTileGO = GridMap.Instance.listHexes[i];
 			HexTile currentHexTile = GridMap.Instance.listHexes[i].GetComponent<HexTile>();
@@ -81,12 +81,16 @@ public class Biomes : MonoBehaviour {
 	}
 
 	private void CalculateElevationAndMoisture(){
-		float elevationFrequency = UnityEngine.Random.Range(2.5f,3.5f);
-		float moistureFrequency = UnityEngine.Random.Range(1f,5f);
+		float elevationFrequency = 2.66f;
+		float moistureFrequency = 2.94f;
+		float tempFrequency = 2.4f;
 
-		float elevationRand = UnityEngine.Random.Range(500f,1000f);
-		float moistureRand = UnityEngine.Random.Range(500f,1000f);
+		float elevationRand = UnityEngine.Random.Range(500f,2000f);
+		float moistureRand = UnityEngine.Random.Range(500f,2000f);
+		float temperatureRand = UnityEngine.Random.Range(500f,2000f);
 
+		string[] splittedNameEq = EquatorGenerator.Instance.listEquator[0].name.Split(new char[]{','});
+		int equatorY = int.Parse (splittedNameEq [1]);
 
 		for(int i = 0; i < GridMap.Instance.listHexes.Count; i++){
 			string[] splittedName = GridMap.Instance.listHexes[i].name.Split(new char[]{','});
@@ -101,6 +105,11 @@ public class Biomes : MonoBehaviour {
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationNoise = elevationNoise;
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationType = elevationType;
 			GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise = Mathf.PerlinNoise((nx + moistureRand) * moistureFrequency, (ny + moistureRand) * moistureFrequency);
+
+			int distanceToEquator = Mathf.Abs (xy [1] - equatorY);
+			float tempGradient = 1.2f / GridMap.Instance.height;
+			GridMap.Instance.listHexes [i].GetComponent<HexTile>().temperature = distanceToEquator * tempGradient;
+			GridMap.Instance.listHexes[i].GetComponent<HexTile>().temperature += (Mathf.PerlinNoise((nx + temperatureRand) * tempFrequency, (ny + temperatureRand) * tempFrequency)) * 0.6f;
 		}
 	}
 
@@ -260,7 +269,7 @@ public class Biomes : MonoBehaviour {
 	}
 
 	private ELEVATION GetElevationType(float elevationNoise){
-		if(elevationNoise >= 0f && elevationNoise <= 0.30f){
+		if(elevationNoise <= 0.30f){
 			return ELEVATION.WATER;
 		}else if(elevationNoise > 0.30f && elevationNoise <= 0.60f){
 			return ELEVATION.PLAIN;
@@ -273,8 +282,8 @@ public class Biomes : MonoBehaviour {
 		float moistureNoise = goHex.GetComponent<HexTile>().moistureNoise;
 		float temperature = goHex.GetComponent<HexTile>().temperature;
 
-		if(temperature >= 0f && temperature <= 0.25f){
-			if(moistureNoise >= 0f && moistureNoise <= 0.20f){
+		if(temperature <= 0.35f) {
+			if(moistureNoise <= 0.20f){
 				return BIOMES.DESERT;
 			}else if(moistureNoise > 0.20f && moistureNoise <= 0.40f){
 				return BIOMES.GRASSLAND;
@@ -283,30 +292,30 @@ public class Biomes : MonoBehaviour {
 			}else if(moistureNoise > 0.55f){
 				return BIOMES.FOREST;
 			}
-		}else if(temperature > 0.25f && temperature <= 0.50f){
-			if(moistureNoise >= 0f && moistureNoise <= 0.20f){
+		} else if(temperature > 0.35f && temperature <= 0.65f){
+			if(moistureNoise <= 0.20f){
 				return BIOMES.DESERT;
-			}else if(moistureNoise > 0.20f && moistureNoise <= 0.30f){
+			}else if(moistureNoise > 0.20f && moistureNoise <= 0.55f){
 				return BIOMES.GRASSLAND;
-			}else if(moistureNoise > 0.30f && moistureNoise <= 0.55f){
+			}else if(moistureNoise > 0.55f && moistureNoise <= 0.75f){
 				return BIOMES.WOODLAND;
-			}else if(moistureNoise > 0.55f){
+			}else if(moistureNoise > 0.75f){
 				return BIOMES.FOREST;
 			}
-		}else if(temperature > 0.50f && temperature <= 0.75f){
-			if(moistureNoise >= 0f && moistureNoise <= 0.30f){
-				return BIOMES.DESERT;
-			}else if(moistureNoise > 0.30f && moistureNoise <= 0.50f){
+		} else if(temperature > 0.65f && temperature <= 0.85f){
+			if(moistureNoise <= 0.2f){
+				return BIOMES.TUNDRA;
+			}else if(moistureNoise > 0.2f && moistureNoise <= 0.55f){
 				return BIOMES.GRASSLAND;
-			}else if(moistureNoise > 0.50f && moistureNoise <= 0.60f){
+			}else if(moistureNoise > 0.55f && moistureNoise <= 0.75f){
 				return BIOMES.WOODLAND;
-			}else if(moistureNoise > 0.60f){
+			}else if(moistureNoise > 0.75f){
 				return BIOMES.SNOW;
 			}
-		}else if(temperature > 0.75f){
-			if(moistureNoise >= 0f && moistureNoise <= 0.50f){
+		} else if(temperature > 0.85f){
+			if(moistureNoise <= 0.4f){
 				return BIOMES.TUNDRA;
-			}else if(moistureNoise > 0.50f){
+			}else if(moistureNoise > 0.4f){
 				return BIOMES.SNOW;
 			}
 		}
@@ -319,7 +328,7 @@ public class Biomes : MonoBehaviour {
 			float moisture = GridMap.Instance.listHexes[i].GetComponent<HexTile>().moistureNoise;
 
 			if(elevationType == ELEVATION.WATER){
-				if(moisture <= 0.35f){
+				if(moisture <= 0.2f){
 					GridMap.Instance.listHexes[i].GetComponent<HexTile>().biomeType = BIOMES.BARE;
 					GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(186f/255f, 154f/255f, 154f/255f);
 				}
