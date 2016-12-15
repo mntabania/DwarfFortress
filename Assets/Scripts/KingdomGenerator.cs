@@ -31,16 +31,16 @@ public class KingdomGenerator : MonoBehaviour {
 
 	}
 	private void CreateConnections(){
-		cities[0].cityAttributes.connectedCities = new List<CityTile>{cities[6],cities[9]};
-		cities[1].cityAttributes.connectedCities = new List<CityTile>{cities[2],cities[7],cities[8]};
-		cities[2].cityAttributes.connectedCities = new List<CityTile>{cities[5],cities[7]};
-		cities[3].cityAttributes.connectedCities = new List<CityTile>{cities[4]};
-		cities[4].cityAttributes.connectedCities = new List<CityTile>{cities[3],cities[9],cities[0]};
-		cities[5].cityAttributes.connectedCities = new List<CityTile>{cities[7],cities[1]};
-		cities[6].cityAttributes.connectedCities = new List<CityTile>{cities[4],cities[8]};
-		cities[7].cityAttributes.connectedCities = new List<CityTile>{cities[1]};
-		cities[8].cityAttributes.connectedCities = new List<CityTile>{cities[2]};
-		cities[9].cityAttributes.connectedCities = new List<CityTile>{cities[2],cities[5],cities[3]};
+		cities[0].cityAttributes.connectedCities = new List<CityTile>{cities[6],cities[9],cities[4]};
+		cities[1].cityAttributes.connectedCities = new List<CityTile>{cities[2],cities[7],cities[8],cities[5]};
+		cities[2].cityAttributes.connectedCities = new List<CityTile>{cities[5],cities[7],cities[1],cities[8],cities[9]};
+		cities[3].cityAttributes.connectedCities = new List<CityTile>{cities[4],cities[9]};
+		cities[4].cityAttributes.connectedCities = new List<CityTile>{cities[3],cities[9],cities[0],cities[6]};
+		cities[5].cityAttributes.connectedCities = new List<CityTile>{cities[7],cities[1],cities[2],cities[9]};
+		cities[6].cityAttributes.connectedCities = new List<CityTile>{cities[4],cities[8],cities[0]};
+		cities[7].cityAttributes.connectedCities = new List<CityTile>{cities[1],cities[2],cities[5]};
+		cities[8].cityAttributes.connectedCities = new List<CityTile>{cities[2],cities[1],cities[6]};
+		cities[9].cityAttributes.connectedCities = new List<CityTile>{cities[2],cities[5],cities[3],cities[0],cities[4]};
 
 	}
 	private void DrawConnections(){
@@ -66,10 +66,10 @@ public class KingdomGenerator : MonoBehaviour {
 	internal void GenerateInitialKingdoms(){
 		CreateTempCities ();
 		AddCapitalCities ();
-		capitalCities [0].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1");
-		capitalCities [1].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2");
-		capitalCities [2].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3");
-		capitalCities [3].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4");
+		capitalCities [0].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f));
+		capitalCities [1].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f));
+		capitalCities [2].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f));
+		capitalCities [3].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f));
 
 		for(int i = 0; i < capitalCities.Count; i++){
 			kingdoms.Add (capitalCities [i].gameObject.GetComponent<KingdomTile> ());
@@ -93,6 +93,7 @@ public class KingdomGenerator : MonoBehaviour {
 				if(citiesForExpansion.Count > 0){
 					int randomCity = UnityEngine.Random.Range (0, citiesForExpansion.Count);
 					Expand (this.kingdoms[i], fromCityTile[j], citiesForExpansion[randomCity]);
+					Debug.Log (this.kingdoms [i].kingdom.kingdomName + " EXPANDED FROM " + fromCityTile [j].cityAttributes.hexTile.name + " TO " + citiesForExpansion [randomCity].cityAttributes.hexTile.name);
 					break;
 				}
 			}
@@ -128,6 +129,7 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void Expand(KingdomTile kingdomTile, CityTile fromCityTile, CityTile toCityTile){
 		toCityTile.cityAttributes.kingdomTile = kingdomTile;
+		toCityTile.GetComponent<SpriteRenderer> ().color = kingdomTile.kingdom.tileColor;
 		kingdomTile.kingdom.cities.Add (toCityTile);
 		int populationDecrease = (int)(fromCityTile.cityAttributes.population * 0.2f);
 		toCityTile.cityAttributes.population += populationDecrease;
