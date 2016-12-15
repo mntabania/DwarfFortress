@@ -74,7 +74,8 @@ public class CityGenerator : MonoBehaviour {
 						j--;
 						continue;
 					} else {
-						GLDebug.DrawLine (currentCityTile.transform.position, listOrderedByDistance [j].transform.position, Color.black, 10000f); //Draw Line Between 2 Cities
+//						GLDebug.DrawLine (currentCityTile.transform.position, listOrderedByDistance [j].transform.position, Color.black, 10000f); //Draw Line Between 2 Cities
+						LineDrawer.Instance.DrawLine(currentCityTile.transform.position, listOrderedByDistance [j].transform.position);
 						currentCityTile.cityAttributes.AddCityAsConnected (listOrderedByDistance [j].GetCityTile ());
 						listOrderedByDistance [j].GetCityTile ().cityAttributes.AddCityAsConnected (currentCityTile);
 						/*
