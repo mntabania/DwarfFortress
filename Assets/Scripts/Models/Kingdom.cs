@@ -13,8 +13,9 @@ public class Kingdom : IKingdom {
 	public int performance;
 	public int army;
 	public string kingdomName;
+	public Color tileColor;
 
-	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName){
+	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor){
 		int[] traits = GenerateTraits ();
 		this.id = 1 + GetID();
 		this.kingdomName = kingdomName;
@@ -25,6 +26,7 @@ public class Kingdom : IKingdom {
 		this.altruism = traits [0];
 		this.ambition = traits [1];
 		this.performance = traits [2];
+		this.tileColor = tileColor;
 
 		SetLastID (this.id);
 
