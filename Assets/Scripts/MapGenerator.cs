@@ -8,9 +8,9 @@ public class MapGenerator : MonoBehaviour {
 		EquatorGenerator.Instance.GenerateEquator();
 		Biomes.Instance.GenerateElevation();
 		Biomes.Instance.GenerateBiome();
-//		CityGenerator.Instance.GenerateCities();
-		KingdomGenerator.Instance.GenerateInitialKingdoms ();
-		KingdomGenerator.Instance.ListAdjacentKingdoms ();
+		CityGenerator.Instance.GenerateCities();
+//		KingdomGenerator.Instance.GenerateInitialKingdoms ();
+//		KingdomGenerator.Instance.ListAdjacentKingdoms ();
 	}
 
 }
