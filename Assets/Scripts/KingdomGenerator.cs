@@ -107,6 +107,7 @@ public class KingdomGenerator : MonoBehaviour {
 		TriggerEvents ();
 	}
 	private void TriggerEvents(){
+//		CheckEnemyKingdoms ();
 		GrowPopulation ();
 		GenerateArmy ();
 		TriggerExpandEvent ();
@@ -117,9 +118,9 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void TriggerExpandEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 //			Debug.Log ("EXPAND");
 			int expandPercentage = (5 + (2 * this.kingdoms[i].kingdom.ambition) + this.kingdoms[i].kingdom.performance);
 			int expandChance = UnityEngine.Random.Range (0, 100);
@@ -175,9 +176,9 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void GrowPopulation(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 //			Debug.Log ("GROW POPULATION");
 			float growthPercentage = this.kingdoms[i].kingdom.populationGrowth / 100f;
 			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
@@ -189,9 +190,9 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void GenerateArmy(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 //			Debug.Log ("GENERATE ARMY");
 			float increaseArmyPercentage = UnityEngine.Random.Range (0.5f, 1.5f);
 			int totalPopulation = 0;
@@ -203,12 +204,12 @@ public class KingdomGenerator : MonoBehaviour {
 		}
 	}
 	internal void ListAdjacentKingdoms(){
-		List<KingdomTile> adjacentKingdoms = new List<KingdomTile> ();
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 //			Debug.Log ("ListAdjacentKingdoms");
+			this.kingdoms [i].kingdom.adjacentKingdoms.Clear();
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
 				for(int k = 0; k < this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities.Count; k++){
 					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile != null){
@@ -223,9 +224,9 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void TriggerDeclareWarEvent(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 //			Debug.Log ("WAR");
 			if(this.kingdoms [i].kingdom.adjacentKingdoms.Count <= 0){
 				return;
@@ -234,9 +235,9 @@ public class KingdomGenerator : MonoBehaviour {
 			targetKingdoms = GetAdjacentKingdomsInOrderOfArmy (this.kingdoms [i]);
 			bool isEnemy = false;
 			for (int j = 0; j < targetKingdoms.Count; j++) {
-				if(targetKingdoms[j].kingdom.cities.Count <= 0){
-					continue;
-				}
+//				if(targetKingdoms[j].kingdom.cities.Count <= 0){
+//					continue;
+//				}
 				isEnemy = false;
 				for(int k = 0; k < targetKingdoms[j].kingdom.enemyKingdoms.Count; k++){
 					if(targetKingdoms[j].kingdom.enemyKingdoms[k].kingdom.kingdomName == this.kingdoms[i].kingdom.kingdomName){
@@ -258,8 +259,9 @@ public class KingdomGenerator : MonoBehaviour {
 				}
 			}
 //			KingdomTile targetKingdom = GetAdjacentWeakestArmy (this.kingdoms [i].kingdom.adjacentKingdoms);
-
 		}
+//		Debug.Log ("WAR");
+
 	}
 	private void DeclareWar(KingdomTile currentKingdom, KingdomTile targetKingdom){
 		currentKingdom.kingdom.enemyKingdoms.Add (targetKingdom);
@@ -280,13 +282,16 @@ public class KingdomGenerator : MonoBehaviour {
 
 	private void TriggerInvadeEvent(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
-			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
+			if(this.kingdoms [i].kingdom.enemyKingdoms.Count <= 0){
 				continue;
 			}
-			if(this.kingdoms [i].kingdom.enemyKingdoms.Count <= 0){
-				return;
-			}
 			KingdomTile targetKingdom = GetEnemyWeakestArmy (this.kingdoms [i].kingdom.enemyKingdoms);
+			if(targetKingdom == null){
+				continue;
+			}
 			List <CityTile> cityTilesConnected = GetCityTilesConnected (this.kingdoms [i], targetKingdom);
 			int randomCityInvader = UnityEngine.Random.Range (0, cityTilesConnected.Count);
 
@@ -300,6 +305,7 @@ public class KingdomGenerator : MonoBehaviour {
 				Invade (this.kingdoms[i], targetKingdom, cityInvader, cityTarget);
 			}
 		}
+//		Debug.Log ("INVADE");
 	}
 	private void Invade(KingdomTile invaderKingdom, KingdomTile targetKingdom, CityTile fromCityTile, CityTile toCityTile){
 		Debug.Log (invaderKingdom.kingdom.kingdomName + " ATTEMPTS TO INVADE " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
@@ -323,6 +329,7 @@ public class KingdomGenerator : MonoBehaviour {
 					break;
 				}
 			}
+			CheckEnemyKingdoms ();
 			Debug.Log (invaderKingdom.kingdom.kingdomName + " SUCCESSFULLY INVADED " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
 		}else{
 			Debug.Log (invaderKingdom.kingdom.kingdomName + " HAS FAILED TO INVADE " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
@@ -358,12 +365,20 @@ public class KingdomGenerator : MonoBehaviour {
 		return cityTilesConnected[randomCityTarget];
 	}
 	private KingdomTile GetEnemyWeakestArmy(List<KingdomTile> enemyKingdoms){
-		int weakestArmy = enemyKingdoms[0].kingdom.army;
-		KingdomTile kingdomWithWeakestArmy = enemyKingdoms[0];
+		int weakestArmy = 0;
+		KingdomTile kingdomWithWeakestArmy = null;
 		for(int i = 0; i < enemyKingdoms.Count; i++){
-			if(enemyKingdoms[i].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(enemyKingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
+			weakestArmy = enemyKingdoms [i].kingdom.army;
+			kingdomWithWeakestArmy = enemyKingdoms [i];
+			break;
+		}
+		for(int i = 0; i < enemyKingdoms.Count; i++){
+//			if(enemyKingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 			int currentArmy = enemyKingdoms[i].kingdom.army;
 			if(weakestArmy > currentArmy){
 				weakestArmy = currentArmy;
@@ -375,14 +390,19 @@ public class KingdomGenerator : MonoBehaviour {
 
 	private void TriggerDeclarePeaceEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			if(this.kingdoms[i].kingdom.cities.Count <= 0 || this.kingdoms[i].kingdom.enemyKingdoms.Count <= 0){
+//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+//				continue;
+//			}
+			if(this.kingdoms[i].kingdom.enemyKingdoms.Count <= 0){
 				continue;
 			}
-
 			KingdomTile targetKingdom = GetRandomPeaceKingdom (this.kingdoms [i]);
 			int citiesGained = 0;
 			int citiesLost = 0;
 			for(int j = 0; j < this.kingdoms[i].kingdom.enemyKingdoms.Count; j++){
+//				if(this.kingdoms[i].kingdom.enemyKingdoms[j].kingdom.cities.Count <= 0){
+//					continue;
+//				}
 				if(this.kingdoms[i].kingdom.enemyKingdoms[j].kingdom.id == targetKingdom.kingdom.id){
 					citiesGained = this.kingdoms [i].kingdom.citiesGained [j];
 					citiesLost = this.kingdoms [i].kingdom.citiesLost [j];
@@ -397,6 +417,8 @@ public class KingdomGenerator : MonoBehaviour {
 				Debug.Log (this.kingdoms [i].kingdom.kingdomName + " DECLARED PEACE WITH " + targetKingdom.kingdom.kingdomName);
 			}
 		}
+//		Debug.Log ("PEACE");
+
 	}
 	private void DeclarePeace(KingdomTile fromKingdomTile, KingdomTile toKingdomTile){
 		for(int i = 0; i < fromKingdomTile.kingdom.enemyKingdoms.Count; i++){
@@ -419,12 +441,37 @@ public class KingdomGenerator : MonoBehaviour {
 	private KingdomTile GetRandomPeaceKingdom(KingdomTile kingdomTile){
 		List <KingdomTile> enemyKingdoms = new List<KingdomTile> ();
 		for(int j = 0; j < kingdomTile.kingdom.enemyKingdoms.Count; j++){
-			if(kingdomTile.kingdom.enemyKingdoms[j].kingdom.cities.Count <= 0){
-				continue;
-			}
+//			if(kingdomTile.kingdom.enemyKingdoms[j].kingdom.cities.Count <= 0){
+//				continue;
+//			}
 			enemyKingdoms.Add (kingdomTile.kingdom.enemyKingdoms [j]);
 		}
 		int randomPeaceKingdom = UnityEngine.Random.Range (0, enemyKingdoms.Count);
 		return enemyKingdoms[randomPeaceKingdom];
+	}
+
+	private void CheckEnemyKingdoms(){
+		List <int> index = new List<int> ();
+		List <KingdomTile> kingdoms = new List<KingdomTile> ();
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+				kingdoms.Add (this.kingdoms [i]);
+			}
+			index.Clear ();
+			for(int j = 0; j < this.kingdoms[i].kingdom.enemyKingdoms.Count; j++){
+				if(this.kingdoms[i].kingdom.enemyKingdoms[j].kingdom.cities.Count <= 0){
+					index.Add (j);
+				}
+			}
+			for (int j = 0; j < index.Count; j++) {
+				this.kingdoms [i].kingdom.enemyKingdoms.RemoveAt (index[j]);
+				this.kingdoms [i].kingdom.citiesGained.RemoveAt (index[j]);
+				this.kingdoms [i].kingdom.citiesLost.RemoveAt (index[j]);
+			}
+		}
+
+		for(int i = 0; i < kingdoms.Count; i++){
+			this.kingdoms.Remove (kingdoms[i]);
+		}
 	}
 }
