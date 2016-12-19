@@ -13,6 +13,7 @@ public class City : ICity{
 	public int population;
 	public List<CityTile> connectedCities;
 	public KingdomTile kingdomTile;
+	public Faction faction;
 
 	public City(HexTile hexTile, BIOMES biomeType){
 		this.hexTile = hexTile;
@@ -23,6 +24,7 @@ public class City : ICity{
 		this.numOfRoads = 0;
 		this.connectedCities = new List<CityTile>();
 		this.kingdomTile = null;
+		this.faction = null;
 	}
 
 	public int GeneratePopulation(){

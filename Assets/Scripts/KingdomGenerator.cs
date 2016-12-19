@@ -65,8 +65,8 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 
 	internal void GenerateInitialKingdoms(){
-		CreateTempCities ();
-		AddCapitalCities ();
+//		CreateTempCities ();
+//		AddCapitalCities ();
 //		capitalCities [0].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f));
 //		capitalCities [1].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f));
 //		capitalCities [2].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f));
@@ -74,28 +74,28 @@ public class KingdomGenerator : MonoBehaviour {
 
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f), ReligionGenerator.Instance.GenerateReligion(), CultureGenerator.Instance.GenerateCulture());
+		goKingdom1.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){CityGenerator.Instance.capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom1.GetComponent<KingdomTile>());
 
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f), ReligionGenerator.Instance.GenerateReligion(), CultureGenerator.Instance.GenerateCulture());
+		goKingdom2.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){CityGenerator.Instance.capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTile>());
 
 
 		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom3.transform.parent = this.transform;
-		goKingdom3.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f), ReligionGenerator.Instance.GenerateReligion(), CultureGenerator.Instance.GenerateCulture());
+		goKingdom3.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){CityGenerator.Instance.capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f));
 		goKingdom3.name = goKingdom3.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom3.GetComponent<KingdomTile>());
 
 
 		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom4.transform.parent = this.transform;
-		goKingdom4.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f), ReligionGenerator.Instance.GenerateReligion(), CultureGenerator.Instance.GenerateCulture());
+		goKingdom4.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){CityGenerator.Instance.capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f));
 		goKingdom4.name = goKingdom4.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom4.GetComponent<KingdomTile>());
 
@@ -103,8 +103,27 @@ public class KingdomGenerator : MonoBehaviour {
 //		for(int i = 0; i < capitalCities.Count; i++){
 //			kingdoms.Add (capitalCities [i].gameObject.GetComponent<KingdomTile> ());
 //		}
-		CreateConnections ();
-		DrawConnections ();
+//		CreateConnections ();
+//		DrawConnections ();
+		CreateInitialFactions ();
+	}
+	private void CreateInitialFactions(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			this.kingdoms [i].kingdom.factions.Add (GenerateFaction(this.kingdoms [i].kingdom.race, ReligionGenerator.Instance.GenerateReligion (), CultureGenerator.Instance.GenerateCulture ()));
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				this.kingdoms [i].kingdom.cities [j].cityAttributes.faction = this.kingdoms [i].kingdom.factions [0];
+			}
+		}
+	}
+	private Faction GenerateFaction(RACE race, Religion religion, Culture culture){
+		Faction faction = new Faction ();
+		faction.id = Utilities.lastfactionid += 1;
+		faction.factionName = "FACTION" + faction.id;
+		faction.race = race;
+		faction.religion = religion;
+		faction.culture = culture;
+
+		return faction;
 	}
 	internal void OnTurn(){
 		TriggerEvents ();
@@ -171,6 +190,7 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void Expand(KingdomTile kingdomTile, CityTile fromCityTile, CityTile toCityTile){
 		toCityTile.cityAttributes.kingdomTile = kingdomTile;
+		toCityTile.cityAttributes.faction = fromCityTile.cityAttributes.faction;
 		toCityTile.GetComponent<SpriteRenderer> ().color = kingdomTile.kingdom.tileColor;
 		kingdomTile.kingdom.cities.Add (toCityTile);
 		int populationDecrease = (int)(fromCityTile.cityAttributes.population * 0.2f);
@@ -317,6 +337,7 @@ public class KingdomGenerator : MonoBehaviour {
 		int successChance = UnityEngine.Random.Range (0, 100);
 		if(successChance >= 0 && successChance <= successRate){
 			toCityTile.cityAttributes.kingdomTile = invaderKingdom;
+			toCityTile.cityAttributes.faction = fromCityTile.cityAttributes.faction;
 			toCityTile.GetComponent<SpriteRenderer> ().color = invaderKingdom.kingdom.tileColor;
 			invaderKingdom.kingdom.cities.Add (toCityTile);
 			targetKingdom.kingdom.cities.Remove (toCityTile);

@@ -351,7 +351,7 @@ public class CityGenerator : MonoBehaviour {
 			int capitalCityIndex = lastIndex - j;
 			cities[capitalCityIndex].GetComponent<CityTile>().cityAttributes.cityType = CITY_TYPE.CAPITAL;
 			cities [capitalCityIndex].GetCityTile().cityAttributes.population = cities [capitalCityIndex].GetCityTile ().cityAttributes.GeneratePopulation ();
-			cities[capitalCityIndex].SetTileColor(Color.yellow);
+//			cities[capitalCityIndex].SetTileColor(Color.yellow);
 			capitalCities.Add(cities[capitalCityIndex].GetComponent<CityTile>());
 		}
 	}
