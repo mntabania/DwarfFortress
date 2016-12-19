@@ -332,6 +332,14 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void Invade(KingdomTile invaderKingdom, KingdomTile targetKingdom, CityTile fromCityTile, CityTile toCityTile){
 		Debug.Log (invaderKingdom.kingdom.kingdomName + " ATTEMPTS TO INVADE " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
+		float invaderArmyLossPercentage = UnityEngine.Random.Range (10f, 20f);
+		float targetArmyLossPercentage = UnityEngine.Random.Range (5f, 10f);
+
+		int invaderArmyLoss = (int)((invaderArmyLossPercentage/100f) * (float)invaderKingdom.kingdom.army);
+		invaderKingdom.kingdom.army -= invaderArmyLoss;
+
+		int targetArmyLoss = (int)((targetArmyLossPercentage/100f) * (float)targetKingdom.kingdom.army);
+		targetKingdom.kingdom.army -= targetArmyLoss;
 
 		float successRate = 50f * ((float)invaderKingdom.kingdom.army / (float)targetKingdom.kingdom.army);
 		int successChance = UnityEngine.Random.Range (0, 100);
@@ -358,6 +366,9 @@ public class KingdomGenerator : MonoBehaviour {
 		}else{
 			Debug.Log (invaderKingdom.kingdom.kingdomName + " HAS FAILED TO INVADE " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
 		}
+
+		Debug.Log (invaderKingdom.kingdom.kingdomName + " ARMY LOSS: " + invaderArmyLoss + " (" + invaderArmyLossPercentage + "%)");
+		Debug.Log (targetKingdom.kingdom.kingdomName + " ARMY LOSS: " + targetArmyLoss + " (" + targetArmyLossPercentage + "%)");
 
 	}
 	private List<CityTile> GetCityTilesConnected(KingdomTile kingdomTile, KingdomTile targetKingdom){
