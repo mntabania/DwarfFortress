@@ -101,19 +101,21 @@ public class CityGenerator : MonoBehaviour {
 			latestIndex = i;
 
 			if (pendingCityTiles.Count != cityCount && (i + 1) == pendingCityTiles.Count) {
-				Debug.LogError ("MISSED SOME CITIES!");
+				Debug.Log ("MISSED SOME CITIES!");
 				Debug.Log ("Create Lines for missed out cities");
 				for (int x = 0; x < cities.Count; x++) {
 					if (!pendingCityTiles.Contains (cities[x].GetCityTile())) {
 						Debug.Log("======Missed out city: " + cities[x].name + " ======");
 
-						HexTile possibleConnectionTile = FindNearestCityWithConnection(cities [x].GetCityTile ());
-						ConnectCities (cities [x], possibleConnectionTile);
-						if (!pendingCityTiles.Contains (cities [x].GetCityTile ())) {
-							pendingCityTiles.Add (cities [x].GetCityTile ());
-						}
-						if (!pendingCityTiles.Contains (possibleConnectionTile.GetCityTile ())) {
-							pendingCityTiles.Add (possibleConnectionTile.GetCityTile ());
+						HexTile possibleConnectionTile = FindNearestCityWithConnection(cities [x].GetCityTile());
+						if (possibleConnectionTile != null) {
+							ConnectCities (cities [x], possibleConnectionTile);
+							if (!pendingCityTiles.Contains (cities [x].GetCityTile ())) {
+								pendingCityTiles.Add (cities [x].GetCityTile ());
+							}
+							if (!pendingCityTiles.Contains (possibleConnectionTile.GetCityTile ())) {
+								pendingCityTiles.Add (possibleConnectionTile.GetCityTile ());
+							}
 						}
 					}
 
@@ -134,8 +136,10 @@ public class CityGenerator : MonoBehaviour {
 					Debug.LogError ("No more possible connectionssssss");
 					break;
 				}
-				if (!IsLineIntersecting (tile.transform.position, cityTilesByDistance [i].transform.position) ||
-					!IsCollinear (tile.transform.position, cityTilesByDistance [i].transform.position)) {
+				if (IsLineIntersecting (tile.transform.position, cityTilesByDistance [i].transform.position) ||
+				    IsCollinear (tile.transform.position, cityTilesByDistance [i].transform.position)) {
+					continue;
+				} else {
 					return cityTilesByDistance [i];
 				}
 			}
@@ -164,7 +168,8 @@ public class CityGenerator : MonoBehaviour {
 					Debug.Log ("Because that city alread has 4 or more cities connected to it?: " + (listOrderedByDistance [j].GetCityTile ().cityAttributes.connectedCities.Count >= 4).ToString ());
 					continue;
 				} else {
-					if (IsLineIntersecting (currentCityTile.transform.position, listOrderedByDistance[j].transform.position)) {
+					if (IsLineIntersecting (currentCityTile.transform.position, listOrderedByDistance[j].transform.position) ||
+						IsCollinear (currentCityTile.transform.position, listOrderedByDistance[j].transform.position)) {
 						Debug.Log ("Cannot connect: ");
 						Debug.Log ("Because Line Intersects?: " + IsLineIntersecting (currentCityTile.transform.position, listOrderedByDistance [j].transform.position).ToString ());
 						Debug.Log ("Because Line is Collinear?: " + IsCollinear(currentCityTile.transform.position, listOrderedByDistance[j].transform.position));
