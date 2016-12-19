@@ -7,6 +7,7 @@ public class Kingdom : IKingdom {
 	public int id;
 	public RACE race;
 	public Religion religion;
+	public Culture culture;
 	public float populationGrowth;
 	public int altruism;
 	public int ambition;
@@ -21,7 +22,7 @@ public class Kingdom : IKingdom {
 	public List<int> citiesLost;
 
 
-	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor, Religion religion){
+	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor, Religion religion, Culture culture){
 		int[] traits = GenerateTraits ();
 		this.id = 1 + GetID();
 		this.kingdomName = kingdomName;
@@ -29,6 +30,7 @@ public class Kingdom : IKingdom {
 		this.army = GenerateArmyPopulation ();
 		this.race = race;
 		this.religion = religion;
+		this.culture = culture;
 		this.cities = cities;
 		this.altruism = traits [0];
 		this.ambition = traits [1];

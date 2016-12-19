@@ -15,6 +15,8 @@ public class ReligionGenerator : MonoBehaviour {
 
 	internal Religion GenerateReligion(){
 		Religion religion = new Religion ();
+		int randomName = UnityEngine.Random.Range (0, religionList.names.Count);
+		religion.religionName = religionList.names[randomName];
 		religion.gods = GetGods ();
 		religion.focus = GetFocus ();
 		religion.expectation = GetExpectation ();
@@ -29,9 +31,9 @@ public class ReligionGenerator : MonoBehaviour {
 				+ ". People are expected to be " + religion.expectation [0] + " and " + religion.expectation [1] + ". They are not allowed " + religion.forbidden [0] + " and " + religion.forbidden [1] + ".";
 		}
 
+		religionList.names.RemoveAt (randomName);
 		return religion;
 	}
-
 	private string[] GetGods(){
 		int noOfGods = UnityEngine.Random.Range (1, 3);
 

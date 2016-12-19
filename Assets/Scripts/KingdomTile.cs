@@ -15,8 +15,8 @@ public class KingdomTile : MonoBehaviour {
 //	public List<CityTile> cities;
 
 
-	public void CreateKingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor, Religion religion){
-		this.kingdom = new Kingdom (populationGrowth, race, cities, kingdomName, tileColor, religion);
+	public void CreateKingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor, Religion religion, Culture culture){
+		this.kingdom = new Kingdom (populationGrowth, race, cities, kingdomName, tileColor, religion, culture);
 		for (int i = 0; i < this.kingdom.cities.Count; i++) {
 			this.kingdom.cities [i].cityAttributes.kingdomTile = this;
 			this.kingdom.cities [i].GetComponent<SpriteRenderer> ().color = this.kingdom.cities [i].cityAttributes.kingdomTile.kingdom.tileColor;
