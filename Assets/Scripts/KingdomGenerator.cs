@@ -71,28 +71,35 @@ public class KingdomGenerator : MonoBehaviour {
 //		capitalCities [1].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f));
 //		capitalCities [2].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f));
 //		capitalCities [3].gameObject.AddComponent<KingdomTile> ().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f));
-
+		Religion religion = ReligionGenerator.Instance.GenerateReligion();
+		Debug.Log (religion.sentence);
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.HUMANS, new List<CityTile>(){capitalCities[0]}, "KINGDOM1", new Color(255f/255f, 0f/255f, 206f/255f), religion);
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom1.GetComponent<KingdomTile>());
 
+		religion = ReligionGenerator.Instance.GenerateReligion();
+		Debug.Log (religion.sentence);
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.ELVES, new List<CityTile>(){capitalCities[1]}, "KINGDOM2", new Color(40f/255f, 255f/255f, 0f/255f), religion);
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTile>());
 
+		religion = ReligionGenerator.Instance.GenerateReligion();
+		Debug.Log (religion.sentence);
 		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom3.transform.parent = this.transform;
-		goKingdom3.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f));
+		goKingdom3.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.MINGONS, new List<CityTile>(){capitalCities[2]}, "KINGDOM3", new Color(0f/255f, 234f/255f, 255f/255f), religion);
 		goKingdom3.name = goKingdom3.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom3.GetComponent<KingdomTile>());
 
+		religion = ReligionGenerator.Instance.GenerateReligion();
+		Debug.Log (religion.sentence);
 		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (goKingdomTile);
 		goKingdom4.transform.parent = this.transform;
-		goKingdom4.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom4.GetComponent<KingdomTile>().CreateKingdom (5f, RACE.CROMADS, new List<CityTile>(){capitalCities[3]}, "KINGDOM4", new Color(157f/255f, 0f/255f, 255f/255f), religion);
 		goKingdom4.name = goKingdom4.GetComponent<KingdomTile> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom4.GetComponent<KingdomTile>());
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class Kingdom : IKingdom {
 	public int id;
 	public RACE race;
+	public Religion religion;
 	public float populationGrowth;
 	public int altruism;
 	public int ambition;
@@ -20,13 +21,14 @@ public class Kingdom : IKingdom {
 	public List<int> citiesLost;
 
 
-	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor){
+	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor, Religion religion){
 		int[] traits = GenerateTraits ();
 		this.id = 1 + GetID();
 		this.kingdomName = kingdomName;
 		this.populationGrowth = populationGrowth;
 		this.army = GenerateArmyPopulation ();
 		this.race = race;
+		this.religion = religion;
 		this.cities = cities;
 		this.altruism = traits [0];
 		this.ambition = traits [1];
