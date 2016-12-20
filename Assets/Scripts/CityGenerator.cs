@@ -230,6 +230,8 @@ public class CityGenerator : MonoBehaviour {
 //		GLDebug.DrawLine (currentCityTile.transform.position, listOrderedByDistance [j].transform.position, Color.black, 10000f); //Draw Line Between 2 Cities
 		GameObject lineGO = LineDrawer.Instance.DrawLine (originTile.transform, originTile.transform.position, targetTile.transform.position);
 		lastLine = lineGO.GetComponent<Line> ();
+		lineGO.SetActive (false);
+		PathManager.Instance.DeterminePath (originTile.tile, targetTile.tile);
 		allLines.Add (lineGO.GetComponent<Line> ());
 		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile ());
 		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
@@ -459,23 +461,6 @@ public class CityGenerator : MonoBehaviour {
 			}
 			tilesElligibleForCities.Remove (chosenTile);
 			return;
-//			int randomTileIndex = UnityEngine.Random.Range (0, cities.Count);
-//			HexTile[] neighborTiles = cities [randomTileIndex].GetTilesInRange(1.5f);
-//			bool foundTile = false;
-//			for (int i = 0; i < neighborTiles.Length; i++) {
-//				HexTile[] nearTiles = neighborTiles [i].GetTilesInRange (0.7f);
-//				for (int j = 0; j < nearTiles.Length; j++) {
-//					if (nearTiles[j].isCity) {
-//						break;
-//					}
-//					if ((j+1) == nearTiles.Length) {
-//						SetTileAsCity(nearTiles[j]);
-//						tilesElligibleForCities.Remove(nearTiles[j]);
-//						return;
-//					}
-//				}
-//	
-//			}
 		}
 
 		bool choosingCity = true;

@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Model;
 
 public class HexTile : MonoBehaviour {
+
+	public Tile tile;
+
+	public GameObject path;
 
 	public float elevationNoise;
 	public float moistureNoise;
