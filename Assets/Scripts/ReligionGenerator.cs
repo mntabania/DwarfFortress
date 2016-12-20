@@ -14,6 +14,9 @@ public class ReligionGenerator : MonoBehaviour {
 	}
 
 	internal Religion GenerateReligion(){
+		if(religionList.names.Count <= 0){
+			return null;
+		}
 		Religion religion = new Religion ();
 		int randomName = UnityEngine.Random.Range (0, religionList.names.Count);
 		religion.religionName = religionList.names[randomName];

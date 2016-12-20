@@ -109,13 +109,21 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void CreateInitialFactions(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			this.kingdoms [i].kingdom.factions.Add (GenerateFaction(this.kingdoms [i].kingdom.race, ReligionGenerator.Instance.GenerateReligion (), CultureGenerator.Instance.GenerateCulture ()));
+			Religion religion = ReligionGenerator.Instance.GenerateReligion ();
+			Culture culture = CultureGenerator.Instance.GenerateCulture ();
+			if(religion == null || culture == null){
+				Debug.Log ("NO MORE RELIGIONS OR CULTURE. CAN'T CREATE NEW.");
+				break;
+			}
+			Faction faction = CreateNewFaction (this.kingdoms [i].kingdom.race, religion, culture);
+			this.kingdoms [i].kingdom.factions.Add (faction);
+			FactionStorage.Instance.AddFaction (faction);
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
 				this.kingdoms [i].kingdom.cities [j].cityAttributes.faction = this.kingdoms [i].kingdom.factions [0];
 			}
 		}
 	}
-	private Faction GenerateFaction(RACE race, Religion religion, Culture culture){
+	private Faction CreateNewFaction(RACE race, Religion religion, Culture culture){
 		Faction faction = new Faction ();
 		faction.id = Utilities.lastfactionid += 1;
 		faction.factionName = "FACTION" + faction.id;
@@ -137,6 +145,7 @@ public class KingdomGenerator : MonoBehaviour {
 		TriggerDeclarePeaceEvent ();
 		TriggerDeclareWarEvent ();
 		TriggerInvadeEvent ();
+		TriggerFactionEvents ();
 	}
 	private void TriggerExpandEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
@@ -507,6 +516,175 @@ public class KingdomGenerator : MonoBehaviour {
 
 		for(int i = 0; i < kingdoms.Count; i++){
 			this.kingdoms.Remove (kingdoms[i]);
+		}
+	}
+
+	private void TriggerFactionEvents(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			int triggerChance = UnityEngine.Random.Range (0, 100);
+			if(triggerChance >= 0 && triggerChance < 50){
+				int randomCity = UnityEngine.Random.Range (0, this.kingdoms [i].kingdom.cities.Count);
+				CityTile randomCityTile = this.kingdoms [i].kingdom.cities [randomCity];
+
+				int factionEventsChance = UnityEngine.Random.Range (0, 100);
+				if(factionEventsChance >= 0 && factionEventsChance < 25){ //change faction
+					Debug.Log("CHANGE FACTION EVENT!");
+					ChangeFaction (randomCityTile);
+				}else if(factionEventsChance >= 25 && factionEventsChance < 50){ //split faction
+					Debug.Log("SPLIT FACTION EVENT!");
+					SplitFaction (this.kingdoms [i]);
+				}else{ //influence faction
+					Debug.Log("INFLUENCE FACTION EVENT!");
+					InfluenceFaction (randomCityTile);
+				}
+			}
+		}
+	}
+
+	private void ChangeFaction(CityTile cityTile){
+		if(cityTile.cityAttributes.kingdomTile.kingdom.factions.Count < 2){
+			Debug.Log (cityTile.cityAttributes.kingdomTile.kingdom.kingdomName + " HAS 1 OR LOWER FACTION COUNT. CAN'T CHANGE RELIGION OR CULTURE.");
+			return;
+		}
+		int randomNumber = UnityEngine.Random.Range (0, 2);
+		if(randomNumber == 0){ //religion change
+			Religion religion = ReligionGenerator.Instance.GenerateReligion();
+			if(religion == null){
+				Debug.Log ("NO MORE RELIGIONS. CAN'T CREATE NEW.");
+				return;
+			}
+			cityTile.cityAttributes.faction.religion = religion;
+			Debug.Log (cityTile.cityAttributes.hexTile.name + " RELIGION HAS CHANGED!");
+		}else{ //culture change
+			Culture culture =  CultureGenerator.Instance.GenerateCulture();
+			if(culture == null){
+				Debug.Log ("NO MORE CULTURES. CAN'T CREATE NEW.");
+				return;
+			}
+			cityTile.cityAttributes.faction.culture = culture;
+			Debug.Log (cityTile.cityAttributes.hexTile.name + " CULTURE HAS CHANGED!");
+		}
+		Faction faction = FactionStorage.Instance.CheckFaction (cityTile.cityAttributes.faction);
+		if(faction == null){
+			Debug.Log ("FACTION NON EXISTENT. CREATING NEW FACTION....");
+			cityTile.cityAttributes.faction = CreateNewFaction (cityTile.cityAttributes.faction.race, cityTile.cityAttributes.faction.religion, cityTile.cityAttributes.faction.culture);
+			cityTile.cityAttributes.kingdomTile.kingdom.factions.Add (cityTile.cityAttributes.faction);
+			FactionStorage.Instance.AddFaction (cityTile.cityAttributes.faction);
+		}else{
+			Debug.Log ("FACTION ALREADY EXISTS. RETRIEVING FACTION....");
+			cityTile.cityAttributes.faction = faction;
+		}
+	}
+
+	private void InfluenceFaction(CityTile fromCityTile){
+		int randomNumber = UnityEngine.Random.Range (0, 2);
+		CityTile targetCityTile = null;
+		if(randomNumber == 0){ //influence religion
+			List<int> religionIndexes = GetConnectedCitiesIndexesWithDiffReligion(fromCityTile);
+			if(religionIndexes.Count > 0){
+				int randomTargetCity = UnityEngine.Random.Range (0, religionIndexes.Count);
+				CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [religionIndexes[randomTargetCity]];
+				toCityTile.cityAttributes.faction.religion = fromCityTile.cityAttributes.faction.religion;
+				targetCityTile = toCityTile;
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS RELIGION TO " + toCityTile.cityAttributes.hexTile.name);
+			}
+			else{
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT RELIGION. CHECKING CULTURE....");
+				List<int> cultureIndexes = GetConnectedCitiesIndexesWithDiffCulture(fromCityTile);
+				if(cultureIndexes.Count > 0){
+					int randomTargetCity = UnityEngine.Random.Range (0, cultureIndexes.Count);
+					CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [cultureIndexes[randomTargetCity]];
+					toCityTile.cityAttributes.faction.culture = fromCityTile.cityAttributes.faction.culture;
+					targetCityTile = toCityTile;
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS CULTURE TO " + toCityTile.cityAttributes.hexTile.name);
+				}else{
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT RELIGION OR CULTURE. CAN'T INFLUENCE.");
+				}
+			}
+		}else{ //influence culture
+			List<int> cultureIndexes = GetConnectedCitiesIndexesWithDiffCulture(fromCityTile);
+			if(cultureIndexes.Count > 0){
+				int randomTargetCity = UnityEngine.Random.Range (0, cultureIndexes.Count);
+				CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [cultureIndexes[randomTargetCity]];
+				toCityTile.cityAttributes.faction.culture = fromCityTile.cityAttributes.faction.culture;
+				targetCityTile = toCityTile;
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS CULTURE TO " + toCityTile.cityAttributes.hexTile.name);
+			}else{
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT CULTURE. CHECKING RELIGION....");
+				List<int> religionIndexes = GetConnectedCitiesIndexesWithDiffReligion(fromCityTile);
+				if(religionIndexes.Count > 0){
+					int randomTargetCity = UnityEngine.Random.Range (0, religionIndexes.Count);
+					CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [religionIndexes[randomTargetCity]];
+					toCityTile.cityAttributes.faction.religion = fromCityTile.cityAttributes.faction.religion;
+					targetCityTile = toCityTile;
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS RELIGION TO " + toCityTile.cityAttributes.hexTile.name);
+				}
+				else{
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT CULTURE OR RELIGION. CAN'T INFLUENCE.");
+				}
+			}
+
+		}
+		if(targetCityTile != null){
+			Faction faction = FactionStorage.Instance.CheckFaction (targetCityTile.cityAttributes.faction);
+			if(faction == null){
+				Debug.Log ("FACTION NON EXISTENT. CREATING NEW FACTION....");
+				targetCityTile.cityAttributes.faction = CreateNewFaction (targetCityTile.cityAttributes.faction.race, targetCityTile.cityAttributes.faction.religion, targetCityTile.cityAttributes.faction.culture);
+				targetCityTile.cityAttributes.kingdomTile.kingdom.factions.Add (targetCityTile.cityAttributes.faction);
+				FactionStorage.Instance.AddFaction (targetCityTile.cityAttributes.faction);
+			}else{
+				Debug.Log ("FACTION ALREADY EXISTS. RETRIEVING FACTION....");
+				targetCityTile.cityAttributes.faction = faction;
+			}
+		}
+	}
+	private List<int> GetConnectedCitiesIndexesWithDiffReligion(CityTile cityTile){
+		List<int> indexes = new List<int> ();
+		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
+			if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction != null){
+				if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction.religion != cityTile.cityAttributes.faction.religion){
+					indexes.Add (i);
+				}
+			}
+		}
+		return indexes;
+	}
+	private List<int> GetConnectedCitiesIndexesWithDiffCulture(CityTile cityTile){
+		List<int> indexes = new List<int> ();
+		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
+			if (cityTile.cityAttributes.connectedCities [i].cityAttributes.faction != null) {
+				if (cityTile.cityAttributes.connectedCities [i].cityAttributes.faction.culture != cityTile.cityAttributes.faction.culture) {
+					indexes.Add (i);
+				}
+			}
+		}
+		return indexes;
+	}
+	private void SplitFaction(KingdomTile kingdomTile){
+		if(kingdomTile.kingdom.factions.Count > 1){
+			int randomFaction = UnityEngine.Random.Range (0, kingdomTile.kingdom.factions.Count);
+			Faction rebelFaction = kingdomTile.kingdom.factions [randomFaction];
+			List <CityTile> newCityTiles = new List<CityTile> ();
+			for(int i = 0; i < kingdomTile.kingdom.cities.Count; i++){
+				if(kingdomTile.kingdom.cities[i].cityAttributes.faction == rebelFaction){
+					newCityTiles.Add (kingdomTile.kingdom.cities [i]);
+				}
+			}
+			GameObject goNewKingdom = (GameObject)GameObject.Instantiate (goKingdomTile);
+			goNewKingdom.transform.parent = this.transform;
+			goNewKingdom.GetComponent<KingdomTile>().CreateKingdom (kingdomTile.kingdom.populationGrowth, kingdomTile.kingdom.race, newCityTiles, "KINGDOM", new Color((float)UnityEngine.Random.Range(0,256)/255f, (float)UnityEngine.Random.Range(0,256)/255f, (float)UnityEngine.Random.Range(0,256)/255f));
+			goNewKingdom.GetComponent<KingdomTile> ().kingdom.kingdomName = goNewKingdom.GetComponent<KingdomTile> ().kingdom.kingdomName + goNewKingdom.GetComponent<KingdomTile> ().kingdom.id;
+			goNewKingdom.GetComponent<KingdomTile> ().kingdom.army = (int)(((float)newCityTiles.Count / (float)kingdomTile.kingdom.cities.Count) * (float)kingdomTile.kingdom.army);
+			goNewKingdom.GetComponent<KingdomTile> ().kingdom.factions.Add (rebelFaction);
+			goNewKingdom.name = goNewKingdom.GetComponent<KingdomTile> ().kingdom.kingdomName;
+
+			kingdoms.Add (goNewKingdom.GetComponent<KingdomTile>());
+
+			Debug.Log (rebelFaction.factionName + " HAS SPLIT WITH " + kingdomTile.kingdom.kingdomName);
+			Debug.Log ("CREATED NEW KINGDOM: " + goNewKingdom.name);
+			ListAdjacentKingdoms ();
+		}else{
+			Debug.Log (kingdomTile.kingdom.kingdomName + " HAS 1 OR LOWER FACTION COUNT. CAN'T SPLIT.");
 		}
 	}
 }

@@ -13,6 +13,10 @@ public class CultureGenerator : MonoBehaviour {
 	}
 
 	internal Culture GenerateCulture(){
+		if(cultureList.names.Count <= 0){
+			return null;
+		}
+
 		Culture culture = new Culture ();
 		int randomName = UnityEngine.Random.Range (0, cultureList.names.Count);
 
