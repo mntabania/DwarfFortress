@@ -13,12 +13,14 @@ public class Kingdom : IKingdom {
 	public int army;
 	public string kingdomName;
 	public Color tileColor;
+	public bool isDead;
 	public List<CityTile> cities;
 	public List<KingdomTile> adjacentKingdoms;
 	public List<KingdomTile> enemyKingdoms;
 	public List<int> citiesGained;
 	public List<int> citiesLost;
 	public List<Faction> factions;
+	public List<KingdomRelations> kingdomRelations;
 
 
 	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor){
@@ -33,11 +35,13 @@ public class Kingdom : IKingdom {
 		this.ambition = traits [1];
 		this.performance = traits [2];
 		this.tileColor = tileColor;
+		this.isDead = false;
 		this.adjacentKingdoms = new List<KingdomTile> ();
 		this.enemyKingdoms = new List<KingdomTile> ();
 		this.citiesGained = new List<int> ();
 		this.citiesLost = new List<int> ();
 		this.factions = new List<Faction> ();
+		this.kingdomRelations = new List<KingdomRelations> ();
 		SetLastID (this.id);
 
 	}

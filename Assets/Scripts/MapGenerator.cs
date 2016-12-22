@@ -10,7 +10,7 @@ public class MapGenerator : MonoBehaviour {
 		Biomes.Instance.GenerateBiome();
 		CityGenerator.Instance.GenerateCities();
 		KingdomGenerator.Instance.GenerateInitialKingdoms ();
-		KingdomGenerator.Instance.ListAdjacentKingdoms ();
+//		KingdomGenerator.Instance.ListAdjacentKingdoms ();
 	}
 
 }
