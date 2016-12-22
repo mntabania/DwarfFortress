@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Model;
 using System.Linq;
 
 public class GridMap : MonoBehaviour {
@@ -48,7 +47,6 @@ public class GridMap : MonoBehaviour {
 					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
 				}
 				hex.GetComponent<HexTile>().tile = new Tile (x, y, hex.GetComponent<HexTile>());
-				hex.GetComponent<HexTile>().canPass = true;
 				GameBoard [x, y] = hex.GetComponent<HexTile> ().tile;
 			}
 		}

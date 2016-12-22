@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Model;
 using System.Linq;
 using System;
 
@@ -9,35 +8,48 @@ public class PathManager : MonoBehaviour {
 
 	public static PathManager Instance = null;
 
+	public List<Road> allRoads;
+
 	public GameObject Line;
 
-	List<GameObject> _path;
 	const float Spacing = 1f;
 
 	void Awake(){
 		Instance = this;
+		allRoads = new List<Road> ();
 	}
 
+	/*
+	 * For testing purposes, draw a path
+	 * from the 1st city to the 2nd city.
+	 * */
 	[ContextMenu("PATHPATH")]
 	public void PathPath(){
 		CityGenerator.Instance.RefinePaths (CityGenerator.Instance.cities [0], CityGenerator.Instance.cities [1]);
 		DeterminePath (CityGenerator.Instance.cities [0].tile, CityGenerator.Instance.cities [1].tile);
 	}
 
+	/*
+	 * Generate Path From one tile to another
+	 * */
 	public void DeterminePath(Tile start, Tile destination){
-		Debug.Log ("DETERMINE PATH!");
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destination.X, 2) + Math.Pow(t.Y - destination.Y, 2));
 
 		var path = PathFind.PathFind.FindPath(start, destination, distance, estimate);
-		Debug.Log ("PASOK!");
-		DrawPath(path);
+		DrawPath(start.hexTile.GetComponent<CityTile>(), destination.hexTile.GetComponent<CityTile>(), path);
 	}
 
-	private void DrawPath(IEnumerable<Tile> path) {
-		Debug.Log ("PASOK DITEY!");
-		Debug.Log ("IS PATH NULL?: " + (path == null).ToString());
+
+	/*
+	 * Draw the generated paths
+	 * */
+	private void DrawPath(CityTile startingCity, CityTile destinationCity, IEnumerable<Tile> path) {
 		List<Tile> pathList = path.ToList();
+		Road road = new Road(path.ToArray(), startingCity.cityAttributes, destinationCity.cityAttributes);
+		startingCity.cityAttributes.roads.Add(road);
+		destinationCity.cityAttributes.roads.Add(road);
+		allRoads.Add (road);
 		for (int i = 0; i < pathList.Count; i++) {
 			if ((i + 1) < pathList.Count) {
 				CreateLine(pathList[i], pathList [i+1]);
@@ -47,6 +59,10 @@ public class PathManager : MonoBehaviour {
 		}
 	}
 
+	/*
+	 * Take into account which direction each path 
+	 * is going to.
+	 * */
 	void CreateLine(Tile currentTile, Tile nextTile) {
 		if (nextTile == null) {
 			return;

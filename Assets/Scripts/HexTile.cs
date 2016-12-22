@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Model;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,8 +21,10 @@ public class HexTile : MonoBehaviour {
 
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
+
 	public bool isCity;
-	public bool canPass = true;
+	public bool isRoad = false;
+
 
 	public List<HexTile> neighbours;
 
@@ -87,7 +88,7 @@ public class HexTile : MonoBehaviour {
 
 	[ContextMenu("Check Tile Can Pass")]
 	public void CheckIfTileIsPassable(){
-		Debug.Log (name + " is Passable?: " + canPass);
+		Debug.Log (name + " is Passable?: " + tile.canPass);
 	}
 
 	[ContextMenu("Show Neighbours")]
@@ -100,7 +101,7 @@ public class HexTile : MonoBehaviour {
 
 	[ContextMenu("Set Tile as Unpassable")]
 	public void SetTileAsUnpassable(){
-		canPass = false;
+		tile.canPass = false;
 	}
 
 	public void ActivatePath(PATH_DIRECTION direction){
@@ -131,6 +132,10 @@ public class HexTile : MonoBehaviour {
 	}
 
 	/*
+	 * TODO: Revise this to use the new formula 
+	 * in getting a hexagon's neighbours. Much more
+	 * optimized that way
+	 * 
 	 * Returns all Hex tiles within a radius
 	 * */
 	public HexTile[] GetTilesInRange(float radius){
@@ -147,7 +152,6 @@ public class HexTile : MonoBehaviour {
 	}
 
 	private BIOME GetBiome(){
-
 		if(elevationNoise <= 0.35f){
 			if(elevationNoise < 0.30f){
 				return BIOME.OCEAN;

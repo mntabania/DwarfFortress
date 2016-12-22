@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Model;
 
 public class CityGenerator : MonoBehaviour {
 
@@ -87,6 +86,15 @@ public class CityGenerator : MonoBehaviour {
 		}
 
 	}
+
+	void GenerateRoads(){
+		for (int i = 0; i < cities.Count; i++) {
+			CityTile currentCityTile = pendingCityTiles[i];
+			int randomNumberOfRoads = currentCityTile.cityAttributes.GenerateNumberOfRoads();
+
+//			cities[i]
+		}
+	}
 		
 
 	void GenerateCityConnections(){
@@ -157,7 +165,6 @@ public class CityGenerator : MonoBehaviour {
 			int roadsCreated = 0;
 			Debug.Log ("Create " + numberOfRoads + " roads");
 			for (int j = 0; roadsCreated < numberOfRoads; j++) {
-				Debug.Log (j);
 				if (j >= listOrderedByDistance.Count) {
 					Debug.Log ("No more possible connections");
 					break;
@@ -229,6 +236,7 @@ public class CityGenerator : MonoBehaviour {
 
 	void ConnectCities(HexTile originTile, HexTile targetTile){
 //		GLDebug.DrawLine (currentCityTile.transform.position, listOrderedByDistance [j].transform.position, Color.black, 10000f); //Draw Line Between 2 Cities
+		Debug.Log ("Connected to: " + targetTile.name);
 		GameObject lineGO = LineDrawer.Instance.DrawLine (originTile.transform, originTile.transform.position, targetTile.transform.position);
 		lastLine = lineGO.GetComponent<Line> ();
 		lineGO.SetActive (false);
@@ -237,7 +245,7 @@ public class CityGenerator : MonoBehaviour {
 		allLines.Add (lineGO.GetComponent<Line> ());
 		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile ());
 		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
-		Debug.Log ("Connected to: " + targetTile.name);
+
 		ResetPassableTiles();
 	}
 
@@ -246,10 +254,23 @@ public class CityGenerator : MonoBehaviour {
 			HexTile currentTile = cities[i];
 			if (currentTile != startTile && currentTile != destinationTile) {
 				for (int j = 0; j < currentTile.neighbours.Count; j++) {
-					currentTile.neighbours [j].canPass = false;
+					currentTile.neighbours [j].tile.canPass = false;
 				}
 			}
 		}
+//		List<Road> allRoads = PathManager.Instance.allRoads;
+//		if (allRoads.Count > 0) {
+//			for (int i = 0; i < allRoads.Count; i++) {
+//				Road currentRoad = allRoads[i];
+//				if (!currentRoad.connectingCities.Contains(startTile) && !currentRoad.connectingCities.Contains(destinationTile)) {
+//					for (int j = 0; j < currentRoad.path.Length; j++) {
+//						if (!currentRoad.path [j].hexTile.isCity) {
+//							currentRoad.path [j].canPass = false;
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 
 
@@ -258,7 +279,7 @@ public class CityGenerator : MonoBehaviour {
 		for (int i = 0; i < allHexes.Count; i++) {
 			HexTile currentHexTile = allHexes[i].GetComponent<HexTile>();
 			if (!currentHexTile.isCity) {
-				currentHexTile.canPass = true;
+				currentHexTile.tile.canPass = true;
 			}
 		}
 	}
@@ -478,9 +499,6 @@ public class CityGenerator : MonoBehaviour {
 				if (tilesElligibleForCities.Contains (neighborTiles [i])) {
 					//Remove all neighbor tiles from elligible tiles
 					tilesElligibleForCities.Remove (neighborTiles [i]);
-					//if (!neighborTiles [i].isCity) {
-					//	neighborTiles [i].SetTileColor (Color.yellow);
-					//}
 				}
 			}
 			tilesElligibleForCities.Remove (chosenTile);
@@ -504,9 +522,6 @@ public class CityGenerator : MonoBehaviour {
 					if (tilesElligibleForCities.Contains (neighborTiles [i])) {
 						//Remove all neighbor tiles from elligible tiles
 						tilesElligibleForCities.Remove (neighborTiles [i]);
-						//if (!neighborTiles [i].isCity) {
-						//	neighborTiles [i].SetTileColor (Color.yellow);
-						//}
 					}
 				}
 				tilesElligibleForCities.Remove (chosenTile);
