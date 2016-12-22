@@ -95,7 +95,9 @@ public class KingdomGenerator : MonoBehaviour {
 	private void TriggerEvents(){
 //		CheckEnemyKingdoms ();
 		GrowPopulation ();
+		GenerateGold ();
 		GenerateArmy ();
+		GenerateGarrison ();
 		TriggerExpandEvent ();
 //		ListAdjacentKingdoms ();
 //		TriggerDeclarePeaceEvent ();
@@ -108,7 +110,70 @@ public class KingdomGenerator : MonoBehaviour {
 		TriggerFactionEvents ();
 		CheckWarPeaceCounter ();
 	}
+	internal void UpdateAdjacentKingdoms(){
+		List<KingdomTile> adjacentKingdoms = new List<KingdomTile> ();
 
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			adjacentKingdoms.Clear ();
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				for(int k = 0; k < this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities.Count; k++){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile != null){
+						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile.kingdom.id != this.kingdoms[i].kingdom.id){
+							adjacentKingdoms.Add (this.kingdoms [i].kingdom.cities [j].cityAttributes.connectedCities [k].cityAttributes.kingdomTile);
+						}
+					}
+				}
+			}
+			adjacentKingdoms = adjacentKingdoms.Distinct ().ToList();
+
+			for (int j = 0; j < this.kingdoms [i].kingdom.kingdomRelations.Count; j++) {
+				if(adjacentKingdoms.Contains(this.kingdoms [i].kingdom.kingdomRelations[j].targetKingdom)){
+					this.kingdoms [i].kingdom.kingdomRelations [j].isAdjacent = true;
+				}else{
+					this.kingdoms [i].kingdom.kingdomRelations [j].isAdjacent = false;
+				}
+			}
+		}
+	}
+	private void GrowPopulation(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			float growthPercentage = this.kingdoms[i].kingdom.populationGrowth / 100f;
+			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
+				City city = this.kingdoms [i].kingdom.cities [j].cityAttributes;
+				float populationIncrease = city.population * growthPercentage;
+				city.population += (int)populationIncrease;
+			}
+		}
+	}
+	private void GenerateArmy(){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			float increaseArmyPercentage = UnityEngine.Random.Range (0.5f, 1.5f);
+			int totalPopulation = 0;
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				totalPopulation += this.kingdoms [i].kingdom.cities [j].cityAttributes.population;
+			}
+			int armyIncrease = (int)(((increaseArmyPercentage/100f) * totalPopulation) * this.kingdoms [i].kingdom.performance);
+			this.kingdoms [i].kingdom.army += armyIncrease;
+		}
+	}
+	private void GenerateGarrison(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				float increaseGarrisonPercentage = UnityEngine.Random.Range (0.5f, 1.5f);
+				int garrisonIncrease = ((int)((increaseGarrisonPercentage / 100f) * (float)this.kingdoms [i].kingdom.cities [j].cityAttributes.population)) * this.kingdoms [i].kingdom.performance;
+				this.kingdoms [i].kingdom.cities [j].cityAttributes.garrison += garrisonIncrease;
+			}
+		}
+	}
+	private void GenerateGold(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				int goldIncrease = this.kingdoms [i].kingdom.cities [j].cityAttributes.cityLevel * this.kingdoms [i].kingdom.cities [j].cityAttributes.richnessLevel;
+				this.kingdoms [i].kingdom.cities [j].cityAttributes.gold += goldIncrease;
+			}
+		}
+	}
+		
 	private void TriggerExpandEvent(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
 //			if(this.kingdoms[i].kingdom.cities.Count <= 0){
@@ -168,79 +233,26 @@ public class KingdomGenerator : MonoBehaviour {
 		toCityTile.cityAttributes.population += populationDecrease;
 		fromCityTile.cityAttributes.population -= populationDecrease;
 	}
-	private void GrowPopulation(){
-		for(int i = 0; i < this.kingdoms.Count; i++){
-//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-//				continue;
-//			}
-//			Debug.Log ("GROW POPULATION");
-			float growthPercentage = this.kingdoms[i].kingdom.populationGrowth / 100f;
-			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
-				City city = this.kingdoms [i].kingdom.cities [j].cityAttributes;
-				float populationIncrease = city.population * growthPercentage;
-				city.population += (int)populationIncrease;
-			}
-		}
-	}
-	private void GenerateArmy(){
-		for (int i = 0; i < this.kingdoms.Count; i++) {
-//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-//				continue;
-//			}
-//			Debug.Log ("GENERATE ARMY");
-			float increaseArmyPercentage = UnityEngine.Random.Range (0.5f, 1.5f);
-			int totalPopulation = 0;
-			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				totalPopulation += this.kingdoms [i].kingdom.cities [j].cityAttributes.population;
-			}
-			int armyIncrease = (int)(((increaseArmyPercentage/100f) * totalPopulation) * this.kingdoms [i].kingdom.performance);
-			this.kingdoms [i].kingdom.army += armyIncrease;
-		}
-	}
-	internal void UpdateAdjacentKingdoms(){
-		List<KingdomTile> adjacentKingdoms = new List<KingdomTile> ();
 
-		for (int i = 0; i < this.kingdoms.Count; i++) {
-			adjacentKingdoms.Clear ();
-			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				for(int k = 0; k < this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities.Count; k++){
-					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile != null){
-						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile.kingdom.id != this.kingdoms[i].kingdom.id){
-							adjacentKingdoms.Add (this.kingdoms [i].kingdom.cities [j].cityAttributes.connectedCities [k].cityAttributes.kingdomTile);
-						}
-					}
-				}
-			}
-			adjacentKingdoms = adjacentKingdoms.Distinct ().ToList();
-
-			for (int j = 0; j < this.kingdoms [i].kingdom.kingdomRelations.Count; j++) {
-				if(adjacentKingdoms.Contains(this.kingdoms [i].kingdom.kingdomRelations[j].targetKingdom)){
-					this.kingdoms [i].kingdom.kingdomRelations [j].isAdjacent = true;
-				}else{
-					this.kingdoms [i].kingdom.kingdomRelations [j].isAdjacent = false;
-				}
-			}
-		}
-	}
-	internal void ListAdjacentKingdoms(){
-		for(int i = 0; i < this.kingdoms.Count; i++){
-//			if(this.kingdoms[i].kingdom.cities.Count <= 0){
-//				continue;
+//	internal void ListAdjacentKingdoms(){
+//		for(int i = 0; i < this.kingdoms.Count; i++){
+////			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+////				continue;
+////			}
+////			Debug.Log ("ListAdjacentKingdoms");
+//			this.kingdoms [i].kingdom.adjacentKingdoms.Clear();
+//			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+//				for(int k = 0; k < this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities.Count; k++){
+//					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile != null){
+//						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile.kingdom.id != this.kingdoms[i].kingdom.id){
+//							this.kingdoms [i].kingdom.adjacentKingdoms.Add (this.kingdoms [i].kingdom.cities [j].cityAttributes.connectedCities [k].cityAttributes.kingdomTile);
+//						}
+//					}
+//				}
 //			}
-//			Debug.Log ("ListAdjacentKingdoms");
-			this.kingdoms [i].kingdom.adjacentKingdoms.Clear();
-			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				for(int k = 0; k < this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities.Count; k++){
-					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile != null){
-						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.connectedCities[k].cityAttributes.kingdomTile.kingdom.id != this.kingdoms[i].kingdom.id){
-							this.kingdoms [i].kingdom.adjacentKingdoms.Add (this.kingdoms [i].kingdom.cities [j].cityAttributes.connectedCities [k].cityAttributes.kingdomTile);
-						}
-					}
-				}
-			}
-			this.kingdoms [i].kingdom.adjacentKingdoms = this.kingdoms [i].kingdom.adjacentKingdoms.Distinct ().ToList();
-		}
-	}
+//			this.kingdoms [i].kingdom.adjacentKingdoms = this.kingdoms [i].kingdom.adjacentKingdoms.Distinct ().ToList();
+//		}
+//	}
 
 	private void TriggerDeclareWarEventNew(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {

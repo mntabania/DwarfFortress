@@ -8,9 +8,12 @@ public class City : ICity{
 	public HexTile hexTile;
 	public BIOMES biomeType;
 	public CITY_TYPE cityType;
+	public int cityLevel;
 	public int richnessLevel;
 	public int numOfRoads;
 	public int population;
+	public int garrison;
+	public int gold;
 	public List<CityTile> connectedCities;
 	public KingdomTile kingdomTile;
 	public Faction faction;
@@ -19,9 +22,12 @@ public class City : ICity{
 		this.hexTile = hexTile;
 		this.biomeType = biomeType;
 		this.cityType = CITY_TYPE.NORMAL;
+		this.cityLevel = 1;
 		this.richnessLevel = GenerateRichness();
 		this.population = 0;
 		this.numOfRoads = 0;
+		this.garrison = 0;
+		this.gold = 0;
 		this.connectedCities = new List<CityTile>();
 		this.kingdomTile = null;
 		this.faction = null;
