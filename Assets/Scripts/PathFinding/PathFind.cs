@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Model;
 
 namespace PathFind {
     public static class PathFind {
@@ -31,8 +30,6 @@ namespace PathFind {
 	                }
 
 	            }
-				Debug.Log ("Last Step Was: " + lastStep.ToString());
-				Debug.Log ("Destination was: " + destination.ToString ());
 	            return null;
         }
     }
