@@ -1018,4 +1018,73 @@ public class KingdomGenerator : MonoBehaviour {
 			}
 		}
 	}
+
+	private void WorldEvents(){
+		
+	}
+	private void CreateNewCultureOrReligion(){
+		int noOfCities = UnityEngine.Random.Range (1, 3);
+
+		for(int i = noOfCities; i >= 0; i--){
+			List<CityTile> cityTiles = GetCityListForNewCultureOrReligion(i);
+			List<CityTile> chosenConnectedCityTiles = new List<CityTile> ();
+
+			if(cityTiles.Count > 0){
+				int randomCity = UnityEngine.Random.Range (0, cityTiles.Count);
+				List<CityTile> connectedCityTiles = new List<CityTile> ();
+				for(int j = 0; j < cityTiles[randomCity].cityAttributes.connectedCities.Count; j++){
+					if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile != null){
+						if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.faction != null){
+							if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile.kingdom.id == cityTiles[randomCity].cityAttributes.kingdomTile.kingdom.id){
+								connectedCityTiles.Add (cityTiles [randomCity].cityAttributes.connectedCities [j]);
+							}
+						}
+					}
+				}
+
+				chosenConnectedCityTiles.Clear ();
+				for(int j = 0; j < i; j++){
+					int random = UnityEngine.Random.Range (0, connectedCityTiles.Count);
+					chosenConnectedCityTiles.Add (connectedCityTiles [random]);
+					connectedCityTiles.Remove (connectedCityTiles [random]);
+				}
+				break;
+			}
+
+			int randomNo = UnityEngine.Random.Range(0,2);
+
+			if(randomNo == 0){ //religion
+				
+			}else{//culture
+				
+			}
+		}
+
+
+	}
+	private List<CityTile> GetCityListForNewCultureOrReligion(int requirement){
+		List<CityTile> cityTiles = new List<CityTile> ();
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				if(CheckForNoOfCitiesConnected(this.kingdoms[i].kingdom.cities[j]) >= requirement){
+					cityTiles.Add (this.kingdoms [i].kingdom.cities [j]);
+				}
+			}
+		}
+		return cityTiles;
+	}
+	private int CheckForNoOfCitiesConnected(CityTile cityTile){
+		int noOfConnected = 0;
+		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
+			if(cityTile.cityAttributes.connectedCities[i].cityAttributes.kingdomTile != null){
+				if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction != null){
+					if(cityTile.cityAttributes.connectedCities[i].cityAttributes.kingdomTile.kingdom.id == cityTile.cityAttributes.kingdomTile.kingdom.id){
+						noOfConnected += 1;
+					}
+				}
+			}
+		}
+
+		return noOfConnected;
+	}
 }
