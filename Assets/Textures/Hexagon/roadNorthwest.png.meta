@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: 43b360f1e1b7ab348b8dfc60fd3582dc
-timeCreated: 1481767731
+guid: 242ae851824e7b3428a3722ef8f77e32
+timeCreated: 1482290625
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: 63078_0
+  fileIDToRecycleName: {}
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -39,10 +38,10 @@ TextureImporter:
   rGBM: 0
   compressionQuality: 50
   allowsAlphaSplitting: 0
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 5
+  alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
@@ -52,20 +51,7 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: 63078_0
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 133
-        width: 233
-        height: 26
-      alignment: 5
-      pivot: {x: 1, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
+    sprites: []
     outline: []
   spritePackingTag: 
   userData: 

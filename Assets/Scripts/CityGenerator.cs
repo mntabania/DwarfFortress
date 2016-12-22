@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Model;
 
 public class CityGenerator : MonoBehaviour {
 
@@ -231,12 +232,33 @@ public class CityGenerator : MonoBehaviour {
 		GameObject lineGO = LineDrawer.Instance.DrawLine (originTile.transform, originTile.transform.position, targetTile.transform.position);
 		lastLine = lineGO.GetComponent<Line> ();
 		lineGO.SetActive (false);
+//		RefinePaths (originTile, targetTile);
 		PathManager.Instance.DeterminePath (originTile.tile, targetTile.tile);
 		allLines.Add (lineGO.GetComponent<Line> ());
 		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile ());
 		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
 		Debug.Log ("Connected to: " + targetTile.name);
+//		ResetPassableTiles();
+	}
 
+	public void RefinePaths(HexTile startTile, HexTile destinationTile){
+		for (int i = 0; i < cities.Count; i++) {
+			HexTile currentTile = cities[i];
+			if (currentTile != startTile && currentTile != destinationTile) {
+				
+			}
+		}
+	}
+
+
+	void ResetPassableTiles(){
+		List<GameObject> allHexes = GridMap.Instance.listHexes;
+		for (int i = 0; i < allHexes.Count; i++) {
+			HexTile currentHexTile = allHexes[i].GetComponent<HexTile>();
+			if (!currentHexTile.isCity) {
+				currentHexTile.canPass = true;
+			}
+		}
 	}
 
 	bool IsLineIntersecting(Vector3 startPoint, Vector3 endPoint){
@@ -493,6 +515,7 @@ public class CityGenerator : MonoBehaviour {
 	void SetTileAsCity(HexTile tile){
 		tile.SetTileColor(Color.black);
 		tile.isCity = true;
+		tile.canPass = false;
 		tile.gameObject.AddComponent<CityTile>();
 		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
 		cities.Add(tile);

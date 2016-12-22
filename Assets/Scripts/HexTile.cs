@@ -1,12 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Model;
+using System.Collections.Generic;
+using System.Linq;
 
 public class HexTile : MonoBehaviour {
 
 	public Tile tile;
 
 	public GameObject path;
+	public GameObject northPath;
+	public GameObject northEastPath;
+	public GameObject southEastPath;
+	public GameObject southPath;
+	public GameObject southWestPath;
+	public GameObject northWestPath;
 
 	public float elevationNoise;
 	public float moistureNoise;
@@ -15,7 +23,7 @@ public class HexTile : MonoBehaviour {
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
 	public bool isCity;
-
+	public bool canPass = true;
 
 //		switch(biomeType){
 //		case BIOME.OCEAN:
@@ -74,6 +82,47 @@ public class HexTile : MonoBehaviour {
 //			break;
 //		}
 //	}
+
+	[ContextMenu("Check Tile Can Pass")]
+	public void CheckIfTileIsPassable(){
+		Debug.Log (name + " is Passable?: " + canPass);
+	}
+
+	[ContextMenu("Show Neighbours")]
+	public void ShowNeighbours(){
+		Debug.Log ("======" + this.name + " - " + tile.Neighbours.ToList().Count + "======");
+		foreach (Tile t in tile.Neighbours) {
+			Debug.Log ("Neighbours: " + t.hexTile.name);
+		}
+	}
+
+	[ContextMenu("Set Tile as Unpassable")]
+	public void SetTileAsUnpassable(){
+		canPass = false;
+	}
+
+	public void ActivatePath(PATH_DIRECTION direction){
+		switch (direction) {
+		case PATH_DIRECTION.NORTH:
+			northPath.SetActive (true);
+			break;
+		case PATH_DIRECTION.NORTH_EAST:
+			northEastPath.SetActive (true);
+			break;
+		case PATH_DIRECTION.NORTH_WEST:
+			northWestPath.SetActive (true);
+			break;
+		case PATH_DIRECTION.SOUTH:
+			southPath.SetActive (true);
+			break;
+		case PATH_DIRECTION.SOUTH_EAST:
+			southEastPath.SetActive (true);
+			break;
+		case PATH_DIRECTION.SOUTH_WEST:
+			southWestPath.SetActive (true);
+			break;
+		}
+	}
 
 	public void SetTileColor(Color color){
 		gameObject.GetComponent<SpriteRenderer> ().color = color;

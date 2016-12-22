@@ -33,8 +33,8 @@ public class GridMap : MonoBehaviour {
 		for (int x = 0;  x < width; x++){
 			for(int y = 0; y < height; y++){
 				float yPosition = y * yOffset;
-				if(x % 2 == 1){
-					yPosition += yOffset/2;
+				if (x % 2 == 1) {
+					yPosition += yOffset / 2;
 				}
 				GameObject hex = GameObject.Instantiate(goHex) as GameObject;
 				hex.transform.parent = this.transform;
@@ -42,11 +42,20 @@ public class GridMap : MonoBehaviour {
 				hex.transform.localScale = new Vector3(tileSize,tileSize,0f);
 				hex.name = x + "," + y;
 				listHexes.Add(hex);
-				hex.GetComponent<HexTile> ().tile = new Tile (x, y);
-				hex.GetComponent<HexTile> ().tile.hexTile = hex.GetComponent<HexTile> ();
+				if (x % 2 == 1) {
+					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)(width-1) - (y*2);
+				} else {
+					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
+				}
+				hex.GetComponent<HexTile>().tile = new Tile (x, y, hex.GetComponent<HexTile>());
+				hex.GetComponent<HexTile>().canPass = true;
 				GameBoard [x, y] = hex.GetComponent<HexTile> ().tile;
 			}
 		}
+		listHexes.ForEach(o => o.GetComponent<HexTile>().tile.FindNeighbours(GameBoard));
+	}
+
+	public void FindEveryTilesNeighbour(){
 		listHexes.ForEach(o => o.GetComponent<HexTile>().tile.FindNeighbours(GameBoard));
 	}
 

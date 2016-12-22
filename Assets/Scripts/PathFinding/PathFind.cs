@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Model;
 
 namespace PathFind {
     public static class PathFind {
@@ -24,14 +25,19 @@ namespace PathFind {
 					lastStep = path.LastStep;
 
 	                foreach (Node n in path.LastStep.Neighbours) {
-	                    double d = distance(path.LastStep, n);
-	                    var newPath = path.AddStep(n, d);
-	                    queue.Enqueue(newPath.TotalCost + estimate(n), newPath);
+						double d = distance(path.LastStep, n);
+						var newPath = path.AddStep(n, d);
+						queue.Enqueue(newPath.TotalCost + estimate(n), newPath);
 	                }
+
 	            }
 				Debug.Log ("Last Step Was: " + lastStep.ToString());
 				Debug.Log ("Destination was: " + destination.ToString ());
 	            return null;
         }
     }
+
+
+
+
 }

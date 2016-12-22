@@ -93,7 +93,7 @@ public class EquatorGenerator : MonoBehaviour {
 		}
 
 		for(int i = 0; i < listEquator.Count; i++){
-			listEquator[i].GetComponent<SpriteRenderer>().color = Color.red;
+//			listEquator[i].GetComponent<SpriteRenderer>().color = Color.red;
 		}
 	}
 
