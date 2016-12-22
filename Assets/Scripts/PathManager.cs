@@ -20,7 +20,7 @@ public class PathManager : MonoBehaviour {
 
 	[ContextMenu("PATHPATH")]
 	public void PathPath(){
-//		CityGenerator.Instance.RefinePaths (CityGenerator.Instance.cities [0], CityGenerator.Instance.cities [1]);
+		CityGenerator.Instance.RefinePaths (CityGenerator.Instance.cities [0], CityGenerator.Instance.cities [1]);
 		DeterminePath (CityGenerator.Instance.cities [0].tile, CityGenerator.Instance.cities [1].tile);
 	}
 
@@ -107,7 +107,7 @@ public class PathManager : MonoBehaviour {
 				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH_EAST);
 			}
 		}
-		currentHexTile.path.SetActive(true);
+//		currentHexTile.path.SetActive(true);
 //		var line = (GameObject)Instantiate(Line);
 //		line.transform.position = GetWorldCoordinates(tile.Location.X, tile.Location.Y, 1f);
 //		_path.Add(line);

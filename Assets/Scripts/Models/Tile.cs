@@ -10,10 +10,12 @@ namespace Model {
 		public Tile(int x, int y, HexTile tile)
             : base(x, y) {
 			hexTile = tile;
-        }			
+        }
+
 		public HexTile hexTile { get; set; }
        
-		public IEnumerable<Tile> Neighbours { get;  set;  }
+		public IEnumerable<Tile> AllNeighbours { get;  set;  }
+		public IEnumerable<Tile> Neighbours { get { return AllNeighbours.Where (o => o.hexTile.canPass); } }
 
         public void FindNeighbours(Tile[,] gameBoard) {
             var neighbours = new List<Tile>();
@@ -29,13 +31,14 @@ namespace Model {
 				int neighbourCoordinateX = X + possibleExits [i].X;
 				int neighbourCoordinateY = Y + possibleExits [i].Y;
 				if (neighbourCoordinateX >= 0 && neighbourCoordinateX < gameBoard.GetLength(0) && neighbourCoordinateY >= 0 && neighbourCoordinateY < gameBoard.GetLength(1)){
-					if (gameBoard [neighbourCoordinateX, neighbourCoordinateY].hexTile.canPass) {
-						neighbours.Add (gameBoard [neighbourCoordinateX, neighbourCoordinateY]);
-					}
+					neighbours.Add (gameBoard [neighbourCoordinateX, neighbourCoordinateY]);
 				}
 				
 			}
-			Neighbours = neighbours;
+			AllNeighbours = neighbours;
+			for (int i = 0; i < neighbours.Count; i++) {
+				hexTile.neighbours.Add(neighbours[i].hexTile);
+			}
         }
 
         public static List<Point> EvenNeighbours {

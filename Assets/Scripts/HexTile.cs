@@ -25,6 +25,8 @@ public class HexTile : MonoBehaviour {
 	public bool isCity;
 	public bool canPass = true;
 
+	public List<HexTile> neighbours;
+
 //		switch(biomeType){
 //		case BIOME.OCEAN:
 //			this.gameObject.GetComponent<SpriteRenderer>().color = new Color(0f/255f,1f/255f,105f/255f);
