@@ -7,6 +7,8 @@ public class CultureGenerator : MonoBehaviour {
 	public static CultureGenerator Instance;
 
 	public CultureList cultureList;
+	public Culture trendyCulture = null;
+	public List<Culture> allCultures = new List<Culture>();
 
 	void Awake(){
 		Instance = this;
@@ -31,7 +33,7 @@ public class CultureGenerator : MonoBehaviour {
 			+ " are very important in their society. They discriminate " + culture.discrimination + ". " + culture.majorTaboo + " is forbidden";
 
 		cultureList.names.RemoveAt (randomName);
-
+		allCultures.Add(culture);
 		return culture;
 	}
 }

@@ -428,7 +428,7 @@ public class KingdomGenerator : MonoBehaviour {
 
 		float successRate = 50f * ((float)invaderKingdom.kingdom.army / (float)targetKingdom.kingdom.army);
 		int successChance = UnityEngine.Random.Range (0, 100);
-		if(successChance >= 0 && successChance <= successRate){
+		if(successChance <= successRate){
 			toCityTile.cityAttributes.kingdomTile = invaderKingdom;
 			toCityTile.cityAttributes.faction = fromCityTile.cityAttributes.faction;
 			toCityTile.GetComponent<SpriteRenderer> ().color = invaderKingdom.kingdom.tileColor;
@@ -735,6 +735,7 @@ public class KingdomGenerator : MonoBehaviour {
 		List <KingdomTile> kingdoms = new List<KingdomTile> ();
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			if(this.kingdoms[i].kingdom.cities.Count <= 0){
+				this.kingdoms[i].kingdom.isDead = true;
 				kingdoms.Add (this.kingdoms [i]);
 			}
 			index.Clear ();
@@ -758,12 +759,12 @@ public class KingdomGenerator : MonoBehaviour {
 	private void TriggerFactionEvents(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			int triggerChance = UnityEngine.Random.Range (0, 100);
-			if(triggerChance >= 0 && triggerChance < 50){
+			if(triggerChance < 3){
 				int randomCity = UnityEngine.Random.Range (0, this.kingdoms [i].kingdom.cities.Count);
 				CityTile randomCityTile = this.kingdoms [i].kingdom.cities [randomCity];
 
 				int factionEventsChance = UnityEngine.Random.Range (0, 100);
-				if(factionEventsChance >= 0 && factionEventsChance < 25){ //change faction
+				if(factionEventsChance < 25){ //change faction
 					Debug.Log("CHANGE FACTION EVENT!");
 					ChangeFaction (randomCityTile);
 				}else if(factionEventsChance >= 25 && factionEventsChance < 50){ //split faction
@@ -814,6 +815,7 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 
 	private void InfluenceFaction(CityTile fromCityTile){
+		
 		int randomNumber = UnityEngine.Random.Range (0, 2);
 		CityTile targetCityTile = null;
 		if(randomNumber == 0){ //influence religion
@@ -1020,54 +1022,129 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 
 	private void WorldEvents(){
-		
+		CreateNewCultureOrReligion();
+		SetTrendyReligion();
+		SetTrendyCulture();
+		InfluenceTrendyReligion();
+		InfluenceTrendyCulture();
+		InfluenceFaction();
 	}
 	private void CreateNewCultureOrReligion(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 5){
+			return;
+		}
+		Debug.Log("WORLD EVENT: CREATE NEW CULTURE OR RELIGION");
+
 		int noOfCities = UnityEngine.Random.Range (1, 3);
+
+		Debug.Log("NO OF CITIES TO BE CONVERTED: " + (noOfCities + 1));
 
 		for(int i = noOfCities; i >= 0; i--){
 			List<CityTile> cityTiles = GetCityListForNewCultureOrReligion(i);
 			List<CityTile> chosenConnectedCityTiles = new List<CityTile> ();
 
 			if(cityTiles.Count > 0){
-				int randomCity = UnityEngine.Random.Range (0, cityTiles.Count);
-				List<CityTile> connectedCityTiles = new List<CityTile> ();
-				for(int j = 0; j < cityTiles[randomCity].cityAttributes.connectedCities.Count; j++){
-					if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile != null){
-						if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.faction != null){
-							if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile.kingdom.id == cityTiles[randomCity].cityAttributes.kingdomTile.kingdom.id){
-								connectedCityTiles.Add (cityTiles [randomCity].cityAttributes.connectedCities [j]);
+				if(i > 0){
+					int randomCity = UnityEngine.Random.Range (0, cityTiles.Count);
+					List<CityTile> connectedCityTiles = new List<CityTile> ();
+					for(int j = 0; j < cityTiles[randomCity].cityAttributes.connectedCities.Count; j++){
+						if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile != null){
+							if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.faction != null){
+								if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile.kingdom.id == cityTiles[randomCity].cityAttributes.kingdomTile.kingdom.id){
+									connectedCityTiles.Add (cityTiles [randomCity].cityAttributes.connectedCities [j]);
+								}
 							}
 						}
 					}
+
+					chosenConnectedCityTiles.Clear ();
+					for(int j = 0; j < i; j++){
+						int random = UnityEngine.Random.Range (0, connectedCityTiles.Count);
+						chosenConnectedCityTiles.Add (connectedCityTiles [random]);
+						connectedCityTiles.Remove (connectedCityTiles [random]);
+					}
+
+
+					int randomNo = UnityEngine.Random.Range(0,2);
+
+					if(randomNo == 0){ //religion
+						Religion religion = ReligionGenerator.Instance.GenerateReligion();
+						if(religion == null){
+							Debug.Log ("NO MORE RELIGIONS. CAN'T CREATE NEW.");
+							return;
+						}
+						cityTiles[randomCity].cityAttributes.faction.religion = religion;
+						Debug.Log("RELIGION CHANGED ON CITY: " + cityTiles[randomCity].cityAttributes.hexTile.name);
+
+						for(int j = 0; j < chosenConnectedCityTiles.Count; j++){
+							chosenConnectedCityTiles[j].cityAttributes.faction.religion = religion;
+							Debug.Log("RELIGION CHANGED ON CITY: " + chosenConnectedCityTiles[j].cityAttributes.hexTile.name);
+						}
+
+
+
+					}else{ //culture
+						Culture culture = CultureGenerator.Instance.GenerateCulture();
+						if(culture == null){
+							Debug.Log ("NO MORE CULTURE. CAN'T CREATE NEW.");
+							return;
+						}
+						cityTiles[randomCity].cityAttributes.faction.culture = culture;
+						Debug.Log("CULTURE CHANGED ON CITY: " + cityTiles[randomCity].cityAttributes.hexTile.name);
+
+						for(int j = 0; j < chosenConnectedCityTiles.Count; j++){
+							chosenConnectedCityTiles[j].cityAttributes.faction.culture = culture;
+							Debug.Log("CULTURE CHANGED ON CITY: " + chosenConnectedCityTiles[j].cityAttributes.hexTile.name);
+						}
+					}
+				}else{
+					int randomCity = UnityEngine.Random.Range (0, cityTiles.Count);
+
+					int randomNo = UnityEngine.Random.Range(0,2);
+
+					if(randomNo == 0){ //religion
+						Religion religion = ReligionGenerator.Instance.GenerateReligion();
+						if(religion == null){
+							Debug.Log ("NO MORE RELIGIONS. CAN'T CREATE NEW.");
+							return;
+						}
+						cityTiles[randomCity].cityAttributes.faction.religion = religion;
+						Debug.Log("RELIGION CHANGED ON CITY: " + cityTiles[randomCity].cityAttributes.hexTile.name);
+
+
+					}else{ //culture
+						Culture culture = CultureGenerator.Instance.GenerateCulture();
+						if(culture == null){
+							Debug.Log ("NO MORE CULTURE. CAN'T CREATE NEW.");
+							return;
+						}
+						cityTiles[randomCity].cityAttributes.faction.culture = culture;
+						Debug.Log("CULTURE CHANGED ON CITY: " + cityTiles[randomCity].cityAttributes.hexTile.name);
+
+					}
 				}
 
-				chosenConnectedCityTiles.Clear ();
-				for(int j = 0; j < i; j++){
-					int random = UnityEngine.Random.Range (0, connectedCityTiles.Count);
-					chosenConnectedCityTiles.Add (connectedCityTiles [random]);
-					connectedCityTiles.Remove (connectedCityTiles [random]);
-				}
-				break;
+				return;
+			}else{
+				continue;
 			}
 
-			int randomNo = UnityEngine.Random.Range(0,2);
-
-			if(randomNo == 0){ //religion
-				
-			}else{//culture
-				
-			}
 		}
-
+		Debug.Log("CAN'T CHANGE RELIGION OR CULTURE. THERE IS NO CITY CAN BE CONVERTED.");
 
 	}
 	private List<CityTile> GetCityListForNewCultureOrReligion(int requirement){
 		List<CityTile> cityTiles = new List<CityTile> ();
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				if(CheckForNoOfCitiesConnected(this.kingdoms[i].kingdom.cities[j]) >= requirement){
-					cityTiles.Add (this.kingdoms [i].kingdom.cities [j]);
+				if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+						if(CheckForNoOfCitiesConnected(this.kingdoms[i].kingdom.cities[j]) >= requirement){
+							cityTiles.Add (this.kingdoms [i].kingdom.cities [j]);
+						}
+					}
 				}
 			}
 		}
@@ -1086,5 +1163,163 @@ public class KingdomGenerator : MonoBehaviour {
 		}
 
 		return noOfConnected;
+	}
+
+	private void SetTrendyReligion(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 15){
+			return;
+		}
+		Debug.Log("WORLD EVENT: SET TRENDY RELIGION");
+		ReligionGenerator.Instance.trendyReligion = ReligionGenerator.Instance.allReligions[UnityEngine.Random.Range(0, ReligionGenerator.Instance.allReligions.Count)];
+	}
+
+	private void SetTrendyCulture(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 15){
+			return;
+		}
+		Debug.Log("WORLD EVENT: SET TRENDY CULTURE");
+		CultureGenerator.Instance.trendyCulture = CultureGenerator.Instance.allCultures[UnityEngine.Random.Range(0, CultureGenerator.Instance.allCultures.Count)];
+	}
+	private void InfluenceTrendyReligion(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 25){
+			return;
+		}
+		Debug.Log("WORLD EVENT: SPREAD TRENDY RELIGION");
+		List<CityTile> allCitiesWithTrendyReligion = new List<CityTile>();
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.religion == ReligionGenerator.Instance.trendyReligion){
+						allCitiesWithTrendyReligion.Add(this.kingdoms[i].kingdom.cities[j]);
+					}
+				}
+			}
+		}
+
+		CityTile chosenCity = allCitiesWithTrendyReligion[UnityEngine.Random.Range(0, allCitiesWithTrendyReligion.Count)];
+		List<int> religionIndexes = GetConnectedCitiesIndexesWithDiffReligion(chosenCity);
+		if(religionIndexes.Count > 0){
+			int randomTargetCity = UnityEngine.Random.Range (0, religionIndexes.Count);
+			CityTile toCityTile = chosenCity.cityAttributes.connectedCities [religionIndexes[randomTargetCity]];
+			toCityTile.cityAttributes.faction.religion = chosenCity.cityAttributes.faction.religion;
+			Debug.Log (chosenCity.cityAttributes.hexTile.name + " HAS INFLUENCED TRENDY RELIGION TO " + toCityTile.cityAttributes.hexTile.name);
+		}else{
+			Debug.Log ("THERE IS NO CONNECTED CITY WITH DIFFERENT RELIGION. CAN'T SPREAD TRENDY RELIGION.");
+
+		}
+	}
+	private void InfluenceTrendyCulture(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 25){
+			return;
+		}
+		Debug.Log("WORLD EVENT: SPREAD TRENDY CULTURE");
+		List<CityTile> allCitiesWithTrendyCulture = new List<CityTile>();
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.culture == CultureGenerator.Instance.trendyCulture){
+						allCitiesWithTrendyCulture.Add(this.kingdoms[i].kingdom.cities[j]);
+					}
+				}
+			}
+		}
+
+		CityTile chosenCity = allCitiesWithTrendyCulture[UnityEngine.Random.Range(0, allCitiesWithTrendyCulture.Count)];
+		List<int> cultureIndexes = GetConnectedCitiesIndexesWithDiffCulture(chosenCity);
+		if(cultureIndexes.Count > 0){
+			int randomTargetCity = UnityEngine.Random.Range (0, cultureIndexes.Count);
+			CityTile toCityTile = chosenCity.cityAttributes.connectedCities [cultureIndexes[randomTargetCity]];
+			toCityTile.cityAttributes.faction.culture = chosenCity.cityAttributes.faction.culture;
+			Debug.Log (chosenCity.cityAttributes.hexTile.name + " HAS INFLUENCED TRENDY CULTURE TO " + toCityTile.cityAttributes.hexTile.name);
+		}else{
+			Debug.Log ("THERE IS NO CONNECTED CITY WITH DIFFERENT CULTURE. CAN'T SPREAD TRENDY CULTURE.");
+		}
+	}
+	private void InfluenceReligionOrCulture(){
+		int chance = UnityEngine.Random.Range(0,100);
+
+		if(chance > 5){
+			return;
+		}
+		Debug.Log("WORLD EVENT: SPREAD CULTURE OR RELIGION");
+		List<CityTile> allCities = new List<CityTile>();
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			allCities.AddRange(this.kingdoms[i].kingdom.cities);
+		}
+		CityTile fromCityTile = allCities [UnityEngine.Random.Range (0, allCities.Count)];
+
+		int randomNumber = UnityEngine.Random.Range (0, 2);
+		CityTile targetCityTile = null;
+		if(randomNumber == 0){ //influence religion
+			List<int> religionIndexes = GetConnectedCitiesIndexesWithDiffReligion(fromCityTile);
+			if(religionIndexes.Count > 0){
+				int randomTargetCity = UnityEngine.Random.Range (0, religionIndexes.Count);
+				CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [religionIndexes[randomTargetCity]];
+				toCityTile.cityAttributes.faction.religion = fromCityTile.cityAttributes.faction.religion;
+				targetCityTile = toCityTile;
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS RELIGION TO " + toCityTile.cityAttributes.hexTile.name);
+			}
+			else{
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT RELIGION / TARGET HAS ONLY ONE CITY. CHECKING CULTURE....");
+				List<int> cultureIndexes = GetConnectedCitiesIndexesWithDiffCulture(fromCityTile);
+				if(cultureIndexes.Count > 0){
+					int randomTargetCity = UnityEngine.Random.Range (0, cultureIndexes.Count);
+					CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [cultureIndexes[randomTargetCity]];
+					toCityTile.cityAttributes.faction.culture = fromCityTile.cityAttributes.faction.culture;
+					targetCityTile = toCityTile;
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS CULTURE TO " + toCityTile.cityAttributes.hexTile.name);
+				}else{
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT RELIGION OR CULTURE / TARGET HAS ONLY ONE CITY. CAN'T INFLUENCE.");
+				}
+			}
+		}else{ //influence culture
+			List<int> cultureIndexes = GetConnectedCitiesIndexesWithDiffCulture(fromCityTile);
+			if(cultureIndexes.Count > 0){
+				int randomTargetCity = UnityEngine.Random.Range (0, cultureIndexes.Count);
+				CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [cultureIndexes[randomTargetCity]];
+				toCityTile.cityAttributes.faction.culture = fromCityTile.cityAttributes.faction.culture;
+				targetCityTile = toCityTile;
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS CULTURE TO " + toCityTile.cityAttributes.hexTile.name);
+			}else{
+				Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT CULTURE / TARGET HAS ONLY ONE CITY. CHECKING RELIGION....");
+				List<int> religionIndexes = GetConnectedCitiesIndexesWithDiffReligion(fromCityTile);
+				if(religionIndexes.Count > 0){
+					int randomTargetCity = UnityEngine.Random.Range (0, religionIndexes.Count);
+					CityTile toCityTile = fromCityTile.cityAttributes.connectedCities [religionIndexes[randomTargetCity]];
+					toCityTile.cityAttributes.faction.religion = fromCityTile.cityAttributes.faction.religion;
+					targetCityTile = toCityTile;
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS INFLUENCED ITS RELIGION TO " + toCityTile.cityAttributes.hexTile.name);
+				}
+				else{
+					Debug.Log (fromCityTile.cityAttributes.hexTile.name + " HAS NO ADJACENT CITIES WITH DIFFERENT CULTURE OR RELIGION / TARGET HAS ONLY ONE CITY. CAN'T INFLUENCE.");
+				}
+			}
+
+		}
+		if(targetCityTile != null){
+			Faction faction = FactionStorage.Instance.CheckFaction (targetCityTile.cityAttributes.faction);
+			if(faction == null){
+				Debug.Log ("FACTION NON EXISTENT. CREATING NEW FACTION....");
+				targetCityTile.cityAttributes.faction = CreateNewFaction (targetCityTile.cityAttributes.faction.race, targetCityTile.cityAttributes.faction.religion, targetCityTile.cityAttributes.faction.culture);
+				targetCityTile.cityAttributes.kingdomTile.kingdom.factions.Add (targetCityTile.cityAttributes.faction);
+				FactionStorage.Instance.AddFaction (targetCityTile.cityAttributes.faction);
+			}else{
+				Debug.Log ("FACTION ALREADY EXISTS. RETRIEVING FACTION....");
+				targetCityTile.cityAttributes.faction = faction;
+			}
+		}
+	}
+	private void DarkAge(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			
+		}
 	}
 }
