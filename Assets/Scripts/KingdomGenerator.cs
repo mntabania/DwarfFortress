@@ -232,6 +232,10 @@ public class KingdomGenerator : MonoBehaviour {
 		int populationDecrease = (int)(fromCityTile.cityAttributes.population * 0.2f);
 		toCityTile.cityAttributes.population += populationDecrease;
 		fromCityTile.cityAttributes.population -= populationDecrease;
+
+		if(!kingdomTile.kingdom.isInDarkAge){
+			kingdomTile.kingdom.darkAgeChance += 1;
+		}
 	}
 
 //	internal void ListAdjacentKingdoms(){
@@ -306,6 +310,10 @@ public class KingdomGenerator : MonoBehaviour {
 				targetKingdom.kingdom.kingdomRelations [i].isAtWar = true;
 				break;
 			}
+		}
+
+		if(!currentKingdom.kingdom.isInDarkAge){
+			currentKingdom.kingdom.darkAgeChance += 3;
 		}
 	}
 	private bool hasAdjacency(KingdomTile kingdomTile){
@@ -445,6 +453,9 @@ public class KingdomGenerator : MonoBehaviour {
 					targetKingdom.kingdom.kingdomRelations[i].citiesLost += 1;
 					break;
 				}
+			}
+			if(!invaderKingdom.kingdom.isInDarkAge){
+				invaderKingdom.kingdom.darkAgeChance += 1;
 			}
 			CheckKingdomRelations ();
 			Debug.Log (invaderKingdom.kingdom.kingdomName + " SUCCESSFULLY INVADED " + targetKingdom.kingdom.kingdomName + " FROM " + fromCityTile.cityAttributes.hexTile.name + " TO " + toCityTile.cityAttributes.hexTile.name);
@@ -1319,7 +1330,66 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void DarkAge(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			
+			if(this.kingdoms[i].kingdom.isInDarkAge){
+				this.kingdoms[i].kingdom.darkAgeCounter += 1;
+				if(this.kingdoms[i].kingdom.darkAgeCounter >= 10){
+					this.kingdoms[i].kingdom.darkAgeCounter = 0;
+					this.kingdoms[i].kingdom.isInDarkAge = false;
+					this.kingdoms[i].kingdom.performance = this.kingdoms[i].kingdom.performanceStorage;
+
+				}
+				continue;
+			}
+			int chance = UnityEngine.Random.Range(0,100);
+			if(chance <= this.kingdoms[i].kingdom.darkAgeChance){
+				Debug.Log(this.kingdoms[i].kingdom.kingdomName + " ENTERS THE DARK AGE! Dun dun dun dun....");
+				this.kingdoms[i].kingdom.isInDarkAge = true;
+				this.kingdoms[i].kingdom.isInGoldenAge = false;
+				this.kingdoms[i].kingdom.darkAgeChance = this.kingdoms[i].kingdom.defaultDarkAgeChance;
+
+				this.kingdoms[i].kingdom.performance = this.kingdoms[i].kingdom.performanceStorage;
+				this.kingdoms[i].kingdom.performance -= 4;
+				if(this.kingdoms[i].kingdom.performance < 1){
+					this.kingdoms[i].kingdom.performance = 1;
+				}
+			}
+		}
+	}
+	private void GoldenAge(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			if(this.kingdoms[i].kingdom.isInGoldenAge){
+				this.kingdoms[i].kingdom.goldenAgeCounter += 1;
+				if(this.kingdoms[i].kingdom.goldenAgeCounter >= 10){
+					this.kingdoms[i].kingdom.goldenAgeCounter = 0;
+					this.kingdoms[i].kingdom.isInGoldenAge = false;
+					this.kingdoms[i].kingdom.performance = this.kingdoms[i].kingdom.performanceStorage;
+				}
+				continue;
+			}
+
+			this.kingdoms[i].kingdom.goldenAgeIncreaseCounter += 1;
+			if(this.kingdoms[i].kingdom.goldenAgeIncreaseCounter >= 4){
+				this.kingdoms[i].kingdom.goldenAgeIncreaseCounter = 0;
+				this.kingdoms[i].kingdom.goldenAgeChance += 1;
+			}
+
+			int chance = UnityEngine.Random.Range(0,100);
+			if(chance <= this.kingdoms[i].kingdom.goldenAgeChance){
+				Debug.Log(this.kingdoms[i].kingdom.kingdomName + " ENTERS THE GOLDEN AGE! Weeeeeeeeeeeeeeeeee....");
+				this.kingdoms[i].kingdom.isInDarkAge = false;
+				this.kingdoms[i].kingdom.isInGoldenAge = true;
+
+				this.kingdoms[i].kingdom.goldenAgeIncreaseCounter = 0;
+				for(int j = 0; j < this.kingdoms.Count; j++){
+					this.kingdoms[j].kingdom.goldenAgeChance = this.kingdoms[j].kingdom.defaultGoldenAgeChance;
+				}
+
+				this.kingdoms[i].kingdom.performance = this.kingdoms[i].kingdom.performanceStorage;
+				this.kingdoms[i].kingdom.performance += 4;
+				if(this.kingdoms[i].kingdom.performance > 10){
+					this.kingdoms[i].kingdom.performance = 10;
+				}
+			}
 		}
 	}
 }

@@ -13,7 +13,16 @@ public class Kingdom : IKingdom {
 	public int performance;
 	public int army;
 
+	public int darkAgeCounter;
+	public int darkAgeChance;
+
+	public int goldenAgeCounter;
+	public int goldenAgeIncreaseCounter;
+	public int goldenAgeChance;
+
 	public bool isDead;
+	public bool isInDarkAge;
+	public bool isInGoldenAge;
 
 	public Color tileColor;
 
@@ -26,6 +35,9 @@ public class Kingdom : IKingdom {
 	public List<KingdomRelations> kingdomRelations;
 
 
+	internal int defaultDarkAgeChance = 3;
+	internal int defaultGoldenAgeChance = 3;
+	internal int performanceStorage;
 
 	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor){
 		int[] traits = GenerateTraits ();
@@ -38,8 +50,16 @@ public class Kingdom : IKingdom {
 		this.altruism = traits [0];
 		this.ambition = traits [1];
 		this.performance = traits [2];
+		this.performanceStorage = this.performance;
+		this.darkAgeCounter = 0;
+		this.darkAgeChance = this.defaultDarkAgeChance;
+		this.goldenAgeCounter = 0;
+		this.goldenAgeIncreaseCounter = 0;
+		this.goldenAgeChance = this.defaultGoldenAgeChance;
 		this.tileColor = tileColor;
 		this.isDead = false;
+		this.isInDarkAge = false;
+		this.isInGoldenAge = false;
 		this.adjacentKingdoms = new List<KingdomTile> ();
 		this.enemyKingdoms = new List<KingdomTile> ();
 		this.citiesGained = new List<int> ();
