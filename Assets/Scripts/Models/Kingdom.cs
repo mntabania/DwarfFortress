@@ -5,15 +5,18 @@ using System.Collections.Generic;
 [System.Serializable]
 public class Kingdom : IKingdom {
 	public int id;
+	public string kingdomName;
 	public RACE race;
 	public float populationGrowth;
 	public int altruism;
 	public int ambition;
 	public int performance;
 	public int army;
-	public string kingdomName;
-	public Color tileColor;
+
 	public bool isDead;
+
+	public Color tileColor;
+
 	public List<CityTile> cities;
 	public List<KingdomTile> adjacentKingdoms;
 	public List<KingdomTile> enemyKingdoms;
@@ -21,6 +24,7 @@ public class Kingdom : IKingdom {
 	public List<int> citiesLost;
 	public List<Faction> factions;
 	public List<KingdomRelations> kingdomRelations;
+
 
 
 	public Kingdom(float populationGrowth, RACE race, List<CityTile> cities, string kingdomName, Color tileColor){

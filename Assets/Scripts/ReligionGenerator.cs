@@ -8,6 +8,9 @@ public class ReligionGenerator : MonoBehaviour {
 	public static ReligionGenerator Instance;
 
 	public ReligionList religionList;
+	public Religion trendyReligion = null;
+	public List<Religion> allReligions = new List<Religion>();
+
 
 	void Awake(){
 		Instance = this;
@@ -35,6 +38,7 @@ public class ReligionGenerator : MonoBehaviour {
 		}
 
 		religionList.names.RemoveAt (randomName);
+		allReligions.Add(religion);
 		return religion;
 	}
 	private string[] GetGods(){
