@@ -15,8 +15,10 @@ public class Road : IRoad {
 		this.connectingCities.Add(city1.hexTile);
 		this.connectingCities.Add(city2.hexTile);
 
-		for (int i = 0; i < connectingCities.Count; i++) {
-			roadName += connectingCities [i].name + " - ";
-		}
+//		for (int i = 0; i < connectingCities.Count; i++) {
+//			roadName += connectingCities [i].name + " - ";
+//		}
+
+		roadName = connectingCities [0].name + " - " + connectingCities[1].name;
 	}
 }

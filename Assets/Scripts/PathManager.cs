@@ -19,14 +19,47 @@ public class PathManager : MonoBehaviour {
 		allRoads = new List<Road> ();
 	}
 
-	/*
-	 * For testing purposes, draw a path
-	 * from the 1st city to the 2nd city.
-	 * */
-	[ContextMenu("PATHPATH")]
-	public void PathPath(){
-		CityGenerator.Instance.RefinePaths (CityGenerator.Instance.cities [0], CityGenerator.Instance.cities [1]);
-		DeterminePath (CityGenerator.Instance.cities [0].tile, CityGenerator.Instance.cities [1].tile);
+	public void GenerateConnections(List<HexTile> cities){
+		for (int i = 0; i < cities.Count; i++) {
+			CityTile currentCityTile = cities[i].GetCityTile();
+			List<HexTile> listOrderedByDistance = currentCityTile.GetAllCitiesByDistance();
+			int randomNumberOfRoads = currentCityTile.cityAttributes.GenerateNumberOfRoads();
+			int createdRoads = 0;
+			for (int j = 0; createdRoads < randomNumberOfRoads; j++) {
+				CityTile tileToConnectTo = listOrderedByDistance [j].GetCityTile();
+				if ((j + 1) == listOrderedByDistance.Count) {
+					//if j has reached listOrderedByDistance's upper bound, connect to nearest city
+					RefinePaths (cities, currentCityTile.cityAttributes.hexTile, listOrderedByDistance[0]);
+					ConnectCities (currentCityTile.cityAttributes.hexTile, listOrderedByDistance[0]);
+					break;
+				} else {
+					if (tileToConnectTo.cityAttributes.numOfRoads < 3) {
+						createdRoads++;
+						RefinePaths (cities, currentCityTile.cityAttributes.hexTile, tileToConnectTo.cityAttributes.hexTile);
+						ConnectCities (currentCityTile.cityAttributes.hexTile, tileToConnectTo.cityAttributes.hexTile);
+					}
+				}
+			}
+		}
+	}
+
+	public void RefinePaths(List<HexTile> cities, HexTile startTile, HexTile destinationTile){
+		for (int i = 0; i < cities.Count; i++) {
+			HexTile currentTile = cities[i];
+			if (currentTile != startTile && currentTile != destinationTile) {
+				for (int j = 0; j < currentTile.neighbours.Count; j++) {
+					currentTile.neighbours [j].tile.canPass = false;
+				}
+			}
+		}
+	}
+
+	void ConnectCities(HexTile originTile, HexTile targetTile){
+		Debug.Log ("Connected to: " + targetTile.name);
+		PathManager.Instance.DeterminePath (originTile.tile, targetTile.tile);
+		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile ());
+		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
+		ResetPassableTiles();
 	}
 
 	/*
@@ -127,5 +160,15 @@ public class PathManager : MonoBehaviour {
 //		var line = (GameObject)Instantiate(Line);
 //		line.transform.position = GetWorldCoordinates(tile.Location.X, tile.Location.Y, 1f);
 //		_path.Add(line);
+	}
+
+	void ResetPassableTiles(){
+		List<GameObject> allHexes = GridMap.Instance.listHexes;
+		for (int i = 0; i < allHexes.Count; i++) {
+			HexTile currentHexTile = allHexes[i].GetComponent<HexTile>();
+			if (!currentHexTile.isCity) {
+				currentHexTile.tile.canPass = true;
+			}
+		}
 	}
 }
