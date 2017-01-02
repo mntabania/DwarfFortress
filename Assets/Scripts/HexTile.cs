@@ -25,9 +25,6 @@ public class HexTile : MonoBehaviour {
 	public bool isCity;
 	public bool isRoad = false;
 
-
-	public List<HexTile> neighbours;
-
 //		switch(biomeType){
 //		case BIOME.OCEAN:
 //			this.gameObject.GetComponent<SpriteRenderer>().color = new Color(0f/255f,1f/255f,105f/255f);
@@ -93,8 +90,8 @@ public class HexTile : MonoBehaviour {
 
 	[ContextMenu("Show Neighbours")]
 	public void ShowNeighbours(){
-		Debug.Log ("======" + this.name + " - " + tile.Neighbours.ToList().Count + "======");
-		foreach (Tile t in tile.Neighbours) {
+		Debug.Log ("======" + this.name + " - " + tile.ValidTiles.ToList().Count + "======");
+		foreach (Tile t in tile.ValidTiles) {
 			Debug.Log ("Neighbours: " + t.hexTile.name);
 		}
 	}

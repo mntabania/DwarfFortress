@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace PathFind {
     public static class PathFind {
-        public static Path<Node> FindPath<Node>(Node start, Node destination, Func<Node, Node, double> distance, Func<Node, double> estimate) 
+		public static Path<Node> FindPath<Node>(Node start, Node destination, Func<Node, Node, double> distance, Func<Node, double> estimate, bool forCreatingRoads) 
 			where Node : IHasNeighbours<Node> {
 
 	            var closed = new HashSet<Node>();
@@ -23,12 +23,21 @@ namespace PathFind {
 	                closed.Add(path.LastStep);
 					lastStep = path.LastStep;
 
-	                foreach (Node n in path.LastStep.Neighbours) {
-						double d = distance(path.LastStep, n);
-						var newPath = path.AddStep(n, d);
-						queue.Enqueue(newPath.TotalCost + estimate(n), newPath);
-	                }
-
+					double d;
+					Path<Node> newPath;
+					if (forCreatingRoads) {
+						foreach (Node n in path.LastStep.ValidTiles) {
+							d = distance (path.LastStep, n);
+							newPath = path.AddStep (n, d);
+							queue.Enqueue (newPath.TotalCost + estimate (n), newPath);
+						}
+					} else {
+						foreach (Node n in path.LastStep.RoadTiles) {
+							d = distance (path.LastStep, n);
+							newPath = path.AddStep (n, d);
+							queue.Enqueue (newPath.TotalCost + estimate (n), newPath);
+						}
+					}
 	            }
 	            return null;
         }

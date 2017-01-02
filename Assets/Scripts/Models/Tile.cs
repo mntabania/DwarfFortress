@@ -16,7 +16,8 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
 	public bool canPass { get; set; }
 
 	public IEnumerable<Tile> AllNeighbours { get;  set;  }
-	public IEnumerable<Tile> Neighbours { get { return AllNeighbours.Where (o => o.canPass); } }
+	public IEnumerable<Tile> ValidTiles { get { return AllNeighbours.Where (o => o.canPass); } } //Returns all neighbour tiles that aren't cities
+	public IEnumerable<Tile> RoadTiles { get { return AllNeighbours.Where (o => o.hexTile.isRoad); } } // Returns all neighbouring road tiles
 
     public void FindNeighbours(Tile[,] gameBoard) {
         var neighbours = new List<Tile>();
@@ -37,9 +38,6 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
 			
 		}
 		AllNeighbours = neighbours;
-		for (int i = 0; i < neighbours.Count; i++) {
-			hexTile.neighbours.Add(neighbours[i].hexTile);
-		}
     }
 
     public static List<Point> EvenNeighbours {
