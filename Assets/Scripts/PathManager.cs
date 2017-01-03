@@ -10,20 +10,22 @@ public class PathManager : MonoBehaviour {
 
 	protected List<HexTile> roadTiles;
 	protected List<CityTile> pendingCityTiles;
+	private List<CityTile> checkedCities;
 
 	public GameObject Line;
 
 	const float Spacing = 1f;
 
 	#region Variables for debugging
-	public CityTile city1;
-	public CityTile city2;
+//	public CityTile city1;
+//	public CityTile city2;
 	#endregion
 
 	void Awake(){
 		Instance = this;
 		roadTiles = new List<HexTile>();
 		pendingCityTiles = new List<CityTile>();
+		checkedCities = new List<CityTile>();
 	}
 
 	#region Road Generation
@@ -132,7 +134,6 @@ public class PathManager : MonoBehaviour {
 					break; //use the already created road between the 2 cities.
 				}
 				roadListByDistance[i].tile.canPass = true;
-//				var path = GetPath (start, roadListByDistance [i]);
 				SetTilesAsRoads(GetPath(start, roadListByDistance[i].tile, true));
 				roadListByDistance[i].tile.canPass = false;
 				break;
@@ -156,12 +157,12 @@ public class PathManager : MonoBehaviour {
 		List<HexTile> tempRoadTiles = roadTiles;
 		/*
 		 * Code if you don't want to use cities included in some paths
+		 * * */
 		for (int i = 0; i < tempRoadTiles.Count; i++) {
 			if (tempRoadTiles [i].isCity) {
 				tempRoadTiles.Remove (tempRoadTiles [i]);
 			}
 		}
-		* */
 		tempRoadTiles.Add(destinationTile);
 
 		List<HexTile> allRoadTiles = tempRoadTiles.OrderBy(
@@ -188,6 +189,7 @@ public class PathManager : MonoBehaviour {
 	}
 
 	public void ActivatePath(CityTile tile1, CityTile tile2){
+		Debug.LogWarning ("Activate Path between: " + tile1.name + " and " + tile2.name);
 		tile2.cityAttributes.hexTile.isRoad = true;
 		List<Tile> pathList = GetPath(tile1.cityAttributes.hexTile.tile, tile2.cityAttributes.hexTile.tile, false).ToList();
 		tile2.cityAttributes.hexTile.isRoad = false;
@@ -195,12 +197,24 @@ public class PathManager : MonoBehaviour {
 			Debug.LogError ("There is no path between the 2 tiles");
 			return;
 		}
-
 		for (int i = 0; i < pathList.Count; i++) {
 			if ((i + 1) < pathList.Count) {
 				CreateLine(pathList[i], pathList [i+1]);
 			} else {
 				CreateLine(pathList[i], null);
+			}
+		}
+		if (!checkedCities.Contains (tile2)) {
+			CheckForAdjacentOccupiedCities(tile2);
+		}
+	}
+
+	void CheckForAdjacentOccupiedCities(CityTile tile){
+		for (int i = 0; i < tile.cityAttributes.connectedCities.Count; i++) {
+			CityTile cityTileToCompareTo = tile.cityAttributes.connectedCities[i];
+			if (cityTileToCompareTo.cityAttributes.kingdomTile != null) {
+				checkedCities.Add (tile);
+				ActivatePath (tile, cityTileToCompareTo);
 			}
 		}
 	}
