@@ -8,8 +8,8 @@ public class PathManager : MonoBehaviour {
 
 	public static PathManager Instance = null;
 
-	public List<HexTile> roadTiles;
-	public List<CityTile> pendingCityTiles;
+	protected List<HexTile> roadTiles;
+	protected List<CityTile> pendingCityTiles;
 
 	public GameObject Line;
 

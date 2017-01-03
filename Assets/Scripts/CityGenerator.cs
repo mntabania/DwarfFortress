@@ -16,8 +16,6 @@ public class CityGenerator : MonoBehaviour {
 
 	public List<HexTile> cities;
 	public List<CityTile> capitalCities;
-	public List<CityTile> pendingCityTiles;
-//	public List<Line> allLines;
 
 	int latestIndex = 0;
 	Line lastLine = null;
@@ -34,8 +32,6 @@ public class CityGenerator : MonoBehaviour {
 	 * */
 	public void GenerateCities(){
 		cities = new List<HexTile>();
-//		allLines = new List<Line>();
-		pendingCityTiles = new List<CityTile>();
 
 
 		CheckForUnelligibleBiomes ();
