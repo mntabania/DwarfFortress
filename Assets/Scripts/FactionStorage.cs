@@ -13,7 +13,6 @@ public class FactionStorage: MonoBehaviour {
 		for(int i = 0; i < allFactions.Count; i++){
 			if(faction.religion == allFactions[i].religion && faction.culture == allFactions[i].culture && faction.race == allFactions[i].race){
 				return allFactions[i];
-				break;
 			}
 		}
 		return null;

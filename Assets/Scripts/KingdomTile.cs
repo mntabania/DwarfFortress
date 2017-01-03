@@ -33,5 +33,4 @@ public class KingdomTile : MonoBehaviour {
 //		this.kingdomName = kingdom.kingdomName;
 	}
 
-
 }

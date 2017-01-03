@@ -92,6 +92,7 @@ public class KingdomGenerator : MonoBehaviour {
 		CheckReligions ();
 		CheckCultures ();
 		CheckWarPeaceCounter ();
+		UpdateAdjacentKingdoms ();
 	}
 
 	#region UPDATE ADJACENT KINGDOMS
@@ -226,7 +227,7 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void Expand(KingdomTile kingdomTile, CityTile fromCityTile, CityTile toCityTile){
 		toCityTile.cityAttributes.kingdomTile = kingdomTile;
-		toCityTile.cityAttributes.faction = fromCityTile.cityAttributes.faction;
+		toCityTile.cityAttributes.faction.CopyData(fromCityTile.cityAttributes.faction);
 		toCityTile.GetComponent<SpriteRenderer> ().color = kingdomTile.kingdom.tileColor;
 		kingdomTile.kingdom.cities.Add (toCityTile);
 		int populationDecrease = (int)(fromCityTile.cityAttributes.population * 0.2f);
@@ -453,7 +454,7 @@ public class KingdomGenerator : MonoBehaviour {
 		int successChance = UnityEngine.Random.Range (0, 100);
 		if(successChance <= successRate){
 			toCityTile.cityAttributes.kingdomTile = invaderKingdom;
-			toCityTile.cityAttributes.faction = fromCityTile.cityAttributes.faction;
+			toCityTile.cityAttributes.faction.CopyData(fromCityTile.cityAttributes.faction);
 			toCityTile.GetComponent<SpriteRenderer> ().color = invaderKingdom.kingdom.tileColor;
 			invaderKingdom.kingdom.cities.Add (toCityTile);
 			targetKingdom.kingdom.cities.Remove (toCityTile);
@@ -486,7 +487,7 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private bool hasEnemies(KingdomTile kingdomTile){
 		for (int i = 0; i < kingdomTile.kingdom.kingdomRelations.Count; i++) {
-			if(kingdomTile.kingdom.kingdomRelations[i].isAtWar){
+			if(kingdomTile.kingdom.kingdomRelations[i].isAtWar && kingdomTile.kingdom.kingdomRelations[i].isAdjacent){
 				return true;	
 			}
 		}
@@ -804,7 +805,7 @@ public class KingdomGenerator : MonoBehaviour {
 			this.kingdoms [i].kingdom.factions.Add (faction);
 			FactionStorage.Instance.AddFaction (faction);
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				this.kingdoms [i].kingdom.cities [j].cityAttributes.faction = this.kingdoms [i].kingdom.factions [0];
+				this.kingdoms [i].kingdom.cities [j].cityAttributes.faction.CopyData(faction);
 			}
 		}
 	}
@@ -874,7 +875,7 @@ public class KingdomGenerator : MonoBehaviour {
 			FactionStorage.Instance.AddFaction (cityTile.cityAttributes.faction);
 		}else{
 			Debug.Log ("FACTION ALREADY EXISTS. RETRIEVING FACTION....");
-			cityTile.cityAttributes.faction = faction;
+			cityTile.cityAttributes.faction.CopyData(faction);
 		}
 	}
 	#endregion
@@ -939,14 +940,14 @@ public class KingdomGenerator : MonoBehaviour {
 				FactionStorage.Instance.AddFaction (targetCityTile.cityAttributes.faction);
 			}else{
 				Debug.Log ("FACTION ALREADY EXISTS. RETRIEVING FACTION....");
-				targetCityTile.cityAttributes.faction = faction;
+				targetCityTile.cityAttributes.faction.CopyData(faction);
 			}
 		}
 	}
 	private List<int> GetConnectedCitiesIndexesWithDiffReligion(CityTile cityTile){
 		List<int> indexes = new List<int> ();
 		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
-			if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction != null){
+			if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction.id != 0){
 				if(cityTile.cityAttributes.connectedCities[i].cityAttributes.kingdomTile.kingdom.cities.Count > 1){
 					if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction.religion != cityTile.cityAttributes.faction.religion){
 						indexes.Add (i);
@@ -959,7 +960,7 @@ public class KingdomGenerator : MonoBehaviour {
 	private List<int> GetConnectedCitiesIndexesWithDiffCulture(CityTile cityTile){
 		List<int> indexes = new List<int> ();
 		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
-			if (cityTile.cityAttributes.connectedCities [i].cityAttributes.faction != null) {
+			if (cityTile.cityAttributes.connectedCities [i].cityAttributes.faction.id != 0) {
 				if (cityTile.cityAttributes.connectedCities [i].cityAttributes.kingdomTile.kingdom.cities.Count > 1) {
 					if (cityTile.cityAttributes.connectedCities [i].cityAttributes.faction.culture != cityTile.cityAttributes.faction.culture) {
 						indexes.Add (i);
@@ -973,6 +974,7 @@ public class KingdomGenerator : MonoBehaviour {
 
 	#region SPLIT FACTION
 	private void SplitFaction(KingdomTile kingdomTile){
+		Debug.Log (kingdomTile.kingdom.kingdomName + " NO OF FACTIONS: " + kingdomTile.kingdom.factions.Count);
 		if(kingdomTile.kingdom.factions.Count > 1){
 			int randomFaction = UnityEngine.Random.Range (0, kingdomTile.kingdom.factions.Count);
 			Faction rebelFaction = kingdomTile.kingdom.factions [randomFaction];
@@ -1063,10 +1065,11 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 	private void CheckFactions(){
 		List<Faction> factions = new List<Faction> ();
+		bool hasFaction = false;
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			factions.Clear ();
 			for(int j = 0; j < this.kingdoms[i].kingdom.factions.Count; j++){
-				bool hasFaction = false;
+				hasFaction = false;
 				for(int k = 0; k < this.kingdoms[i].kingdom.cities.Count; k++){
 					if(this.kingdoms[i].kingdom.cities[k].cityAttributes.faction.id == this.kingdoms[i].kingdom.factions[j].id){
 						hasFaction = true;
@@ -1182,7 +1185,7 @@ public class KingdomGenerator : MonoBehaviour {
 						List<CityTile> connectedCityTiles = new List<CityTile> ();
 						for(int j = 0; j < cityTiles[randomCity].cityAttributes.connectedCities.Count; j++){
 							if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile != null){
-								if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.faction != null){
+								if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.faction.id != 0){
 									if(cityTiles[randomCity].cityAttributes.connectedCities[j].cityAttributes.kingdomTile.kingdom.id == cityTiles[randomCity].cityAttributes.kingdomTile.kingdom.id){
 										connectedCityTiles.Add (cityTiles [randomCity].cityAttributes.connectedCities [j]);
 									}
@@ -1271,11 +1274,9 @@ public class KingdomGenerator : MonoBehaviour {
 		List<CityTile> cityTiles = new List<CityTile> ();
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
-					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
-						if(CheckForNoOfCitiesConnected(this.kingdoms[i].kingdom.cities[j]) >= requirement){
-							cityTiles.Add (this.kingdoms [i].kingdom.cities [j]);
-						}
+				if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.id != 0){
+					if(CheckForNoOfCitiesConnected(this.kingdoms[i].kingdom.cities[j]) >= requirement){
+						cityTiles.Add (this.kingdoms [i].kingdom.cities [j]);
 					}
 				}
 			}
@@ -1286,7 +1287,7 @@ public class KingdomGenerator : MonoBehaviour {
 		int noOfConnected = 0;
 		for(int i = 0; i < cityTile.cityAttributes.connectedCities.Count; i++){
 			if(cityTile.cityAttributes.connectedCities[i].cityAttributes.kingdomTile != null){
-				if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction != null){
+				if(cityTile.cityAttributes.connectedCities[i].cityAttributes.faction.id != 0){
 					if(cityTile.cityAttributes.connectedCities[i].cityAttributes.kingdomTile.kingdom.id == cityTile.cityAttributes.kingdomTile.kingdom.id){
 						noOfConnected += 1;
 					}
@@ -1329,7 +1330,7 @@ public class KingdomGenerator : MonoBehaviour {
 			List<CityTile> allCitiesWithTrendyReligion = new List<CityTile>();
 			for(int i = 0; i < this.kingdoms.Count; i++){
 				for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.id != 0){
 						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.religion.religionName == ReligionGenerator.Instance.trendyReligion.religionName){
 							allCitiesWithTrendyReligion.Add(this.kingdoms[i].kingdom.cities[j]);
 						}
@@ -1365,7 +1366,7 @@ public class KingdomGenerator : MonoBehaviour {
 			List<CityTile> allCitiesWithTrendyCulture = new List<CityTile>();
 			for(int i = 0; i < this.kingdoms.Count; i++){
 				for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction != null){
+					if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.id != 0){
 						if(this.kingdoms[i].kingdom.cities[j].cityAttributes.faction.culture.cultureName == CultureGenerator.Instance.trendyCulture.cultureName){
 							allCitiesWithTrendyCulture.Add(this.kingdoms[i].kingdom.cities[j]);
 						}
@@ -1480,6 +1481,8 @@ public class KingdomGenerator : MonoBehaviour {
 				Debug.Log(this.kingdoms[i].kingdom.kingdomName + " ENTERS THE DARK AGE! Dun dun dun dun....");
 				this.kingdoms[i].kingdom.isInDarkAge = true;
 				this.kingdoms[i].kingdom.isInGoldenAge = false;
+				this.kingdoms[i].kingdom.darkAgeCounter = 0;
+				this.kingdoms[i].kingdom.goldenAgeCounter = 0;
 				this.kingdoms[i].kingdom.darkAgeChance = this.kingdoms[i].kingdom.defaultDarkAgeChance;
 
 				this.kingdoms[i].kingdom.performance = this.kingdoms[i].kingdom.performanceStorage;
@@ -1513,6 +1516,8 @@ public class KingdomGenerator : MonoBehaviour {
 				Debug.Log(this.kingdoms[i].kingdom.kingdomName + " ENTERS THE GOLDEN AGE! Weeeeeeeeeeeeeeeeee....");
 				this.kingdoms[i].kingdom.isInDarkAge = false;
 				this.kingdoms[i].kingdom.isInGoldenAge = true;
+				this.kingdoms[i].kingdom.darkAgeCounter = 0;
+				this.kingdoms[i].kingdom.goldenAgeCounter = 0;
 
 				this.kingdoms[i].kingdom.goldenAgeIncreaseCounter = 0;
 				for(int j = 0; j < this.kingdoms.Count; j++){
@@ -1548,7 +1553,7 @@ public class KingdomGenerator : MonoBehaviour {
 							Faction faction = CreateNewFaction (chosenCities[0].cityAttributes.faction.race, chosenCities[0].cityAttributes.faction.religion, chosenCities[0].cityAttributes.faction.culture);
 
 							for(int j = 0; j < chosenCities.Count; j++){
-								chosenCities[j].cityAttributes.faction = faction;
+								chosenCities[j].cityAttributes.faction.CopyData(faction);
 							}
 
 							this.kingdoms[i].kingdom.factions.Add (faction);
@@ -1586,8 +1591,10 @@ public class KingdomGenerator : MonoBehaviour {
 	}
 
 	private void SplitKingdoms(){
+		int chance = 0;
+
 		for(int i = 0; i < this.kingdoms.Count; i++){
-			int chance = UnityEngine.Random.Range(0,100);
+			chance = UnityEngine.Random.Range(0,100);
 			if(chance < 4){
 				Debug.Log(this.kingdoms[i].kingdom.kingdomName + ": SPLIT KINGDOMS EVENT!");
 				SplitFaction(this.kingdoms[i]);
