@@ -22,7 +22,7 @@ public class HexTile : MonoBehaviour {
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
 
-	public bool isCity;
+	public bool isCity = false;
 	public bool isRoad = false;
 
 //		switch(biomeType){

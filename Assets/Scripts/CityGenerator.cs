@@ -311,17 +311,10 @@ public class CityGenerator : MonoBehaviour {
 	void SetTileAsCity(HexTile tile){
 		tile.SetTileColor(Color.black);
 		tile.isCity = true;
-		//TODO: GAWIN MOTO
-//		tile.tile.canPass = false;
+		tile.tile.canPass = false;
 		tile.gameObject.AddComponent<CityTile>();
 		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
 		cities.Add(tile);
-	}
-
-	public void ResetPassableTiles(){
-		for (int i = 0; i < cities.Count; i++) {
-			cities [i].tile.canPass = false;
-		}
 	}
 
 	/*
