@@ -15,7 +15,6 @@ public class City : ICity{
 	public int garrison;
 	public int gold;
 	public List<CityTile> connectedCities;
-	public List<Road> roads;
 	public KingdomTile kingdomTile;
 	public Faction faction;
 
@@ -30,7 +29,6 @@ public class City : ICity{
 		this.garrison = 0;
 		this.gold = 0;
 		this.connectedCities = new List<CityTile>();
-		this.roads = new List<Road>();
 		this.kingdomTile = null;
 		this.faction = new Faction();
 	}
@@ -72,7 +70,6 @@ public class City : ICity{
 		this.connectedCities.Add(cityTile);
 		this.numOfRoads = connectedCities.Count;
 	}
-
-
+		
 
 }

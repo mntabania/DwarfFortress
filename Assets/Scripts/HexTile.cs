@@ -22,11 +22,8 @@ public class HexTile : MonoBehaviour {
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
 
-	public bool isCity;
+	public bool isCity = false;
 	public bool isRoad = false;
-
-
-	public List<HexTile> neighbours;
 
 //		switch(biomeType){
 //		case BIOME.OCEAN:
@@ -93,8 +90,8 @@ public class HexTile : MonoBehaviour {
 
 	[ContextMenu("Show Neighbours")]
 	public void ShowNeighbours(){
-		Debug.Log ("======" + this.name + " - " + tile.Neighbours.ToList().Count + "======");
-		foreach (Tile t in tile.Neighbours) {
+		Debug.Log ("======" + this.name + " - " + tile.ValidTiles.ToList().Count + "======");
+		foreach (Tile t in tile.ValidTiles) {
 			Debug.Log ("Neighbours: " + t.hexTile.name);
 		}
 	}

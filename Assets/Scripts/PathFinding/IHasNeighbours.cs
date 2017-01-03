@@ -7,6 +7,7 @@ namespace PathFind
 {
     public interface IHasNeighbours<N>
     {
-        IEnumerable<N> Neighbours { get; }
+		IEnumerable<N> ValidTiles { get; }
+		IEnumerable<N> RoadTiles { get; } 
     }
 }

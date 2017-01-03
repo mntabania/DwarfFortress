@@ -16,8 +16,6 @@ public class CityGenerator : MonoBehaviour {
 
 	public List<HexTile> cities;
 	public List<CityTile> capitalCities;
-	public List<CityTile> pendingCityTiles;
-//	public List<Line> allLines;
 
 	int latestIndex = 0;
 	Line lastLine = null;
@@ -34,14 +32,11 @@ public class CityGenerator : MonoBehaviour {
 	 * */
 	public void GenerateCities(){
 		cities = new List<HexTile>();
-//		allLines = new List<Line>();
-		pendingCityTiles = new List<CityTile>();
 
 
 		CheckForUnelligibleBiomes ();
 		for (int i = 0; i < cityCount; i++) {
 			BIOMES chosenBiome = RollForCityBiome();
-			Debug.Log ("Chosen Biome-" + i + ": " + chosenBiome);
 			if (chosenBiome == BIOMES.SNOW) {
 				PlaceCityOnBiomeTile (Biomes.Instance.snowHexTiles);
 			} else if (chosenBiome == BIOMES.TUNDRA) {
@@ -292,8 +287,6 @@ public class CityGenerator : MonoBehaviour {
 			//Choose random tile from city placable biome tiles
 			int randomTileIndex = UnityEngine.Random.Range (0, cityPlacableBiomeTile.Count);
 			HexTile chosenTile = cityPlacableBiomeTile[randomTileIndex];
-			Debug.Log ("Tiles Elligible For Cities: " + tilesElligibleForCities.Count);
-
 			//check if chosen tile is elligible for city placement
 			if (tilesElligibleForCities.Contains(chosenTile)) {
 				choosingCity = false;
@@ -314,6 +307,7 @@ public class CityGenerator : MonoBehaviour {
 	void SetTileAsCity(HexTile tile){
 		tile.SetTileColor(Color.black);
 		tile.isCity = true;
+		tile.tile.canPass = false;
 		tile.gameObject.AddComponent<CityTile>();
 		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
 		cities.Add(tile);
@@ -333,6 +327,20 @@ public class CityGenerator : MonoBehaviour {
 			}
 		}
 		return false;
+	}
+
+	public HexTile FindNearestCityWithConnection(CityTile tile){
+		List<HexTile> cityTilesByDistance = tile.GetAllCitiesByDistance();
+		for (int i = 0; i < cityTilesByDistance.Count; i++) {
+			if (cityTilesByDistance[i].GetCityTile().cityAttributes.numOfRoads > 0) {
+				if (i == cityTilesByDistance.Count) {
+					Debug.LogError ("No more possible connectionssssss");
+					break;
+				}
+				return cityTilesByDistance[i];
+			}
+		}
+		return null;
 	}
 }
 
@@ -467,23 +475,5 @@ public class CityGenerator : MonoBehaviour {
 //		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
 //
 //		ResetPassableTiles();
-//	}
-//	public HexTile FindNearestCityWithConnection(CityTile tile){
-//		List<HexTile> cityTilesByDistance = tile.GetAllCitiesByDistance();
-//		for (int i = 0; i < cityTilesByDistance.Count; i++) {
-//			if (cityTilesByDistance[i].GetCityTile().cityAttributes.numOfRoads > 0) {
-//				if (i == cityTilesByDistance.Count) {
-//					Debug.LogError ("No more possible connectionssssss");
-//					break;
-//				}
-//				if (IsLineIntersecting (tile.transform.position, cityTilesByDistance [i].transform.position) ||
-//					IsCollinear (tile.transform.position, cityTilesByDistance [i].transform.position)) {
-//					continue;
-//				} else {
-//					return cityTilesByDistance [i];
-//				}
-//			}
-//		}
-//		return null;
 //	}
 #endregion

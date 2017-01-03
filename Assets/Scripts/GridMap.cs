@@ -47,7 +47,7 @@ public class GridMap : MonoBehaviour {
 					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
 				}
 				hex.GetComponent<HexTile>().tile = new Tile (x, y, hex.GetComponent<HexTile>());
-				GameBoard [x, y] = hex.GetComponent<HexTile> ().tile;
+				GameBoard [x, y] = hex.GetComponent<HexTile>().tile;
 			}
 		}
 		listHexes.ForEach(o => o.GetComponent<HexTile>().tile.FindNeighbours(GameBoard));

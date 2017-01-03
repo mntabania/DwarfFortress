@@ -8,7 +8,8 @@ public class PathManager : MonoBehaviour {
 
 	public static PathManager Instance = null;
 
-	public List<Road> allRoads;
+	protected List<HexTile> roadTiles;
+	protected List<CityTile> pendingCityTiles;
 
 	public GameObject Line;
 
@@ -16,50 +17,100 @@ public class PathManager : MonoBehaviour {
 
 	void Awake(){
 		Instance = this;
-		allRoads = new List<Road> ();
+		roadTiles = new List<HexTile>();
+		pendingCityTiles = new List<CityTile>();
 	}
 
 	public void GenerateConnections(List<HexTile> cities){
-		for (int i = 0; i < cities.Count; i++) {
+		pendingCityTiles.Add(cities[0].GetCityTile());
+		for (int i = 0; i < pendingCityTiles.Count; i++) {
 			CityTile currentCityTile = cities[i].GetCityTile();
 			List<HexTile> listOrderedByDistance = currentCityTile.GetAllCitiesByDistance();
 			int randomNumberOfRoads = currentCityTile.cityAttributes.GenerateNumberOfRoads();
-			int createdRoads = 0;
+			int createdRoads = currentCityTile.cityAttributes.connectedCities.Count;
+
+			if (randomNumberOfRoads < createdRoads) {
+				currentCityTile.cityAttributes.numOfRoads = createdRoads;
+			}
+
 			for (int j = 0; createdRoads < randomNumberOfRoads; j++) {
 				CityTile tileToConnectTo = listOrderedByDistance [j].GetCityTile();
 				if ((j + 1) == listOrderedByDistance.Count) {
 					//if j has reached listOrderedByDistance's upper bound, connect to nearest city
-					RefinePaths (cities, currentCityTile.cityAttributes.hexTile, listOrderedByDistance[0]);
-					ConnectCities (currentCityTile.cityAttributes.hexTile, listOrderedByDistance[0]);
+					createdRoads++;
+					if (!currentCityTile.cityAttributes.connectedCities.Contains (listOrderedByDistance [0].GetCityTile())) {
+						ConnectCities (currentCityTile.cityAttributes.hexTile, listOrderedByDistance [0]);
+						if (!pendingCityTiles.Contains (listOrderedByDistance [0].GetCityTile ())) {
+							pendingCityTiles.Add (listOrderedByDistance [0].GetCityTile ());
+						}
+					}
 					break;
 				} else {
-					if (tileToConnectTo.cityAttributes.numOfRoads < 3) {
+					if (tileToConnectTo.cityAttributes.numOfRoads < 3 && !currentCityTile.cityAttributes.connectedCities.Contains(tileToConnectTo)) {
 						createdRoads++;
-						RefinePaths (cities, currentCityTile.cityAttributes.hexTile, tileToConnectTo.cityAttributes.hexTile);
 						ConnectCities (currentCityTile.cityAttributes.hexTile, tileToConnectTo.cityAttributes.hexTile);
+						if (!pendingCityTiles.Contains(tileToConnectTo)) {
+							pendingCityTiles.Add(tileToConnectTo);
+						}
+					}
+				}
+			}
+
+			if (pendingCityTiles.Count != CityGenerator.Instance.cityCount) {
+				Debug.Log ("MISSED SOME CITIES!");
+				Debug.Log ("Create Lines for missed out cities");
+				for (int x = 0; x < cities.Count; x++) {
+					if (!pendingCityTiles.Contains (cities [x].GetCityTile())) {
+						Debug.Log ("======Missed out city: " + cities [x].name + " ======");
+						CityTile missedOutCity = cities [x].GetCityTile ();
+						HexTile possibleConnectionTile = CityGenerator.Instance.FindNearestCityWithConnection (missedOutCity);
+						if (possibleConnectionTile != null && !missedOutCity.cityAttributes.connectedCities.Contains(possibleConnectionTile.GetCityTile())) {
+							ConnectCities (missedOutCity.cityAttributes.hexTile, possibleConnectionTile);
+							if (!pendingCityTiles.Contains (missedOutCity)) {
+								pendingCityTiles.Add (missedOutCity);
+							}
+							if (!pendingCityTiles.Contains(possibleConnectionTile.GetCityTile())) {
+								pendingCityTiles.Add(possibleConnectionTile.GetCityTile());
+							}
+						}
 					}
 				}
 			}
 		}
+		Debug.Log ("DONE!: " + pendingCityTiles.Count);
 	}
 
-	public void RefinePaths(List<HexTile> cities, HexTile startTile, HexTile destinationTile){
-		for (int i = 0; i < cities.Count; i++) {
-			HexTile currentTile = cities[i];
-			if (currentTile != startTile && currentTile != destinationTile) {
-				for (int j = 0; j < currentTile.neighbours.Count; j++) {
-					currentTile.neighbours [j].tile.canPass = false;
-				}
+	[ContextMenu("CHECK")]
+	public void ForChecking(){
+		Debug.Log(CityGenerator.Instance.FindNearestCityWithConnection(CityGenerator.Instance.cities[0].GetCityTile()).name);
+	}
+
+	public bool AreTheseTilesConnected(HexTile tile1, HexTile tile2){
+		Func<Tile, Tile, double> distance = (node1, node2) => 1;
+		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - tile2.tile.X, 2) + Math.Pow(t.Y - tile2.tile.Y, 2));
+
+		tile2.isRoad = true;
+		var path = PathFind.PathFind.FindPath(tile1.tile, tile2.tile, distance, estimate, false);
+		tile2.isRoad = false;
+
+		return path != null;
+	}
+
+	int GetAdjacentCitiesCount(HexTile city){
+		int count = 0;
+		for(int i = 0; i < CityGenerator.Instance.cities.Count; i++){
+			if (CityGenerator.Instance.cities[i] != city && AreTheseTilesConnected (city, CityGenerator.Instance.cities[i])) {
+				count++;
 			}
 		}
+		return count;
 	}
 
 	void ConnectCities(HexTile originTile, HexTile targetTile){
-		Debug.Log ("Connected to: " + targetTile.name);
+		Debug.Log (originTile.name + " is now connected to: " + targetTile.name);
 		PathManager.Instance.DeterminePath (originTile.tile, targetTile.tile);
-		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile ());
-		targetTile.GetCityTile ().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
-		ResetPassableTiles();
+		originTile.GetCityTile().cityAttributes.AddCityAsConnected (targetTile.GetCityTile());
+		targetTile.GetCityTile().cityAttributes.AddCityAsConnected (originTile.GetCityTile());
 	}
 
 	/*
@@ -69,21 +120,57 @@ public class PathManager : MonoBehaviour {
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destination.X, 2) + Math.Pow(t.Y - destination.Y, 2));
 
-		var path = PathFind.PathFind.FindPath(start, destination, distance, estimate);
-		DrawPath(start.hexTile.GetComponent<CityTile>(), destination.hexTile.GetComponent<CityTile>(), path);
+		List<HexTile> roadListByDistance = SortAllRoadsByDistance (start.hexTile, destination.hexTile); //Sort all road tiles in regards to how far they are from the start
+		start.canPass = true;
+		destination.canPass = true;
+		for (int i = 0; i < roadListByDistance.Count; i++) {
+			if (AreTheseTilesConnected (roadListByDistance [i], destination.hexTile)) {
+				Debug.Log ("Connect to roadTile: " + roadListByDistance [i].name + " instead");
+				if (roadListByDistance[i].isCity && roadListByDistance[i].GetCityTile().cityAttributes.connectedCities.Contains(start.hexTile.GetCityTile())) {
+					break; //use the already created road between the 2 cities.
+				}
+				roadListByDistance[i].tile.canPass = true;
+				var path = PathFind.PathFind.FindPath (start, roadListByDistance [i].tile, distance, estimate, true);
+				DrawPath (path);
+				roadListByDistance[i].tile.canPass = false;
+				break;
+			}
+		}
+		start.canPass = false;
+		destination.canPass = false;
 	}
 
+	List<HexTile> SortAllRoadsByDistance(HexTile startTile, HexTile destinationTile){
+		List<HexTile> tempRoadTiles = roadTiles;
+		/*
+		 * Code if you don't want to use cities included in some paths
+		 * */
+//		for (int i = 0; i < tempRoadTiles.Count; i++) {
+//			if (tempRoadTiles [i].isCity) {
+//				tempRoadTiles.Remove (tempRoadTiles [i]);
+//			}
+//		}
+		tempRoadTiles.Add(destinationTile);
+
+		List<HexTile> allRoadTiles = tempRoadTiles.OrderBy(
+			x => Vector2.Distance(startTile.transform.position, x.transform.position) 
+		).ToList();
+
+		return allRoadTiles;
+	}
 
 	/*
 	 * Draw the generated paths
 	 * */
-	private void DrawPath(CityTile startingCity, CityTile destinationCity, IEnumerable<Tile> path) {
+	private void DrawPath(IEnumerable<Tile> path) {
+		Debug.Log ("DRAW PATH!");
 		List<Tile> pathList = path.ToList();
-		Road road = new Road(path.ToArray(), startingCity.cityAttributes, destinationCity.cityAttributes);
-		startingCity.cityAttributes.roads.Add(road);
-		destinationCity.cityAttributes.roads.Add(road);
-		allRoads.Add (road);
 		for (int i = 0; i < pathList.Count; i++) {
+			if (!pathList[i].hexTile.isCity) {
+				pathList[i].hexTile.isRoad = true;
+				roadTiles.Add(pathList[i].hexTile);
+			}
+
 			if ((i + 1) < pathList.Count) {
 				CreateLine(pathList[i], pathList [i+1]);
 			} else {
@@ -160,15 +247,5 @@ public class PathManager : MonoBehaviour {
 //		var line = (GameObject)Instantiate(Line);
 //		line.transform.position = GetWorldCoordinates(tile.Location.X, tile.Location.Y, 1f);
 //		_path.Add(line);
-	}
-
-	void ResetPassableTiles(){
-		List<GameObject> allHexes = GridMap.Instance.listHexes;
-		for (int i = 0; i < allHexes.Count; i++) {
-			HexTile currentHexTile = allHexes[i].GetComponent<HexTile>();
-			if (!currentHexTile.isCity) {
-				currentHexTile.tile.canPass = true;
-			}
-		}
 	}
 }
