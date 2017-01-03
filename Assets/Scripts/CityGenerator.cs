@@ -32,8 +32,6 @@ public class CityGenerator : MonoBehaviour {
 	 * */
 	public void GenerateCities(){
 		cities = new List<HexTile>();
-
-
 		CheckForUnelligibleBiomes ();
 		for (int i = 0; i < cityCount; i++) {
 			BIOMES chosenBiome = RollForCityBiome();
