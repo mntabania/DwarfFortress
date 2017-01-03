@@ -30,7 +30,7 @@ public class City : ICity{
 		this.gold = 0;
 		this.connectedCities = new List<CityTile>();
 		this.kingdomTile = null;
-		this.faction = null;
+		this.faction = new Faction();
 	}
 
 	public int GeneratePopulation(){
