@@ -17,6 +17,9 @@ public class King {
 	public CHARACTER character;
 	public List<GOALS> goals;
 	public List<List<string>> tasks;
+	public List<PUBLIC_IMAGE> publicImages;
+	public List<Relationship> relationshipKings;
+	public List<Relationship> relationshipMayors;
 
 	public King(){
 		this.id = 1 + GetID ();
@@ -31,6 +34,9 @@ public class King {
 		this.character = (CHARACTER)(UnityEngine.Random.Range (0, Enum.GetNames(typeof(CHARACTER)).Length));
 		this.goals = new List<GOALS> ();
 		this.tasks = new List<List<string>> ();
+		this.publicImages = new List<PUBLIC_IMAGE> ();
+		this.relationshipKings = new List<Relationship> ();
+		this.relationshipMayors = new List<Relationship> ();
 
 		SetLastID (this.id);
 	}
