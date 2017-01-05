@@ -248,6 +248,8 @@ public class KingdomGenerator : MonoBehaviour {
 		toCityTile.cityAttributes.population += populationDecrease;
 		fromCityTile.cityAttributes.population -= populationDecrease;
 
+		PathManager.Instance.ActivatePath(fromCityTile, toCityTile);
+
 		if(!kingdomTile.kingdom.isInDarkAge){
 			kingdomTile.kingdom.darkAgeChance += 1;
 		}
