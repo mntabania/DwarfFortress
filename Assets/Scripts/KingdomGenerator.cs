@@ -127,10 +127,18 @@ public class KingdomGenerator : MonoBehaviour {
 	private void GrowPopulation(){
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			float growthPercentage = this.kingdoms[i].kingdom.populationGrowth / 100f;
+
+			if(this.kingdoms[i].kingdom.isInDarkAge){
+				growthPercentage = -0.02f;
+			}
+
 			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
 				City city = this.kingdoms [i].kingdom.cities [j].cityAttributes;
 				float populationIncrease = city.population * growthPercentage;
 				city.population += (int)populationIncrease;
+				if(city.population < 0){
+					city.population = 1;
+				}
 			}
 		}
 	}
@@ -139,13 +147,19 @@ public class KingdomGenerator : MonoBehaviour {
 	#region GENERATE ARMY
 	private void GenerateArmy(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
-			float increaseArmyPercentage = UnityEngine.Random.Range (0.5f, 1.5f);
 			int totalPopulation = 0;
+			float increaseArmyPercentage = UnityEngine.Random.Range (0.5f, 1.5f) / 100f;
+			if(this.kingdoms[i].kingdom.isInDarkAge){
+				increaseArmyPercentage = -0.02f;
+			}
 			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
 				totalPopulation += this.kingdoms [i].kingdom.cities [j].cityAttributes.population;
 			}
-			int armyIncrease = (int)(((increaseArmyPercentage/100f) * totalPopulation) * this.kingdoms [i].kingdom.performance);
+			int armyIncrease = (int)((increaseArmyPercentage * totalPopulation) * this.kingdoms [i].kingdom.performance);
 			this.kingdoms [i].kingdom.army += armyIncrease;
+			if(this.kingdoms[i].kingdom.army < 0){
+				this.kingdoms [i].kingdom.army = 1;
+			}
 		}
 	}
 	#endregion
