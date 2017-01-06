@@ -62,6 +62,7 @@ public class CityTest{
 		if(this.foodCount < 0){
 //			this.foodCount = 0;
 			this.cityState = CITY_STATE.STARVATION;
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": City is [ff0000] STARVING [-].\n\n"; 
 			ComputeForDeath();
 		}else{
 			this.cityState = CITY_STATE.ABUNDANT;
