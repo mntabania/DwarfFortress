@@ -28,6 +28,7 @@ public class CityTest{
 	public Culture cityCulture;
 	public KingdomTileTest kingdomTile;
 	public HexTile hexTile;
+	public string cityLogs;
 
 	public CityTest(HexTile hexTile, BIOMES biomeType){
 		this.id = 0;
@@ -52,10 +53,12 @@ public class CityTest{
 		this.cityCulture = new Culture();
 		this.kingdomTile = null;
 		this.hexTile = hexTile;
+		this.cityLogs = string.Empty;
 	}
 
 	internal void ConsumeFood(int foodRequirement){
 		this.foodCount -= foodRequirement;
+		cityLogs += GameManager.Instance.currentDay.ToString() + ": Consumed [ff0000]" + foodRequirement.ToString() + "[-] food.\n\n"; 
 		if(this.foodCount < 0){
 //			this.foodCount = 0;
 			this.cityState = CITY_STATE.STARVATION;
@@ -66,7 +69,9 @@ public class CityTest{
 	}
 
 	internal void ProduceGold(){
-		this.goldCount += this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
+		int producedGold = this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
+		this.goldCount += producedGold;
+		cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + producedGold.ToString() + "[-] gold. Total is now: [7CFC00]" + this.goldCount.ToString()+ "[-]\n\n"; 
 	}
 
 	internal void ProduceResources(){
@@ -75,18 +80,23 @@ public class CityTest{
 			switch(this.citizens[i].type){
 			case CITIZEN_TYPE.FARMER:
 				this.foodCount += production;
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] food.\n\n"; 
 				break;
 			case CITIZEN_TYPE.WOODSMAN:
 				this.lumberCount += production;
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] lumber.\n\n"; 
 				break;
 			case CITIZEN_TYPE.MINER:
 				this.stoneCount += production;
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] stone.\n\n"; 
 				break;
 			case CITIZEN_TYPE.ALCHEMIST:
 				this.manaStoneCount += production;
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] mana stones.\n\n"; 
 				break;
 			case CITIZEN_TYPE.ARTISAN:
 				this.tradeGoodsCount += production;
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] trade goods.\n\n"; 
 				break;
 			}
 		}
@@ -106,7 +116,8 @@ public class CityTest{
 			//DIE MADAPAKA
 			//RUSSIAN ROULETTE
 			int russianRoulette = Random.Range (0, citizens.Count);
-			Debug.LogError ("SOMEONE DIED: " + citizens [russianRoulette].type.ToString());
+//			Debug.LogError ("SOMEONE DIED: " + citizens [russianRoulette].type.ToString());
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": A [FF0000]" + citizens[russianRoulette].type.ToString() + "[-] died.\n\n"; 
 			citizens.Remove (citizens [russianRoulette]);
 		}
 	}

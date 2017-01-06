@@ -13,6 +13,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblLumberCount;
 	public UILabel lblStoneCount;
 	public UILabel lblManaStoneCount;
+	public UILabel lblCitySummary;
 
 	public UILabel lblPause;
 
@@ -25,18 +26,18 @@ public class UserInterfaceManager : MonoBehaviour {
 	public void SetCityInfoToShow(CityTileTest cityTile){
 		currentDisplayingCityTile = cityTile;
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
-
 		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
 		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
 		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();
 		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString();
 		lblManaStoneCount.text = "Mana Stone: " + cityTile.cityAttributes.manaStoneCount.ToString();
-
 		if (cityTile.cityAttributes.kingdomTile) {
 			lblKingdomName.text = "Kingdom: " + cityTile.cityAttributes.kingdomTile.kingdom.kingdomRace;
 		} else {
 			lblKingdomName.text = "Kingdom: None";
 		}
+
+		lblCitySummary.text = cityTile.cityAttributes.cityLogs;
 	}
 
 
