@@ -123,6 +123,6 @@ public enum REPRESENTATIVES{
 }
 
 public enum CITY_STATE{
-	FAMINE,
+	STARVATION,
 	ABUNDANT,
 }

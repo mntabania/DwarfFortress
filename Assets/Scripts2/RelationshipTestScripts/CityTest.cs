@@ -13,10 +13,10 @@ public class CityTest{
 	public int numOfRoads;
 	public int population;
 	public int richnessLevel;
-	public int gold;
+	public int goldCount;
 	public int foodCount;
 	public int lumberCount;
-	public int rockCount;
+	public int stoneCount;
 	public int manaStoneCount;
 	public int tradeGoodsCount;
 	public int mayorLikeRating;
@@ -40,7 +40,7 @@ public class CityTest{
 		this.richnessLevel = 60;
 		this.foodCount = 0;
 		this.lumberCount = 0;
-		this.rockCount = 0;
+		this.stoneCount = 0;
 		this.manaStoneCount = 0;
 		this.tradeGoodsCount = 0;
 		this.mayorLikeRating = 0;
@@ -54,22 +54,24 @@ public class CityTest{
 		this.hexTile = hexTile;
 	}
 
-	internal void CheckCityState(int foodRequirement){
+	internal void ConsumeFood(int foodRequirement){
 		this.foodCount -= foodRequirement;
-
 		if(this.foodCount < 0){
-			this.foodCount = 0;
-			this.cityState = CITY_STATE.FAMINE;
+//			this.foodCount = 0;
+			this.cityState = CITY_STATE.STARVATION;
+			ComputeForDeath();
 		}else{
 			this.cityState = CITY_STATE.ABUNDANT;
 		}
 	}
+
 	internal void ProduceGold(){
-		this.gold += this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
+		this.goldCount += this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
 	}
+
 	internal void ProduceResources(){
 		for(int i = 0; i < this.citizens.Count; i++){
-			int production = (int)(((UnityEngine.Random.Range (0.25f, 0.5f) * (float)this.citizens [i].productionValue) + (5 * this.citizens [i].level)) + mayorLikeRating);
+			int production = (int)((float)(5 + (5 * this.citizens [i].level)) * Random.Range(1f, 1.4f)) + mayorLikeRating;
 			switch(this.citizens[i].type){
 			case CITIZEN_TYPE.FARMER:
 				this.foodCount += production;
@@ -78,7 +80,7 @@ public class CityTest{
 				this.lumberCount += production;
 				break;
 			case CITIZEN_TYPE.MINER:
-				this.rockCount += production;
+				this.stoneCount += production;
 				break;
 			case CITIZEN_TYPE.ALCHEMIST:
 				this.manaStoneCount += production;
@@ -87,6 +89,25 @@ public class CityTest{
 				this.tradeGoodsCount += production;
 				break;
 			}
+		}
+	}
+
+	internal int ComputeFoodConsumption(){
+		int totalFoodConsumption = 0;
+		for (int i = 0; i < citizens.Count; i++) {
+			totalFoodConsumption += citizens [i].level * citizens [i].foodConsumption;
+		}
+		return totalFoodConsumption;
+	}
+
+	internal void ComputeForDeath(){
+		int chance = Random.Range (0, 100);
+		if (chance < 2) {
+			//DIE MADAPAKA
+			//RUSSIAN ROULETTE
+			int russianRoulette = Random.Range (0, citizens.Count);
+			Debug.LogError ("SOMEONE DIED: " + citizens [russianRoulette].type.ToString());
+			citizens.Remove (citizens [russianRoulette]);
 		}
 	}
 //	public HexTile hexTile;

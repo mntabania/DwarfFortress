@@ -27,4 +27,14 @@ public class CityTileTest : MonoBehaviour {
 		}
 		return cityTilesByDistance [0];
 	}
+
+	public void SetCityAsActiveAndSetProduction(){
+		GameManager.Instance.turnEnded += TurnActions;
+	}
+
+	public void TurnActions(){
+		cityAttributes.ProduceResources();
+		cityAttributes.ProduceGold();
+		cityAttributes.ConsumeFood(cityAttributes.ComputeFoodConsumption());
+	}
 }

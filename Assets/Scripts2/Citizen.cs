@@ -20,7 +20,7 @@ public class Citizen {
 		this.level = 1;
 		this.strength = 0;
 		this.productionValue = GetProductionValue(this.type);
-		this.foodConsumption = 3 * this.level;
+		this.foodConsumption = 3;
 
 		SetLastID (this.id);
 	}
@@ -31,7 +31,7 @@ public class Citizen {
 		this.level = 1;
 		this.strength = 0;
 		this.productionValue = GetProductionValue(this.type);
-		this.foodConsumption = 3 * this.level;
+		this.foodConsumption = 3;
 
 		SetLastID (this.id);
 	}
