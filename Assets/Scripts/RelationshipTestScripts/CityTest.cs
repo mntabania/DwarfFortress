@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
 public class CityTest{
 
 	public int id;
@@ -18,10 +19,10 @@ public class CityTest{
 	public int tradeGoodsCount;
 	public int mayorLikeRating;
 	public List<Citizen> citizens;
-	public List<CityTile> connectedCities;
+	public List<CityTileTest> connectedCities;
 	public Religion cityReligion;
 	public Culture cityCulture;
-	public KingdomTile kingdomTile;
+	public KingdomTileTest kingdomTile;
 	public HexTile hexTile;
 
 	public CityTest(HexTile hexTile, BIOMES biomeType){
@@ -39,10 +40,10 @@ public class CityTest{
 		this.tradeGoodsCount = 0;
 		this.mayorLikeRating = 0;
 		this.citizens = new List<Citizen>();
-		this.connectedCities = new List<CityTile>();
+		this.connectedCities = new List<CityTileTest>();
 		this.cityReligion = new Religion();
 		this.cityCulture = new Culture();
-		this.kingdomTile = new KingdomTile();
+		this.kingdomTile = null;
 		this.hexTile = hexTile;
 	}
 
