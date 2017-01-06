@@ -12,6 +12,7 @@ public class RelationshipTestScript : MonoBehaviour {
 	void Start () {
 		GenerateInitializeCities ();
 		GenerateInitialKingdoms();
+		GenerateInitialCitizens ();
 	}
 
 	void GenerateInitializeCities(){
@@ -51,5 +52,22 @@ public class RelationshipTestScript : MonoBehaviour {
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 	}
 	
+	private void GenerateInitialCitizens(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+				this.kingdoms [i].kingdom.cities [j].cityAttributes.citizens = InitialCitizens (this.kingdoms [i].kingdom.cities [j]);
+			}
+		}
+			
+	}
+	private List<Citizen> InitialCitizens(CityTileTest cityTile){
+		List<Citizen> citizens = new List<Citizen> ();
+		citizens.Add(new Citizen (CITIZEN_TYPE.FARMER));
+		citizens.Add(new Citizen (CITIZEN_TYPE.FARMER));
+		citizens.Add(new Citizen (CITIZEN_TYPE.WOODSMAN));
+		citizens.Add(new Citizen (CITIZEN_TYPE.WARRIOR));
+
+		return citizens;
+	}
 
 }

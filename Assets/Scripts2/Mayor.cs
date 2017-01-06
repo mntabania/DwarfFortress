@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -23,18 +22,18 @@ public class Mayor {
 	public List<Relationship> relationshipMayors;
 
 
-	public Mayor(){
+	public Mayor(string dummy){
 		this.id = 1 + GetID ();
 		this.name = "MAYOR" + this.id;
-		this.predictability = 0;
-		this.persistence = 0;
-		this.trustworthiness = 0;
-		this.selflessness = 0;
-		this.skill = 0;
-		this.racism = 0;
-		this.religiousTolerance = 0;
+		this.predictability = UnityEngine.Random.Range (0, 10);
+		this.persistence = UnityEngine.Random.Range (0, 10);
+		this.trustworthiness = UnityEngine.Random.Range (0, 10);
+		this.selflessness = UnityEngine.Random.Range (0, 10);
+		this.skill = UnityEngine.Random.Range (0, 10);
+		this.racism = UnityEngine.Random.Range (0, 10);
+		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
+		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
-		this.character = CHARACTER.LOGICAL;
 		this.goals = new List<GOALS> ();
 		this.tasks = new List<List<string>> ();
 		this.publicImages = new List<PUBLIC_IMAGE> ();
@@ -43,7 +42,6 @@ public class Mayor {
 
 		SetLastID (this.id);
 	}
-
 	private int GetID(){
 		return Utilities.lastMayorId;
 	}

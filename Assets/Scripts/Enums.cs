@@ -121,3 +121,8 @@ public enum REPRESENTATIVES{
 	MAYOR,
 	CITIZENS,
 }
+
+public enum CITY_STATE{
+	FAMINE,
+	ABUNDANT,
+}

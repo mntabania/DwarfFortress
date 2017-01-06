@@ -17,7 +17,7 @@ public class KingdomTest{
 	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
-		this.king = new King();
+		this.king = new King("king");
 		this.cities = cities;
 		this.kingdomRace = race;
 		this.isDead = false;

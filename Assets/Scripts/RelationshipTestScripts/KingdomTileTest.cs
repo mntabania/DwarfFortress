@@ -19,6 +19,7 @@ public class KingdomTileTest : MonoBehaviour {
 		this.kingdom = new KingdomTest (populationGrowth, race, cities, tileColor);
 		for (int i = 0; i < this.kingdom.cities.Count; i++) {
 			this.kingdom.cities [i].cityAttributes.kingdomTile = this;
+			this.kingdom.cities [i].cityAttributes.cityMayor = new Mayor ("mayor");
 			this.kingdom.cities [i].GetComponent<SpriteRenderer> ().color = this.kingdom.cities [i].cityAttributes.kingdomTile.kingdom.tileColor;
 			//			this.kingdom.cities [i].cityAttributes.faction = this.kingdom.factions [0];
 		}

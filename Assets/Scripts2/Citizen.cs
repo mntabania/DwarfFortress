@@ -11,19 +11,30 @@ public class Citizen {
 	public int level;
 	public int strength;
 	public int productionValue;
+	public int foodConsumption;
 
-	public Citizen(){
+	public Citizen(string dummy){
 		this.id = 1 + GetID ();
 		this.name = "CITIZEN" + this.id;
 		this.type = (CITIZEN_TYPE)(UnityEngine.Random.Range (0, Enum.GetNames (typeof(CITIZEN_TYPE)).Length));
 		this.level = 1;
 		this.strength = 0;
 		this.productionValue = GetProductionValue(this.type);
+		this.foodConsumption = 3 * this.level;
 
 		SetLastID (this.id);
 	}
+	public Citizen(CITIZEN_TYPE citizenType){
+		this.id = 1 + GetID ();
+		this.name = "CITIZEN" + this.id;
+		this.type = citizenType;
+		this.level = 1;
+		this.strength = 0;
+		this.productionValue = GetProductionValue(this.type);
+		this.foodConsumption = 3 * this.level;
 
-
+		SetLastID (this.id);
+	}
 	private int GetProductionValue(CITIZEN_TYPE citizenType){
 		if(citizenType == CITIZEN_TYPE.DIPLOMAT || citizenType == CITIZEN_TYPE.SPY || citizenType == CITIZEN_TYPE.WARRIOR || citizenType == CITIZEN_TYPE.ARCHER || citizenType == CITIZEN_TYPE.MAGE
 			|| citizenType == CITIZEN_TYPE.HUNTER || citizenType == CITIZEN_TYPE.HEALER || citizenType == CITIZEN_TYPE.BUILDER || citizenType == CITIZEN_TYPE.ENCHANTER){
