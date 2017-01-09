@@ -126,3 +126,10 @@ public enum CITY_STATE{
 	STARVATION,
 	ABUNDANT,
 }
+
+public enum RESOURCE{
+	LUMBER,
+	STONE,
+	MANA_STONE,
+	TRADE_GOOD,
+}
