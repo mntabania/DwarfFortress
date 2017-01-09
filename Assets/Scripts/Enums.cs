@@ -87,6 +87,7 @@ public enum CITIZEN_TYPE{
 	HEALER,
 	BUILDER,
 	ENCHANTER,
+	NONE
 }
 
 public enum CHARACTER{
@@ -128,8 +129,14 @@ public enum CITY_STATE{
 }
 
 public enum RESOURCE{
+	FOOD,
 	LUMBER,
 	STONE,
 	MANA_STONE,
 	TRADE_GOOD,
+}
+
+public enum RESIDENCE{
+	OUTSIDE,
+	INSIDE
 }

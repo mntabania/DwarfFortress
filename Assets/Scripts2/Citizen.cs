@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 
-
 [System.Serializable]
 public class Citizen {
 	public int id;
@@ -12,6 +11,11 @@ public class Citizen {
 	public int strength;
 	public int productionValue;
 	public int foodConsumption;
+	public RESIDENCE residence;
+	public HexTile assignedTile;
+	public int upgradeChance;
+	public int createChance;
+	public CitizenUpgradeRequirements citizenUpgradeRequirements;
 
 	public Citizen(string dummy){
 		this.id = 1 + GetID ();
@@ -21,7 +25,11 @@ public class Citizen {
 		this.strength = 0;
 		this.productionValue = GetProductionValue(this.type);
 		this.foodConsumption = 3;
-
+		this.residence = GetCitizenResidence (this.type);
+		this.assignedTile = null;
+		this.upgradeChance = 0;
+		this.createChance = 0;
+		UpdateUpgradeRequirements ();
 		SetLastID (this.id);
 	}
 	public Citizen(CITIZEN_TYPE citizenType){
@@ -32,7 +40,11 @@ public class Citizen {
 		this.strength = 0;
 		this.productionValue = GetProductionValue(this.type);
 		this.foodConsumption = 3;
-
+		this.residence = GetCitizenResidence (this.type);
+		this.assignedTile = null;
+		this.upgradeChance = 0;
+		this.createChance = 0;
+		UpdateUpgradeRequirements ();
 		SetLastID (this.id);
 	}
 	private int GetProductionValue(CITIZEN_TYPE citizenType){
@@ -42,6 +54,17 @@ public class Citizen {
 			return 0;
 		}
 		return 10;
+	}
+	private RESIDENCE GetCitizenResidence(CITIZEN_TYPE citizenType){
+		if(citizenType == CITIZEN_TYPE.HUNTER || citizenType == CITIZEN_TYPE.FARMER || citizenType == CITIZEN_TYPE.MINER || citizenType == CITIZEN_TYPE.WOODSMAN
+			|| citizenType == CITIZEN_TYPE.ALCHEMIST){
+
+			return RESIDENCE.OUTSIDE;
+		}
+		return RESIDENCE.INSIDE;
+	}
+	internal void UpdateUpgradeRequirements(){
+		this.citizenUpgradeRequirements = AccessRequirements.AccessCitizenUpgradeRequirements (this.type, this.level);
 	}
 	private int GetID(){
 		return Utilities.lastCitizenId;

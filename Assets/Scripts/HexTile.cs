@@ -19,11 +19,18 @@ public class HexTile : MonoBehaviour {
 	public float moistureNoise;
 	public float temperature;
 
+	public int woodValue = 20;
+	public int stoneValue = 20;
+	public int manaStoneValue = 20;
+	public int farmingValue = 20;
+	public int huntingValue = 20;
+
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
 
 	public bool isCity = false;
 	public bool isRoad = false;
+	public bool isOccupied = false;
 
 //		switch(biomeType){
 //		case BIOME.OCEAN:
@@ -140,6 +147,22 @@ public class HexTile : MonoBehaviour {
 		HexTile[] nearTiles = new HexTile[nearHexes.Length];
 		for (int i = 0; i < nearTiles.Length; i++) {
 			nearTiles[i] = nearHexes[i].gameObject.GetComponent<HexTile> ();
+		}
+		return nearTiles;
+	}
+
+	public List<HexTile> GetListTilesInRange(float radius){
+		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(transform.position.x, transform.position.y), radius);
+		List<HexTile> nearTiles = new List<HexTile> ();
+		for (int i = 0; i < nearHexes.Length; i++) {
+			if (nearHexes[i].gameObject == null) {
+				continue;
+			}
+			if (!nearHexes[i].gameObject.GetComponent<HexTile> ().isCity) {
+				if(!nearHexes[i].gameObject.GetComponent<HexTile> ().isOccupied){
+					nearTiles.Add(nearHexes[i].gameObject.GetComponent<HexTile>());
+				}
+			}
 		}
 		return nearTiles;
 	}

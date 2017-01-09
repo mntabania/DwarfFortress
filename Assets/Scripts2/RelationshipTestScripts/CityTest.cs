@@ -35,6 +35,7 @@ public class CityTest{
 	public CITIZEN_TYPE uneededRole;
 	public Citizen upgradeCitizenTarget;
 	public Citizen newCitizenTarget;
+	public CityUpgradeRequirements cityUpgradeRequirements;
 
 	public CityTest(HexTile hexTile, BIOMES biomeType){
 		this.id = 0;
@@ -65,6 +66,7 @@ public class CityTest{
 		this.uneededRole = CITIZEN_TYPE.NONE;
 		this.upgradeCitizenTarget = null;
 		this.newCitizenTarget = null;
+		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 	}
 
 	internal void ConsumeFood(int foodRequirement){
@@ -184,7 +186,7 @@ public class CityTest{
 	}
 
 	int GetTotalChanceForUpgrade(){
-		List<Citizen> citizensToChooseFrom = citizens.OrderBy(x => x.level);
+		List<Citizen> citizensToChooseFrom = citizens.OrderBy(x => x.level).ToList();
 		int lowestLevel = citizens.Min(x => x.level);
 		int totalChances = 0;
 		int[] currentChance = new int[]{100,60,20,5};
@@ -204,6 +206,7 @@ public class CityTest{
 				citizensToChooseFrom [i].upgradeChance = currentChance [a];
 			}
 		}
+		return totalChances;
 	}
 
 	void SelectCitizenToUpgrade(){
@@ -222,6 +225,39 @@ public class CityTest{
 
 	void SelectCitizenForCreation(){
 
+	}
+
+	internal CityUpgradeRequirements UpgradeRequirements(int level){
+		CityUpgradeRequirements req = new CityUpgradeRequirements ();
+
+		switch(level + 1){
+		case 2:
+			req.gold = 2000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 50));
+			break;
+		case 3:
+			req.gold = 4000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 100));
+			break;
+		case 4:
+			req.gold = 6000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 200));
+			req.resource.Add (new Resource (RESOURCE.STONE, 100));
+			break;
+		case 5:
+			req.gold = 8000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 400));
+			req.resource.Add (new Resource (RESOURCE.STONE, 200));
+			break;
+		case 6:
+			req.gold = 10000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 800));
+			req.resource.Add (new Resource (RESOURCE.STONE, 400));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 100));
+			break;
+		}
+
+		return req;
 	}
 
 }

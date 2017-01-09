@@ -4,13 +4,19 @@ using System.Collections.Generic;
 
 public class RelationshipTestScript : MonoBehaviour {
 
+	public static RelationshipTestScript Instance;
+
 	public GameObject[] hexTiles;
 	public GameObject kingdomTilePrefab;
 	public List<KingdomTileTest> kingdoms;
 
+	void Awake(){
+		Instance = this;
+	}
+
 	// Use this for initialization
 	void Start () {
-		GenerateInitializeCities ();
+//		GenerateInitializeCities ();
 		GenerateInitialKingdoms();
 		GenerateInitialCitizens ();
 		StartResourceProductions ();
