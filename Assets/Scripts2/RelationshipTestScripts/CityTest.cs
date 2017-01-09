@@ -22,12 +22,13 @@ public class CityTest{
 	public int mayorLikeRating;
 	public int citizenLimit;
 	public CITY_STATE cityState;
-	public List<Citizen> citizens;
-	public List<CityTileTest> connectedCities;
+	public CityUpgradeRequirements cityUpgradeRequirements;
 	public Religion cityReligion;
 	public Culture cityCulture;
 	public KingdomTileTest kingdomTile;
 	public HexTile hexTile;
+	public List<Citizen> citizens;
+	public List<CityTileTest> connectedCities;
 
 	public CityTest(HexTile hexTile, BIOMES biomeType){
 		this.id = 0;
@@ -46,6 +47,7 @@ public class CityTest{
 		this.mayorLikeRating = 0;
 		this.citizenLimit = 4;
 		this.cityState = CITY_STATE.ABUNDANT;
+		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.citizens = new List<Citizen>();
 		this.connectedCities = new List<CityTileTest>();
 		this.cityReligion = new Religion();
@@ -71,7 +73,7 @@ public class CityTest{
 
 	internal void ProduceResources(){
 		for(int i = 0; i < this.citizens.Count; i++){
-			int production = (int)((float)(5 + (5 * this.citizens [i].level)) * Random.Range(1f, 1.4f)) + mayorLikeRating;
+			int production = (int)((float)(5 + (5 * this.citizens [i].level)) * Random.Range(1f, 1.45f)) + mayorLikeRating;
 			switch(this.citizens[i].type){
 			case CITIZEN_TYPE.FARMER:
 				this.foodCount += production;
@@ -109,6 +111,78 @@ public class CityTest{
 			Debug.LogError ("SOMEONE DIED: " + citizens [russianRoulette].type.ToString());
 			citizens.Remove (citizens [russianRoulette]);
 		}
+	}
+	internal void Upgrade(){
+		int reqGold = this.cityUpgradeRequirements.gold;
+		List<Resource> reqResources = this.cityUpgradeRequirements.resource;
+		if(this.goldCount >= reqGold){
+			for(int i = 0; i < reqResources.Count; i++){
+				switch(reqResources[i].resourceType){
+				case RESOURCE.LUMBER:
+					if(reqResources[i].resourceQuantity >= this.lumberCount){
+						
+					}else{
+						//TRADE OR WAIT
+					}
+					break;
+				case RESOURCE.STONE:
+					if(reqResources[i].resourceQuantity >= this.stoneCount){
+
+					}else{
+
+					}
+					break;
+				case RESOURCE.MANA_STONE:
+					if(reqResources[i].resourceQuantity >= this.manaStoneCount){
+
+					}else{
+
+					}
+					break;
+				case RESOURCE.TRADE_GOOD:
+					if(reqResources[i].resourceQuantity >= this.tradeGoodsCount){
+
+					}else{
+
+					}
+					break;
+				}
+			}
+		}else{
+			//TRADE GOLD OR WAIT FOR GOLD COUNT
+		}
+	}
+	internal CityUpgradeRequirements UpgradeRequirements(int level){
+		CityUpgradeRequirements req = new CityUpgradeRequirements ();
+
+		switch(level + 1){
+		case 2:
+			req.gold = 2000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 50));
+			break;
+		case 3:
+			req.gold = 4000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 100));
+			break;
+		case 4:
+			req.gold = 6000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 200));
+			req.resource.Add (new Resource (RESOURCE.STONE, 100));
+			break;
+		case 5:
+			req.gold = 8000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 400));
+			req.resource.Add (new Resource (RESOURCE.STONE, 200));
+			break;
+		case 6:
+			req.gold = 10000;
+			req.resource.Add (new Resource (RESOURCE.LUMBER, 800));
+			req.resource.Add (new Resource (RESOURCE.STONE, 400));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 100));
+			break;
+		}
+
+		return req;
 	}
 //	public HexTile hexTile;
 //	public BIOMES biomeType;
