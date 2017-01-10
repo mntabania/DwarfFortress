@@ -98,6 +98,19 @@ public class GameManager : MonoBehaviour {
 			return;
 		}
 		turnEnded();
+
+		for (int i = 0; i < kingdoms.Count; i++) {
+			for (int j = 0; j < kingdoms [i].kingdom.cities.Count; j++) {
+				if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
+					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(); //assign citizen type to the City's newCitizenTarget
+				}
+
+				if(kingdoms [i].kingdom.cities [j].cityAttributes.upgradeCitizenTarget == null){
+					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenToUpgrade();
+				}
+
+			}
+		}
 	}
 
 	public void TogglePause(){

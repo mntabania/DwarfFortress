@@ -70,7 +70,7 @@ public class CityTest{
 		this.neededRole = CITIZEN_TYPE.NONE;
 		this.unneededRole = CITIZEN_TYPE.NONE;
 		this.upgradeCitizenTarget = null;
-		this.newCitizenTarget = null;
+		this.newCitizenTarget = CITIZEN_TYPE.NONE;
 		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.isDead = false;
 	}
@@ -244,7 +244,7 @@ public class CityTest{
 		return totalChances;
 	}
 
-	void SelectCitizenToUpgrade(){
+	internal void SelectCitizenToUpgrade(){
 		if(isDead){
 			return;
 		}
@@ -262,7 +262,7 @@ public class CityTest{
 		}
 	}
 
-	void SelectCitizenForCreation(){
+	internal void SelectCitizenForCreation(){
 		if(isDead){
 			return;
 		}
@@ -289,8 +289,8 @@ public class CityTest{
 					break;
 				case CITIZEN_TYPE.ALCHEMIST:
 					int aveManaStone = (int)((float)(neededResources [0] - this.lumberCount) / GetDailyProduction(CITIZEN_TYPE.WOODSMAN));
-					if(aveStone > highestNoOfTurns){
-						highestNoOfTurns = aveStone;
+					if(aveManaStone > highestNoOfTurns){
+						highestNoOfTurns = aveManaStone;
 						currentHighestCitizenType = CITIZEN_TYPE.ALCHEMIST;
 					}					
 					break;
@@ -528,6 +528,7 @@ public class CityTest{
 
 		return unneededCitizen;
 	}
+
 	internal CityUpgradeRequirements UpgradeRequirements(int level){
 		CityUpgradeRequirements req = new CityUpgradeRequirements ();
 
@@ -559,6 +560,67 @@ public class CityTest{
 		}
 
 		return req;
+	}
+		
+	internal void AttemptToIncreaseHousing(){
+		if (CanCityAffordToUpgrade() && !IsCitizenCapReached()) { //if city has the neccessary resources to upgrade and still has room for another citizen
+			int chance = Random.Range(0,100);
+			if (chance < cityActionChances.increaseHousingChance) {
+				//Increase Housing Triggered, Increase Citizen Limit by 1
+				citizenLimit += 1;
+			} else {
+				//On not performing upgrade, increase chance to upgrade by 1
+				cityActionChances.increaseHousingChance += 1;
+			}
+		}
+	}
+
+	internal void AttemptToUpgradeCitizen(){
+
+	}
+
+	bool CanAffordToUpgradeCitizen(){
+		return true;
+	}
+
+	bool CanCityAffordToUpgrade(){
+		CityUpgradeRequirements upgradeRequirements = this.cityUpgradeRequirements;
+		if (upgradeRequirements.gold <= this.goldCount) {
+			for (int i = 0; i < upgradeRequirements.resource.Count; i++) {
+				RESOURCE resourceType = upgradeRequirements.resource [i].resourceType;
+				if(upgradeRequirements.resource [i].resourceQuantity > GetNumberOfResourcesPerType(resourceType)){
+					//The city lacks atleast one resource for upgrade, return false
+					return false;
+				}
+			}
+			//The loop has finished, meaning the city has all the needed resources to upgrade, return true
+			return true;
+		}
+		//The city does not have enough gold, return false
+		return false;
+	}
+
+	bool IsCitizenCapReached(){
+		if (citizens.Count < citizenLimit) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	int GetNumberOfResourcesPerType(RESOURCE resourceType){
+		if (resourceType == RESOURCE.FOOD) {
+			return this.foodCount;
+		} else if (resourceType == RESOURCE.LUMBER) {
+			return this.lumberCount;
+		} else if (resourceType == RESOURCE.MANA_STONE) {
+			return this.manaStoneCount;
+		} else if (resourceType == RESOURCE.STONE) {
+			return this.stoneCount;
+		} else if (resourceType == RESOURCE.TRADE_GOOD) {
+			return this.tradeGoodsCount;
+		}
+		return -1;
 	}
 
 }
