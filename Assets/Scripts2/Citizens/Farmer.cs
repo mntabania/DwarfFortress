@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Farmer {
+public class Farmer: Roles {
 
 	public static CitizenUpgradeRequirements req;
 	public static int chance;
@@ -13,7 +13,7 @@ public class Farmer {
 		req.resource.Add (new Resource(RESOURCE.LUMBER, 0));
 	}
 
-	public static int GetProduction(int level, int mayorLikeRating){
-		return (int)((float)(5 + (5 * level)) * Random.Range(1f, 1.4f)) + mayorLikeRating;
+	public static int GetProduction(int level, int hexValue, int mayorLikeRating){
+		return (int)((float)(5 + (5 * level)) * Random.Range(1f, 1.4f))+ hexValue + mayorLikeRating;
 	}
 }

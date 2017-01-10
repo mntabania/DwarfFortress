@@ -19,11 +19,11 @@ public class HexTile : MonoBehaviour {
 	public float moistureNoise;
 	public float temperature;
 
-	public int woodValue = 20;
-	public int stoneValue = 20;
-	public int manaStoneValue = 20;
-	public int farmingValue = 20;
-	public int huntingValue = 20;
+	public int woodValue = 0;
+	public int stoneValue = 0;
+	public int manaStoneValue = 0;
+	public int farmingValue = 0;
+	public int huntingValue = 0;
 
 	public BIOMES biomeType;
 	public ELEVATION elevationType;

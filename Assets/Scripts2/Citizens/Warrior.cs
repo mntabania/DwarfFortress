@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Warrior {
+public class Warrior: Roles {
 
 	public static CitizenUpgradeRequirements req;
 

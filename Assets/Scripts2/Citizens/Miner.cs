@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Miner {
+public class Miner: Roles {
 
 	public static CitizenUpgradeRequirements req;
 
@@ -11,7 +11,7 @@ public class Miner {
 		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 0));
 	}
 
-	public static int GetProduction(int level, int mayorLikeRating){
-		return (int)((float)(5 + (5 * level)) * Random.Range(1f, 1.4f)) + mayorLikeRating;
+	public static int GetProduction(int level, int hexValue, int mayorLikeRating){
+		return (int)((float)(5 + (5 * level)) * Random.Range(1f, 1.4f))+ hexValue + mayorLikeRating;
 	}
 }

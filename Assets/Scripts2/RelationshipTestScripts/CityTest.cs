@@ -32,11 +32,11 @@ public class CityTest{
 	public KingdomTileTest kingdomTile;
 	public HexTile hexTile;
 	public string cityLogs;
-	public CITIZEN_TYPE foodProductionRole;
+//	public CITIZEN_TYPE foodProductionRole;
 	public CITIZEN_TYPE neededRole;
 	public CITIZEN_TYPE unneededRole;
+	public CITIZEN_TYPE newCitizenTarget;
 	public Citizen upgradeCitizenTarget;
-	public Citizen newCitizenTarget;
 	public CityUpgradeRequirements cityUpgradeRequirements;
 	public bool isDead;
 
@@ -66,7 +66,7 @@ public class CityTest{
 		this.kingdomTile = null;
 		this.hexTile = hexTile;
 		this.cityLogs = string.Empty;
-		this.foodProductionRole = FoodProductionRole ();
+//		this.foodProductionRole = FoodProductionRole ();
 		this.neededRole = CITIZEN_TYPE.NONE;
 		this.unneededRole = CITIZEN_TYPE.NONE;
 		this.upgradeCitizenTarget = null;
@@ -113,27 +113,27 @@ public class CityTest{
 			int production = 0;
 			switch(this.citizens[i].type){
 			case CITIZEN_TYPE.FARMER:
-				production = Farmer.GetProduction (this.citizens [i].level, this.mayorLikeRating);
+				production = Farmer.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.farmingValue, this.mayorLikeRating);
 				this.foodCount += production;
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] food.\n\n"; 
 				break;
 			case CITIZEN_TYPE.WOODSMAN:
-				production = Woodsman.GetProduction (this.citizens [i].level, this.mayorLikeRating);
+				production = Woodsman.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.woodValue, this.mayorLikeRating);
 				this.lumberCount += production;
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] lumber.\n\n"; 
 				break;
 			case CITIZEN_TYPE.MINER:
-				production = Miner.GetProduction (this.citizens [i].level, this.mayorLikeRating);
+				production = Miner.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.stoneValue, this.mayorLikeRating);
 				this.stoneCount += production;
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] stone.\n\n"; 
 				break;
 			case CITIZEN_TYPE.ALCHEMIST:
-				production = Alchemist.GetProduction (this.citizens [i].level, this.mayorLikeRating);
+				production = Alchemist.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.manaStoneValue, this.mayorLikeRating);
 				this.manaStoneCount += production;
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] mana stones.\n\n"; 
 				break;
 			case CITIZEN_TYPE.HUNTER:
-				production = Hunter.GetProduction (this.citizens [i].level, this.mayorLikeRating);
+				production = Hunter.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.huntingValue, this.mayorLikeRating);
 				this.foodCount += production;
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] food.\n\n"; 
 				break;
@@ -266,10 +266,111 @@ public class CityTest{
 		if(isDead){
 			return;
 		}
+		int[] neededResources = NeededResources ();
+		List<CITIZEN_TYPE> neededCitizens = GetListCitizensTarget (neededResources);
+		if(neededCitizens.Count > 0){
+			float highestNoOfTurns = 0f;
+			CITIZEN_TYPE currentHighestCitizenType = CITIZEN_TYPE.NONE;
+			for (int i = 0; i < neededCitizens.Count; i++) {
+				switch(neededCitizens[i]){
+				case CITIZEN_TYPE.WOODSMAN:
+					int aveLumber = (int)((float)(neededResources [0] - this.lumberCount) / GetDailyProduction(CITIZEN_TYPE.WOODSMAN));
+					if(aveLumber > highestNoOfTurns){
+						highestNoOfTurns = aveLumber;
+						currentHighestCitizenType = CITIZEN_TYPE.WOODSMAN;
+					}
+					break;
+				case CITIZEN_TYPE.MINER:
+					int aveStone = (int)((float)(neededResources [0] - this.lumberCount) / GetDailyProduction(CITIZEN_TYPE.WOODSMAN));
+					if(aveStone > highestNoOfTurns){
+						highestNoOfTurns = aveStone;
+						currentHighestCitizenType = CITIZEN_TYPE.MINER;
+					}					
+					break;
+				case CITIZEN_TYPE.ALCHEMIST:
+					int aveManaStone = (int)((float)(neededResources [0] - this.lumberCount) / GetDailyProduction(CITIZEN_TYPE.WOODSMAN));
+					if(aveStone > highestNoOfTurns){
+						highestNoOfTurns = aveStone;
+						currentHighestCitizenType = CITIZEN_TYPE.ALCHEMIST;
+					}					
+					break;
+				}
+			}
 
+			this.newCitizenTarget = currentHighestCitizenType;
+		}
+		else{ //WARRIOR
+			this.newCitizenTarget = CITIZEN_TYPE.WARRIOR;
+
+		}
 	}
-	private CITIZEN_TYPE GetNewCitizenTarget(){ //lumber, stone, manastone, food
+	private int GetDailyProduction(CITIZEN_TYPE citizenType){
+		int production = 0;
+		for (int i = 0; i < this.citizens.Count; i++) {
+			if(this.citizens[i].type == citizenType){
+				switch(citizenType){
+				case CITIZEN_TYPE.WOODSMAN:
+					production += Woodsman.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.woodValue, this.mayorLikeRating);
+					break;
+				case CITIZEN_TYPE.MINER:
+					production += Miner.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.stoneValue, this.mayorLikeRating);
+					break;
+				case CITIZEN_TYPE.ALCHEMIST:
+					production += Alchemist.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.manaStoneValue, this.mayorLikeRating);
+					break;
+				}
+			}
+		}
+
+		return production;
+	}
+	private List<CITIZEN_TYPE> GetListCitizensTarget(int[] neededResources){ //lumber, stone, manastone
 		
+		List<CITIZEN_TYPE> neededCitizens = new List<CITIZEN_TYPE> ();
+//		int highestExcess = 0;
+//		switch(this.citizens[0].type){
+//		case CITIZEN_TYPE.FARMER:
+//			break;
+//		case CITIZEN_TYPE.HUNTER:
+//			break;
+//		case CITIZEN_TYPE.WOODSMAN:
+//			highestExcess = this.lumberCount - neededResources [0];
+//			unneededCitizen = CITIZEN_TYPE.WOODSMAN;
+//			break;
+//		case CITIZEN_TYPE.MINER:
+//			highestExcess = this.stoneCount - neededResources [1];
+//			unneededCitizen = CITIZEN_TYPE.MINER;
+//			break;
+//		case CITIZEN_TYPE.ALCHEMIST:
+//			highestExcess = this.manaStoneCount - neededResources [2];
+//			unneededCitizen = CITIZEN_TYPE.ALCHEMIST;
+//			break;
+//		}
+
+		int excess = 0;
+		for (int i = 0; i < this.citizens.Count; i++) {
+			switch(this.citizens[i].type){
+//			case CITIZEN_TYPE.FARMER:
+//				break;
+//			case CITIZEN_TYPE.HUNTER:
+//				break;
+			case CITIZEN_TYPE.WOODSMAN:
+				excess = this.lumberCount - neededResources [0];
+				break;
+			case CITIZEN_TYPE.MINER:
+				excess = this.stoneCount - neededResources [1];
+				break;
+			case CITIZEN_TYPE.ALCHEMIST:
+				excess = this.manaStoneCount - neededResources [2];
+				break;
+			}
+
+			if(excess < 0){
+				neededCitizens.Add (this.citizens [i].type);
+			}
+		}
+
+		return neededCitizens.Distinct().ToList();
 	}
 
 
@@ -279,7 +380,7 @@ public class CityTest{
 		}
 		if(this.foodCount <= -10){
 			if(this.neededRole == CITIZEN_TYPE.NONE){
-				this.neededRole = this.foodProductionRole;
+				this.neededRole = CITIZEN_TYPE.FARMER;
 			}
 		}else{
 			this.neededRole = CITIZEN_TYPE.NONE;
@@ -306,12 +407,12 @@ public class CityTest{
 		switch(citizen.type){
 		case CITIZEN_TYPE.FARMER:
 			for(int i = 0; i < noOfDays; i++){
-				averageProduction += Farmer.GetProduction (citizen.level, this.mayorLikeRating);
+				averageProduction += Farmer.GetProduction (citizen.level, citizen.assignedTile.farmingValue, this.mayorLikeRating);
 			}
 			break;
 		case CITIZEN_TYPE.HUNTER:
 			for(int i = 0; i < noOfDays; i++){
-				averageProduction += Hunter.GetProduction (citizen.level, this.mayorLikeRating);
+				averageProduction += Hunter.GetProduction (citizen.level, citizen.assignedTile.huntingValue, this.mayorLikeRating);
 			}
 			break;
 		}
@@ -335,13 +436,13 @@ public class CityTest{
 	}
 
 	private int[] NeededResources(){
-		int[] neededResources = new int[]{ 0, 0, 0, 0 }; //lumber, stone, manastone, food
+		int[] neededResources = new int[]{ 0, 0, 0,}; //lumber, stone, manastone
 
 		//BASED ON UPGRADE CITIZEN
 		for(int i = 0; i < upgradeCitizenTarget.citizenUpgradeRequirements.resource.Count; i++){
 			switch(upgradeCitizenTarget.citizenUpgradeRequirements.resource[i].resourceType){
 			case RESOURCE.FOOD:
-				neededResources[3] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
+//				neededResources[3] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.LUMBER:
 				neededResources[0] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
@@ -361,7 +462,7 @@ public class CityTest{
 		for(int i = 0; i < cityUpgradeRequirements.resource.Count; i++){
 			switch(cityUpgradeRequirements.resource[i].resourceType){
 			case RESOURCE.FOOD:
-				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
+//				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.LUMBER:
 				neededResources[0] += cityUpgradeRequirements.resource [i].resourceQuantity;
