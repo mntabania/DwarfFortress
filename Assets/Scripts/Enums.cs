@@ -71,7 +71,7 @@ public enum PATH_DIRECTION{
 	NORTH_WEST,
 }
 
-public enum CITIZEN_TYPE{
+public enum JOB_TYPE{
 	DIPLOMAT,
 	SPY,
 	FARMER,
@@ -129,11 +129,11 @@ public enum CITY_STATE{
 }
 
 public enum RESOURCE{
+	GOLD,
 	FOOD,
 	LUMBER,
 	STONE,
-	MANA_STONE,
-	TRADE_GOOD,
+	MANA_STONE
 }
 
 public enum RESIDENCE{

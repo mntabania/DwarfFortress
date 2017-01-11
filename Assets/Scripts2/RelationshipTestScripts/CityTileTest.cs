@@ -34,7 +34,6 @@ public class CityTileTest : MonoBehaviour {
 
 	public void TurnActions(){
 		cityAttributes.ProduceResources();
-		cityAttributes.ProduceGold();
 		cityAttributes.ConsumeFood(cityAttributes.ComputeFoodConsumption());
 	}
 }

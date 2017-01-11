@@ -33,9 +33,9 @@ public class CityTest{
 	public HexTile hexTile;
 	public string cityLogs;
 //	public CITIZEN_TYPE foodProductionRole;
-	public CITIZEN_TYPE neededRole;
-	public CITIZEN_TYPE unneededRole;
-	public CITIZEN_TYPE newCitizenTarget;
+	public JOB_TYPE neededRole;
+	public JOB_TYPE unneededRole;
+	public JOB_TYPE newCitizenTarget;
 	public Citizen upgradeCitizenTarget;
 	public CityUpgradeRequirements cityUpgradeRequirements;
 	public bool isDead;
@@ -67,20 +67,22 @@ public class CityTest{
 		this.hexTile = hexTile;
 		this.cityLogs = string.Empty;
 //		this.foodProductionRole = FoodProductionRole ();
-		this.neededRole = CITIZEN_TYPE.NONE;
-		this.unneededRole = CITIZEN_TYPE.NONE;
+		this.neededRole = JOB_TYPE.NONE;
+		this.unneededRole = JOB_TYPE.NONE;
 		this.upgradeCitizenTarget = null;
-		this.newCitizenTarget = CITIZEN_TYPE.NONE;
+		this.newCitizenTarget = JOB_TYPE.NONE;
 		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.isDead = false;
 	}
-	internal CITIZEN_TYPE FoodProductionRole(){
-		if(this.biomeType == BIOMES.SNOW){
-			return CITIZEN_TYPE.FARMER;
-		}
-		return CITIZEN_TYPE.FARMER;
 
+	internal int ComputeFoodConsumption(){
+		int totalFoodConsumption = 0;
+		for (int i = 0; i < citizens.Count; i++) {
+			totalFoodConsumption += citizens [i].FoodConsumption();
+		}
+		return totalFoodConsumption;
 	}
+
 	internal void ConsumeFood(int foodRequirement){
 		if(isDead){
 			return;
@@ -96,57 +98,22 @@ public class CityTest{
 		}
 	}
 
-	internal void ProduceGold(){
-		if(isDead){
-			return;
-		}
-		int producedGold = this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
-		this.goldCount += producedGold;
-		cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + producedGold.ToString() + "[-] gold. Total is now: [7CFC00]" + this.goldCount.ToString()+ "[-]\n\n"; 
-	}
-
 	internal void ProduceResources(){
 		if(isDead){
 			return;
 		}
-		for(int i = 0; i < this.citizens.Count; i++){
-			int production = 0;
-			switch(this.citizens[i].type){
-			case CITIZEN_TYPE.FARMER:
-				production = Farmer.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.farmingValue, this.mayorLikeRating);
-				this.foodCount += production;
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] food.\n\n"; 
-				break;
-			case CITIZEN_TYPE.WOODSMAN:
-				production = Woodsman.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.woodValue, this.mayorLikeRating);
-				this.lumberCount += production;
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] lumber.\n\n"; 
-				break;
-			case CITIZEN_TYPE.MINER:
-				production = Miner.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.stoneValue, this.mayorLikeRating);
-				this.stoneCount += production;
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] stone.\n\n"; 
-				break;
-			case CITIZEN_TYPE.ALCHEMIST:
-				production = Alchemist.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.manaStoneValue, this.mayorLikeRating);
-				this.manaStoneCount += production;
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] mana stones.\n\n"; 
-				break;
-			case CITIZEN_TYPE.HUNTER:
-				production = Hunter.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.huntingValue, this.mayorLikeRating);
-				this.foodCount += production;
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Produced [7CFC00]" + production.ToString() + "[-] food.\n\n"; 
-				break;
-			}
-		}
-	}
 
-	internal int ComputeFoodConsumption(){
-		int totalFoodConsumption = 0;
-		for (int i = 0; i < citizens.Count; i++) {
-			totalFoodConsumption += citizens [i].level * citizens [i].foodConsumption;
+		int producedGold = this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
+		this.goldCount += producedGold;
+
+		for(int i = 0; i < this.citizens.Count; i++){
+			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
+			this.goldCount += resourcesProducedByCitizen[0];
+			this.foodCount += resourcesProducedByCitizen[1];
+			this.lumberCount += resourcesProducedByCitizen[2];
+			this.stoneCount += resourcesProducedByCitizen[3];
+			this.manaStoneCount += resourcesProducedByCitizen[4];
 		}
-		return totalFoodConsumption;
 	}
 
 	internal void ComputeForDeath(){
@@ -155,11 +122,8 @@ public class CityTest{
 		}
 		int chance = Random.Range (0, 100);
 		if (chance < 2) {
-			//DIE MADAPAKA
-			//RUSSIAN ROULETTE
 			int russianRoulette = Random.Range (0, citizens.Count);
-//			Debug.LogError ("SOMEONE DIED: " + citizens [russianRoulette].type.ToString());
-			cityLogs += GameManager.Instance.currentDay.ToString() + ": A [FF0000]" + citizens[russianRoulette].type.ToString() + "[-] died.\n\n"; 
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": A [FF0000]" + citizens[russianRoulette].job.jobType.ToString() + "[-] died.\n\n"; 
 			citizens.Remove (citizens [russianRoulette]);
 		}
 	}
@@ -177,49 +141,35 @@ public class CityTest{
 		if(isDead){
 			return;
 		}
-		if (citizen.residence == RESIDENCE.OUTSIDE) {
-			List<HexTile> neighbours = new List<HexTile>();
-			for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
-				neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
-			}
-			neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
-			neighbours = neighbours.Distinct().ToList();
-			int maxValue = 0;
-			switch (citizen.type) {
-			case CITIZEN_TYPE.FARMER:
-				maxValue = neighbours.Max(x => x.farmingValue);
-				neighbours = neighbours.Where(x => x.farmingValue == maxValue).ToList();
-				break;
-			case CITIZEN_TYPE.HUNTER:
-				maxValue = neighbours.Max(x => x.huntingValue);
-				neighbours = neighbours.Where(x => x.huntingValue == maxValue).ToList();
-				break;
-			case CITIZEN_TYPE.WOODSMAN:
-				maxValue = neighbours.Max(x => x.woodValue);
-				neighbours = neighbours.Where(x => x.woodValue == maxValue).ToList();
-				break;
-			case CITIZEN_TYPE.MINER:
-				maxValue = neighbours.Max(x => x.stoneValue);
-				neighbours = neighbours.Where(x => x.stoneValue == maxValue).ToList();
-				break;
-			case CITIZEN_TYPE.ALCHEMIST:
-				maxValue = neighbours.Max(x => x.manaStoneValue);
-				neighbours = neighbours.Where(x => x.manaStoneValue == maxValue).ToList();
-				break;
-			}
-			int randomNeighbour = Random.Range (0, neighbours.Count);
-			ownedBiomeTiles.Add(neighbours [randomNeighbour]);
-			neighbours [randomNeighbour].isOccupied = true;
-			citizen.assignedTile = neighbours[randomNeighbour];
-			if(this.kingdomTile){
-				neighbours [randomNeighbour].SetTileColor (this.kingdomTile.kingdom.tileColor);
-			}
-		} else {
-			citizen.assignedTile = this.hexTile;
+		List<HexTile> neighbours = new List<HexTile>();
+		neighbours.Add (this.hexTile);
+		for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
+			neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
 		}
+		neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
+		neighbours = neighbours.Distinct().ToList();
 
+		citizen.AssignCitizenToTile (neighbours);
 	}
 
+	internal void SelectCitizenToUpgrade(){
+		if(isDead){
+			return;
+		}
+		int choice = Random.Range (0, GetTotalChanceForUpgrade()+1);
+		int upperBound = 0;
+		int lowerBound = 0;
+		for (int i = 0; i < citizens.Count; i++) {
+			upperBound += citizens [i].upgradeChance;
+			if (choice >= lowerBound && choice < upperBound) {
+				upgradeCitizenTarget = citizens [i];
+				break;
+			} else {
+				lowerBound = upperBound;
+			}
+		}
+	}
+		
 	int GetTotalChanceForUpgrade(){
 		List<Citizen> citizensToChooseFrom = citizens.OrderBy(x => x.level).ToList();
 		int lowestLevel = citizens.Min(x => x.level);
@@ -244,23 +194,6 @@ public class CityTest{
 		return totalChances;
 	}
 
-	internal void SelectCitizenToUpgrade(){
-		if(isDead){
-			return;
-		}
-		int choice = Random.Range (0, GetTotalChanceForUpgrade()+1);
-		int upperBound = 0;
-		int lowerBound = 0;
-		for (int i = 0; i < citizens.Count; i++) {
-			upperBound += citizens [i].upgradeChance;
-			if (choice >= lowerBound && choice < upperBound) {
-				upgradeCitizenTarget = citizens [i];
-				break;
-			} else {
-				lowerBound = upperBound;
-			}
-		}
-	}
 
 	internal void SelectCitizenForCreation(){
 		if(isDead){
@@ -304,22 +237,10 @@ public class CityTest{
 
 		}
 	}
-	private int GetDailyProduction(CITIZEN_TYPE citizenType){
+	private int GetDailyProduction(RESOURCE resourceType){
 		int production = 0;
 		for (int i = 0; i < this.citizens.Count; i++) {
-			if(this.citizens[i].type == citizenType){
-				switch(citizenType){
-				case CITIZEN_TYPE.WOODSMAN:
-					production += Woodsman.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.woodValue, this.mayorLikeRating);
-					break;
-				case CITIZEN_TYPE.MINER:
-					production += Miner.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.stoneValue, this.mayorLikeRating);
-					break;
-				case CITIZEN_TYPE.ALCHEMIST:
-					production += Alchemist.GetProduction (this.citizens [i].level, this.citizens [i].assignedTile.manaStoneValue, this.mayorLikeRating);
-					break;
-				}
-			}
+			production += this.citizens [i].GetDailyProduction (resourceType);
 		}
 
 		return production;
@@ -436,24 +357,25 @@ public class CityTest{
 	}
 
 	private int[] NeededResources(){
-		int[] neededResources = new int[]{ 0, 0, 0,}; //lumber, stone, manastone
+		int[] neededResources = new int[]{0, 0, 0, 0, 0,}; //gold, food, lumber, stone, manastone
 
 		//BASED ON UPGRADE CITIZEN
-		for(int i = 0; i < upgradeCitizenTarget.citizenUpgradeRequirements.resource.Count; i++){
-			switch(upgradeCitizenTarget.citizenUpgradeRequirements.resource[i].resourceType){
+		for(int i = 0; i < upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
+			switch(upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType){
+			case RESOURCE.GOLD:
+				neededResources[0] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				break;
 			case RESOURCE.FOOD:
-//				neededResources[3] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[1] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.LUMBER:
-				neededResources[0] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[2] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.STONE:
-				neededResources[1] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[3] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.MANA_STONE:
-				neededResources[2] += upgradeCitizenTarget.citizenUpgradeRequirements.resource [i].resourceQuantity;
-				break;
-			case RESOURCE.TRADE_GOOD:
+				neededResources[4] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			}
 		}
@@ -461,19 +383,20 @@ public class CityTest{
 		//BASED ON HOUSING UPGRADE
 		for(int i = 0; i < cityUpgradeRequirements.resource.Count; i++){
 			switch(cityUpgradeRequirements.resource[i].resourceType){
-			case RESOURCE.FOOD:
-//				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
-				break;
-			case RESOURCE.LUMBER:
+			case RESOURCE.GOLD:
 				neededResources[0] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
-			case RESOURCE.STONE:
+			case RESOURCE.FOOD:
 				neededResources[1] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
-			case RESOURCE.MANA_STONE:
+			case RESOURCE.LUMBER:
 				neededResources[2] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
-			case RESOURCE.TRADE_GOOD:
+			case RESOURCE.STONE:
+				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.MANA_STONE:
+				neededResources[4] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			}
 		}
