@@ -60,10 +60,10 @@ public class GameManager : MonoBehaviour {
 	}
 	private List<Citizen> InitialCitizens(CityTileTest cityTile){
 		List<Citizen> citizens = new List<Citizen> ();
-		citizens.Add(new Citizen (CITIZEN_TYPE.FARMER));
-		citizens.Add(new Citizen (CITIZEN_TYPE.MINER));
-		citizens.Add(new Citizen (CITIZEN_TYPE.WOODSMAN));
-		citizens.Add(new Citizen (CITIZEN_TYPE.WARRIOR));
+		citizens.Add(new Citizen (JOB_TYPE.FARMER, cityTile.cityAttributes));
+		citizens.Add(new Citizen (JOB_TYPE.MINER, cityTile.cityAttributes));
+		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, cityTile.cityAttributes));
+		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, cityTile.cityAttributes));
 
 		return citizens;
 	}
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < kingdoms.Count; i++) {
 			for (int j = 0; j < kingdoms [i].kingdom.cities.Count; j++) {
 				if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
-					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(); //assign citizen type to the City's newCitizenTarget
+					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(true); //assign citizen type to the City's newCitizenTarget
 				}
 
 				if(kingdoms [i].kingdom.cities [j].cityAttributes.upgradeCitizenTarget == null){

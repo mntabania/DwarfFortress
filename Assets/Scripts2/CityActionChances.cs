@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class CityActionChances{
 	internal int defaultOversupplyChance = 2;
 	internal int defaultIncreaseHousingChance = 2;

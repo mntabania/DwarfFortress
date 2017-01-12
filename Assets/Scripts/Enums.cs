@@ -129,11 +129,12 @@ public enum CITY_STATE{
 }
 
 public enum RESOURCE{
+	NONE,
 	GOLD,
 	FOOD,
 	LUMBER,
 	STONE,
-	MANA_STONE
+	MANA_STONE,
 }
 
 public enum RESIDENCE{

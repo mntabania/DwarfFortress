@@ -80,13 +80,14 @@ public class RelationshipTestScript : MonoBehaviour {
 			
 	}
 	private List<Citizen> InitialCitizens(CityTileTest cityTile){
-		List<Citizen> citizens = new List<Citizen> ();
-		citizens.Add(new Citizen (CITIZEN_TYPE.FARMER));
-		citizens.Add(new Citizen (CITIZEN_TYPE.MINER));
-		citizens.Add(new Citizen (CITIZEN_TYPE.WOODSMAN));
-		citizens.Add(new Citizen (CITIZEN_TYPE.WARRIOR));
-
-		return citizens;
+//		List<Citizen> citizens = new List<Citizen> ();
+//		citizens.Add(new Citizen (CITIZEN_TYPE.FARMER));
+//		citizens.Add(new Citizen (CITIZEN_TYPE.MINER));
+//		citizens.Add(new Citizen (CITIZEN_TYPE.WOODSMAN));
+//		citizens.Add(new Citizen (CITIZEN_TYPE.WARRIOR));
+//
+//		return citizens;
+		return null;
 	}
 
 }

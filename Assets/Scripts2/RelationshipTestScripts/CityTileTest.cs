@@ -35,5 +35,13 @@ public class CityTileTest : MonoBehaviour {
 	public void TurnActions(){
 		cityAttributes.ProduceResources();
 		cityAttributes.ConsumeFood(cityAttributes.ComputeFoodConsumption());
+		cityAttributes.SelectCitizenToUpgrade ();
+		cityAttributes.AssignNeededRole ();
+		cityAttributes.AssignUnneededRoles ();
+		cityAttributes.SelectCitizenForCreation (false);
+		cityAttributes.AttemptToIncreaseHousing ();
+		cityAttributes.AttemptToUpgradeCitizen ();
+		cityAttributes.AttemptToCreateNewCitizen ();
+		cityAttributes.AttemptToChangeCitizenRole ();
 	}
 }
