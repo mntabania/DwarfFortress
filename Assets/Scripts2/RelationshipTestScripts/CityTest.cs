@@ -383,7 +383,7 @@ public class CityTest{
 		for (int i = 0; i < this.citizens.Count; i++) {
 			switch (this.citizens [i].job.jobType) {
 			case JOB_TYPE.FARMER:
-				excess = this.foodCount - neededResources [1];
+				excess = this.foodCount - (10 * ComputeFoodConsumption());
 				break;
 			case JOB_TYPE.HUNTER:
 				excess = this.foodCount - neededResources [1];
