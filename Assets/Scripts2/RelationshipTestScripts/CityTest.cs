@@ -50,7 +50,7 @@ public class CityTest{
 		this.numOfRoads = 0;
 		this.population = 0;
 		this.richnessLevel = 60;
-		this.foodCount = 0;
+		this.foodCount = 15;
 		this.lumberCount = 0;
 		this.stoneCount = 0;
 		this.manaStoneCount = 0;
@@ -154,6 +154,9 @@ public class CityTest{
 
 	internal void SelectCitizenToUpgrade(){
 		if(isDead){
+			return;
+		}
+		if(this.upgradeCitizenTarget != null){
 			return;
 		}
 		int totalChance = GetTotalChanceForUpgrade ();
