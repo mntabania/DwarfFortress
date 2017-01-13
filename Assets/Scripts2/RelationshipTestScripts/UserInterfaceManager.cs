@@ -7,6 +7,12 @@ public class UserInterfaceManager : MonoBehaviour {
 
 	public UILabel lblCityName;
 	public UILabel lblKingdomName;
+	public UILabel lblCityLevel;
+	public UILabel lblUpgradeCitizenTarget;
+	public UILabel lblUpgradeCitizenCost;
+	public UILabel lblCreateCitizenTarget;
+	public UILabel lblCreateCitizenCost;
+	public UILabel lblUpgradeCityCost;
 	public UILabel lblNumOfDays;
 	public UILabel lblGoldCount;
 	public UILabel lblFoodCount;
@@ -24,8 +30,27 @@ public class UserInterfaceManager : MonoBehaviour {
 	}
 
 	public void SetCityInfoToShow(CityTileTest cityTile){
+		lblUpgradeCitizenCost.text = "";
+		lblUpgradeCityCost.text = "";
 		currentDisplayingCityTile = cityTile;
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
+		lblCityLevel.text = "Lvl: " + cityTile.cityAttributes.cityLevel.ToString();
+		if (cityTile.cityAttributes.upgradeCitizenTarget != null) {
+			lblUpgradeCitizenTarget.text = "Upgrade: " + cityTile.cityAttributes.upgradeCitizenTarget.job.jobType.ToString ();
+		
+			for (int i = 0; i < cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource.Count; i++) {
+				Resource currentResource = cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource [i];
+				lblUpgradeCitizenCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString ();
+			}
+		}
+
+		lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
+
+		for (int i = 0; i < cityTile.cityAttributes.cityUpgradeRequirements.resource.Count; i++) {
+			Resource currentResource = cityTile.cityAttributes.cityUpgradeRequirements.resource [i];
+			lblUpgradeCityCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString() +"\n";
+		}
+
 		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
 		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
 		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();

@@ -47,6 +47,7 @@ public class GridMap : MonoBehaviour {
 					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
 				}
 				hex.GetComponent<HexTile>().tile = new Tile (x, y, hex.GetComponent<HexTile>());
+				hex.GetComponent<HexTile>().GenerateResourceValues(); //TODO: Relocate to when biomes are chosen
 				GameBoard [x, y] = hex.GetComponent<HexTile>().tile;
 			}
 		}
