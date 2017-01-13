@@ -75,7 +75,7 @@ public class Citizen {
 	public CitizenUpgradeRequirements GetUpgradeRequirements(){
 		return _job.upgradeRequirements;
 	}
-
+		
 	internal int FoodConsumption(){
 		return baseFoodConsumption * _level;
 	}

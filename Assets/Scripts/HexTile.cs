@@ -171,6 +171,55 @@ public class HexTile : MonoBehaviour {
 		return gameObject.GetComponent<CityTile>();
 	}
 
+	public void GenerateResourceValues(){
+		Debug.Log ("Generate Resource Values!");
+		Dictionary<JOB_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];
+		for (int i = 0; i < chancesDict.Keys.Count; i++) {
+			int choice = Random.Range (0, 100);
+			JOB_TYPE currentJobType = chancesDict.Keys.ElementAt(i);
+			int[] chancesForCurrentJobType = chancesDict [currentJobType];
+
+			int upperBound = 0;
+			int lowerBound = 0;
+			int generatedResourceValue = 0;
+			for (int j = 0; j < chancesForCurrentJobType.Length; j++) {
+				upperBound += chancesForCurrentJobType [j];
+				if (choice >= lowerBound && choice < upperBound) {
+					if (j == 0) {
+						generatedResourceValue = Random.Range (21, 36);
+					} else if (j == 1) {
+						generatedResourceValue = Random.Range (36, 46);
+					} else if (j == 2) {
+						generatedResourceValue = Random.Range (10, 21);
+					}
+					break;
+				}
+				lowerBound = upperBound;
+			}
+
+			if (currentJobType == JOB_TYPE.FARMER) {
+				if (elevationType == ELEVATION.MOUNTAIN) {
+					generatedResourceValue -= Random.Range (10, 21);
+				}
+				farmingValue = generatedResourceValue;
+			} else if (currentJobType == JOB_TYPE.HUNTER) {
+				if (elevationType == ELEVATION.MOUNTAIN) {
+					generatedResourceValue += Random.Range (10, 21);
+				}
+				huntingValue = generatedResourceValue;
+			} else if (currentJobType == JOB_TYPE.WOODSMAN) {
+				woodValue = generatedResourceValue;
+			} else if (currentJobType == JOB_TYPE.MINER) {
+				if (elevationType == ELEVATION.MOUNTAIN) {
+					generatedResourceValue += Random.Range (10, 21);
+				}
+				stoneValue = generatedResourceValue;
+			} else if (currentJobType == JOB_TYPE.ALCHEMIST) {
+				manaStoneValue = generatedResourceValue;
+			}
+		}
+	}	
+
 	private BIOME GetBiome(){
 		if(elevationNoise <= 0.35f){
 			if(elevationNoise < 0.30f){
@@ -219,5 +268,4 @@ public class HexTile : MonoBehaviour {
 	void OnMouseDown(){
 //		UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest>());
 	}
-
 }
