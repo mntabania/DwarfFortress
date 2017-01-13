@@ -9,8 +9,8 @@ public class Warrior: Job {
 
 	public Warrior(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
-		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));
-		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 100));
+//		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));
+		req.resource.Add (new Resource(RESOURCE.STONE, 200));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
 		this._jobType = JOB_TYPE.WARRIOR;

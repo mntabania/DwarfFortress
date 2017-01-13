@@ -7,8 +7,8 @@ public class Alchemist : Job {
 
 	public Alchemist(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
-		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 100));
-		req.resource.Add (new Resource(RESOURCE.FOOD, 100));
+		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 200));
+//		req.resource.Add (new Resource(RESOURCE.FOOD, 100));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.MANA_STONE };
 		this._jobType = JOB_TYPE.ALCHEMIST;

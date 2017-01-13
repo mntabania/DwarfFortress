@@ -9,8 +9,8 @@ public class Woodsman: Job {
 
 	public Woodsman(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
-		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));
-		req.resource.Add (new Resource(RESOURCE.STONE, 100));
+		req.resource.Add (new Resource(RESOURCE.LUMBER, 200));
+//		req.resource.Add (new Resource(RESOURCE.STONE, 100));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.LUMBER };
 		this._jobType = JOB_TYPE.WOODSMAN;
