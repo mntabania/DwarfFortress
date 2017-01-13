@@ -42,9 +42,16 @@ public class UserInterfaceManager : MonoBehaviour {
 				Resource currentResource = cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource [i];
 				lblUpgradeCitizenCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString ();
 			}
+		} else {
+			lblUpgradeCitizenTarget.text = "Upgrade: NONE";
 		}
 
-		lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
+		if (cityTile.cityAttributes.newCitizenTarget != JOB_TYPE.NONE) {
+			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
+		} else {
+			lblCreateCitizenTarget.text = "Create: NONE";
+		}
+
 
 		for (int i = 0; i < cityTile.cityAttributes.cityUpgradeRequirements.resource.Count; i++) {
 			Resource currentResource = cityTile.cityAttributes.cityUpgradeRequirements.resource [i];
