@@ -173,7 +173,7 @@ public class HexTile : MonoBehaviour {
 
 	public void GenerateResourceValues(){
 		Debug.Log ("Generate Resource Values!");
-		Dictionary<JOB_TYPE, int[]> chancesDict = biomeResourceChances[biomeType];
+		Dictionary<JOB_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];
 		for (int i = 0; i < chancesDict.Keys.Count; i++) {
 			int choice = Random.Range (0, 100);
 			JOB_TYPE currentJobType = chancesDict.Keys.ElementAt(i);
@@ -267,62 +267,5 @@ public class HexTile : MonoBehaviour {
 
 	void OnMouseDown(){
 //		UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest>());
-	}Dictionary<BIOMES, Dictionary<JOB_TYPE, int[]>> biomeResourceChances = new Dictionary<BIOMES, Dictionary<JOB_TYPE, int[]>>(){
-		{BIOMES.GRASSLAND, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{20, 75, 5}},
-				{JOB_TYPE.HUNTER, new int[]{5, 0, 95}},
-				{JOB_TYPE.WOODSMAN, new int[]{20, 5, 75}},
-				{JOB_TYPE.MINER, new int[]{20, 5, 75}},
-				{JOB_TYPE.ALCHEMIST, new int[]{5, 0, 95}},
-			}
-		},
-
-		{BIOMES.WOODLAND, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{75, 20, 5}},
-				{JOB_TYPE.HUNTER, new int[]{75, 20, 5}},
-				{JOB_TYPE.WOODSMAN, new int[]{75, 20, 5}},
-				{JOB_TYPE.MINER, new int[]{20, 5, 75}},
-				{JOB_TYPE.ALCHEMIST, new int[]{5, 0, 95}},
-			}
-		},
-
-		{BIOMES.FOREST, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{5, 0, 95}},
-				{JOB_TYPE.HUNTER, new int[]{20, 75, 5}},
-				{JOB_TYPE.WOODSMAN, new int[]{20, 5, 75}},
-				{JOB_TYPE.MINER, new int[]{5, 0, 95}},
-				{JOB_TYPE.ALCHEMIST, new int[]{20, 5, 75}},
-			}
-		},
-
-		{BIOMES.DESERT, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{5, 0, 95}},
-				{JOB_TYPE.HUNTER, new int[]{20, 5, 75}},
-				{JOB_TYPE.WOODSMAN, new int[]{20, 5, 75}},
-				{JOB_TYPE.MINER, new int[]{75, 20, 5}},
-				{JOB_TYPE.ALCHEMIST, new int[]{20, 5, 75}},
-			}
-		},
-
-		{BIOMES.TUNDRA, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{20, 5, 75}},
-				{JOB_TYPE.HUNTER, new int[]{20, 5, 75}},
-				{JOB_TYPE.WOODSMAN, new int[]{20, 5, 75}},
-				{JOB_TYPE.MINER, new int[]{50, 0, 95}},
-				{JOB_TYPE.ALCHEMIST, new int[]{20, 5, 75}},
-			}
-		},
-
-		{BIOMES.SNOW, new Dictionary<JOB_TYPE, int[]>(){
-				{JOB_TYPE.FARMER, new int[]{5, 0, 95}},
-				{JOB_TYPE.HUNTER, new int[]{5, 0, 95}},
-				{JOB_TYPE.WOODSMAN, new int[]{5, 0, 95}},
-				{JOB_TYPE.MINER, new int[]{5, 0, 95}},
-				{JOB_TYPE.ALCHEMIST, new int[]{5, 0, 95}},
-			}
-		},
-	};
-
-
-
+	}
 }
