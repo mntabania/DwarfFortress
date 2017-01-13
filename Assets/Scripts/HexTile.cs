@@ -172,7 +172,6 @@ public class HexTile : MonoBehaviour {
 	}
 
 	public void GenerateResourceValues(){
-		Debug.Log ("Generate Resource Values!");
 		Dictionary<JOB_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];
 		for (int i = 0; i < chancesDict.Keys.Count; i++) {
 			int choice = Random.Range (0, 100);
@@ -200,6 +199,9 @@ public class HexTile : MonoBehaviour {
 			if (currentJobType == JOB_TYPE.FARMER) {
 				if (elevationType == ELEVATION.MOUNTAIN) {
 					generatedResourceValue -= Random.Range (10, 21);
+					if (generatedResourceValue < 0) {
+						generatedResourceValue = 1;
+					}
 				}
 				farmingValue = generatedResourceValue;
 			} else if (currentJobType == JOB_TYPE.HUNTER) {
