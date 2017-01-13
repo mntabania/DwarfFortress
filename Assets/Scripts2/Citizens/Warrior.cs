@@ -12,7 +12,7 @@ public class Warrior: Job {
 		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));
 		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 100));
 		this._upgradeRequirements = req;
-		this._resourcesProduced = new RESOURCE[]{ RESOURCE.NONE };
+		this._resourcesProduced = null;
 		this._jobType = JOB_TYPE.WARRIOR;
 	}
 

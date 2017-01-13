@@ -129,7 +129,7 @@ public enum CITY_STATE{
 }
 
 public enum RESOURCE{
-	NONE,
+//	NONE,
 	GOLD,
 	FOOD,
 	LUMBER,

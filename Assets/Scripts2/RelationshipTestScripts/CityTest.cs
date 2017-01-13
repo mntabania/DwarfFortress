@@ -35,6 +35,7 @@ public class CityTest{
 	public string cityLogs;
 //	public JOB_TYPE foodProductionRole;
 	public JOB_TYPE neededRole;
+	public List<RESOURCE> unneededResources;
 	public List<JOB_TYPE> unneededRoles;
 	public JOB_TYPE newCitizenTarget;
 	public Citizen upgradeCitizenTarget;
@@ -89,10 +90,11 @@ public class CityTest{
 			return;
 		}
 		this.foodCount -= foodRequirement;
-		cityLogs += GameManager.Instance.currentDay.ToString() + ": Consumed [ff0000]" + foodRequirement.ToString() + "[-] food.\n\n"; 
+//		cityLogs += GameManager.Instance.currentDay.ToString() + ": Consumed [ff0000]" + foodRequirement.ToString() + "[-] food.\n\n"; 
 		if(this.foodCount < 0){
 			this.cityState = CITY_STATE.STARVATION;
-			cityLogs += GameManager.Instance.currentDay.ToString() + ": City is [ff0000] STARVING [-].\n\n"; 
+//			cityLogs += GameManager.Instance.currentDay.ToString() + ": City is [ff0000] STARVING [-].\n\n"; 
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": FOOD ration is running low. \n\n"; 
 			ComputeForDeath();
 		}else{
 			this.cityState = CITY_STATE.ABUNDANT;
@@ -124,7 +126,7 @@ public class CityTest{
 		int chance = UnityEngine.Random.Range (0, 100);
 		if (chance < 2) {
 			int russianRoulette = UnityEngine.Random.Range (0, citizens.Count);
-			cityLogs += GameManager.Instance.currentDay.ToString() + ": A [FF0000]" + citizens[russianRoulette].job.jobType.ToString() + "[-] died.\n\n"; 
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": The entire [FF0000]" + citizens[russianRoulette].job.jobType.ToString() + "[-] clan perished.\n\n"; 
 			citizens.Remove (citizens [russianRoulette]);
 		}
 	}
@@ -170,7 +172,7 @@ public class CityTest{
 			upperBound += this.citizens [i].upgradeChance;
 			if (choice >= lowerBound && choice < upperBound) {
 				this.upgradeCitizenTarget = this.citizens [i];
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected for citizen upgrade: [FF0000]" + this.upgradeCitizenTarget.job.jobType.ToString() + "[-]\n\n"; 
+//				cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected for citizen upgrade: [FF0000]" + this.upgradeCitizenTarget.job.jobType.ToString() + "[-]\n\n"; 
 				break;
 			} else {
 				lowerBound = upperBound;
@@ -232,7 +234,7 @@ public class CityTest{
 
 				if(chance >= lowerBound && chance < upperBound){
 					this.newCitizenTarget = neededJobs[i].jobType;
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
+//					cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 					break;
 				}else{
 					lowerBound = upperBound;
@@ -241,7 +243,7 @@ public class CityTest{
 		}
 		else{ //WARRIOR
 			this.newCitizenTarget = JOB_TYPE.WARRIOR;
-			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
+//			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 		}
 	}
 
@@ -296,6 +298,9 @@ public class CityTest{
 
 			if(resourceDeficit > 0){
 				for(int j = 0; j < Lookup.JOB_REF.Length; j++){
+					if(Lookup.GetJobInfo(j).resourcesProduced == null){
+						continue;
+					}
 					for(int k = 0; k < Lookup.GetJobInfo(j).resourcesProduced.Length; k++){
 						if(Lookup.GetJobInfo(j).resourcesProduced[k] == allResources[i]){
 							int deficit = 0;
@@ -372,63 +377,92 @@ public class CityTest{
 
 		if(chance < this.cityActionChances.oversupplyChance){
 			this.cityActionChances.oversupplyChance = this.cityActionChances.defaultOversupplyChance;
-			this.unneededRoles = GetUnneededRoles (NeededResources ());
+			this.unneededResources = GetUnneededResources (NeededResources ());
+			this.unneededRoles = GetUnneededRoles ();
 		}else{
 			this.cityActionChances.oversupplyChance += 2;
 		}
 	}
-	private List<JOB_TYPE> GetUnneededRoles(int[] neededResources){ //gold, food, lumber, stone, manastone
-		List<JOB_TYPE> unneededJobs = new List<JOB_TYPE>();
+
+
+	private bool isResourceUnneeded (RESOURCE resource){
+		for(int i = 0; i < this.unneededResources.Count; i++){
+			if(resource == this.unneededResources[i]){
+				return true;
+			}
+		}
+		return false;
+	}
+	private List<RESOURCE> GetUnneededResources(int[] neededResources){ //gold, food, lumber, stone, manastone
+		List<RESOURCE> unneededResources = new List<RESOURCE>();
 		int excess = 0;
-		for (int i = 0; i < this.citizens.Count; i++) {
-			switch (this.citizens [i].job.jobType) {
-			case JOB_TYPE.FARMER:
+		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
+		for (int i = 0; i < allResources.Length; i++) {
+			switch (allResources[i]) {
+			case RESOURCE.GOLD:
+				excess = this.goldCount - neededResources [0];
+				break;
+			case RESOURCE.FOOD:
 				excess = this.foodCount - (10 * ComputeFoodConsumption());
 				break;
-			case JOB_TYPE.HUNTER:
-				excess = this.foodCount - neededResources [1];
-				break;
-			case JOB_TYPE.WOODSMAN:
+			case RESOURCE.LUMBER:
 				excess = this.lumberCount - neededResources [2];
 				break;
-			case JOB_TYPE.MINER:
+			case RESOURCE.STONE:
 				excess = this.stoneCount - neededResources [3];
 				break;
-			case JOB_TYPE.ALCHEMIST:
+			case RESOURCE.MANA_STONE:
 				excess = this.manaStoneCount - neededResources [4];
 				break;
 			}
 
-			if (excess >= 0) {
-				unneededJobs.Add (this.citizens [i].job.jobType);	
+			if (excess > 0) {
+				unneededResources.Add (allResources[i]);
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": There is an oversupply of [FF0000]" + allResources[i].ToString() + "[-]\n\n"; 
 			}
 		}
-//		if (unneededJobs.Count > 0) {
-//			int chance = UnityEngine.Random.Range (0, GetTotalChance (unneededJobs.Count) + 1);
-//			int upperBound = 0;
-//			int lowerBound = 0;
-//			for(int i = 0; i < unneededJobs.Count; i++){
-//				if(i == 0){
-//					upperBound += 100;
-//				}else if(i == 1){
-//					upperBound += 60;
-//				}else if(i == 2){
-//					upperBound += 20;
-//				}else{
-//					upperBound += 5;
-//				}
-//
-//				if(chance >= lowerBound && chance < upperBound){
-//					return unneededJobs[i].jobType;
-//				}else{
-//					lowerBound = upperBound;
-//				}
-//			}
-//		}
 
+		return unneededResources;
+	}
+	private List<JOB_TYPE> GetUnneededRoles(){ //gold, food, lumber, stone, manastone
+		List<JOB_TYPE> unneededJobs = new List<JOB_TYPE>();
+		List<JOB_TYPE> tempUnneededJobs = new List<JOB_TYPE>();
+		bool isAllUnneeded = true;
+		bool hasUnneeded = false;
+		int excess = 0;
+		for (int i = 0; i < Lookup.JOB_REF.Length; i++) {
+			isAllUnneeded = true;
+			if(Lookup.GetJobInfo(i).resourcesProduced == null){
+				continue;
+			}
+			for(int j = 0; j < Lookup.GetJobInfo(i).resourcesProduced.Length; j++){
+				if(!isResourceUnneeded(Lookup.GetJobInfo(i).resourcesProduced[j])){
+					isAllUnneeded = false;
+				}
+			}
+
+			if (isAllUnneeded) {
+				unneededJobs.Add (Lookup.GetJobInfo(i).jobType);	
+			}
+		}
+
+		if(unneededJobs.Count > 0){
+			tempUnneededJobs.AddRange(unneededJobs);
+			for(int i = 0; i < tempUnneededJobs.Count; i++){
+				hasUnneeded = false;
+				for(int j = 0; j < this.citizens.Count; j++){
+					if(tempUnneededJobs[i] == this.citizens[j].job.jobType){
+						hasUnneeded = true;
+					}
+				}
+
+				if(!hasUnneeded){
+					unneededJobs.Remove (tempUnneededJobs[i]);
+				}
+			}
+		}
 		return unneededJobs.Distinct ().ToList();
 	}
-
 	internal List<JobNeeds> GetJobsWithExcessResources(int[] neededResources){
 		List<JobNeeds> unneededJobs = new List<JobNeeds>();
 		int excess = 0;
@@ -570,7 +604,7 @@ public class CityTest{
 				this.cityLevel += 1;
 				ReduceResources (this.cityUpgradeRequirements.resource);
 				this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": City Upgrade: [FF0000]" + this.cityName.ToString() + "[-]\n\n"; 
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-]\n\n"; 
 
 			} else {
 				//On not performing upgrade, increase chance to upgrade by 1
@@ -586,7 +620,7 @@ public class CityTest{
 				this.cityActionChances.upgradeCitizenChance = this.cityActionChances.defaultUpgradeCitizenChance;
 				ReduceResources (this.upgradeCitizenTarget.GetUpgradeRequirements().resource);
 				this.upgradeCitizenTarget.UpgradeCitizen();
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": Citizen Upgrade: [FF0000]" + this.upgradeCitizenTarget.name.ToString() + "[-]\n\n"; 
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": The [FF0000]" + this.upgradeCitizenTarget.job.jobType.ToString() + "[-] clan's level has increased.\n\n"; 
 				SelectCitizenToUpgrade ();
 			} else {
 				this.cityActionChances.upgradeCitizenChance += 1;
@@ -605,12 +639,13 @@ public class CityTest{
 					AssignCitizenToTile (newCitizen);
 					this.citizens.Add (newCitizen);
 					this.neededRole = JOB_TYPE.NONE;
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": Create New Citizen: [FF0000]" + newCitizen.name.ToString() + "[-]\n\n"; 
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.neededRole.ToString() + "[-] has emerged.\n\n"; 
 				}else{
 					Citizen newCitizen = new Citizen (this.newCitizenTarget, this);
 					AssignCitizenToTile (newCitizen);
 					this.citizens.Add (newCitizen);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": Create New Citizen: [FF0000]" + newCitizen.name.ToString() + "[-]\n\n"; 
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.newCitizenTarget.ToString() + "[-] has emerged.\n\n"; 
+					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
 			} else {
@@ -630,11 +665,13 @@ public class CityTest{
 				if(this.neededRole != JOB_TYPE.NONE){
 					citizen.ChangeJob (this.neededRole);
 					this.neededRole = JOB_TYPE.NONE;
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": Change Citizen Role: [FF0000]" + citizen.name.ToString() + "[-] from " + this.unneededRoles[randomRole].ToString() + " to " + this.neededRole.ToString() + "\n\n"; 
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.neededRole.ToString() + "[-]\n\n"; 
 				}else{
 					citizen.ChangeJob (this.newCitizenTarget);
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
+
+					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": Change Citizen Role: [FF0000]" + citizen.name.ToString() + "[-] from " + this.unneededRoles[randomRole].ToString() + " to " + this.newCitizenTarget.ToString() + "\n\n"; 
 				}
 
 				this.unneededRoles.Remove(this.unneededRoles[randomRole]);
