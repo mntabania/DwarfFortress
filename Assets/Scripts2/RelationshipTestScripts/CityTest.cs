@@ -645,6 +645,7 @@ public class CityTest{
 					AssignCitizenToTile (newCitizen);
 					this.citizens.Add (newCitizen);
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.newCitizenTarget.ToString() + "[-] has emerged.\n\n"; 
+					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
 			} else {
@@ -667,8 +668,10 @@ public class CityTest{
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.neededRole.ToString() + "[-]\n\n"; 
 				}else{
 					citizen.ChangeJob (this.newCitizenTarget);
-					SelectCitizenForCreation (false);
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
+
+					this.newCitizenTarget = JOB_TYPE.NONE;
+					SelectCitizenForCreation (false);
 				}
 
 				this.unneededRoles.Remove(this.unneededRoles[randomRole]);
