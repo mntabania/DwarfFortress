@@ -161,7 +161,7 @@ public class HexTile : MonoBehaviour {
 		Collider2D[] nearHexes = Physics2D.OverlapCircleAll (new Vector2(transform.position.x, transform.position.y), radius);
 		List<HexTile> nearTiles = new List<HexTile> ();
 		for (int i = 0; i < nearHexes.Length; i++) {
-			if (nearHexes[i].gameObject == null) {
+			if (nearHexes[i].gameObject == null || nearHexes[i].gameObject == this.gameObject) {
 				continue;
 			}
 			if (!nearHexes[i].gameObject.GetComponent<HexTile> ().isCity) {

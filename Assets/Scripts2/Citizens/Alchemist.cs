@@ -12,6 +12,8 @@ public class Alchemist : Job {
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.MANA };
 		this._jobType = JOB_TYPE.ALCHEMIST;
+		this._residence = RESIDENCE.OUTSIDE;
+
 	}
 
 //	public static int GetProduction(int level, int hexValue, int mayorLikeRating){
@@ -24,7 +26,7 @@ public class Alchemist : Job {
 		}
 		if (resourceType == RESOURCE.MANA) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * 2f);
 		}
 		return 0;
 	}
@@ -34,7 +36,7 @@ public class Alchemist : Job {
 			return 0;
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 	}
 
 	override public int[] GetAllDailyProduction(){
@@ -42,7 +44,7 @@ public class Alchemist : Job {
 			return new int[]{ 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue))) * 2f);
+		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * 2f);
 		return new int[]{0,0,0,0,manaStones};
 	}
 

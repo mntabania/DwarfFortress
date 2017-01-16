@@ -12,6 +12,8 @@ public class Quarryman: Job {
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.STONE };
 		this._jobType = JOB_TYPE.QUARRYMAN;
+		this._residence = RESIDENCE.OUTSIDE;
+
 	}
 
 	override public int GetDailyProduction(RESOURCE resourceType){
@@ -20,7 +22,7 @@ public class Quarryman: Job {
 		}
 		if (resourceType == RESOURCE.STONE) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 		}
 		return 0;
 	}
@@ -30,7 +32,7 @@ public class Quarryman: Job {
 			return 0;
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 	}
 
 	override public int[] GetAllDailyProduction(){
@@ -38,7 +40,7 @@ public class Quarryman: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-		int stones = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+		int stones = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 		return new int[]{0,0,0,stones,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 

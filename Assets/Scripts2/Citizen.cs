@@ -49,21 +49,48 @@ public class Citizen {
 	public Citizen(JOB_TYPE jobType, CityTest city){
 		this._id = GetID()+1;
 		this.name = "CITIZEN" + this._id;
-		this._job = GetJob(jobType);
+		this._job = GetJob (jobType);
+//		this._job = new Job();
+//		this._job.CopyData(GetJob (jobType));
 		this._city = city;
 		this._level = 1;
 		this._job.citizen = this;
 		SetLastID (this._id);
 	}
-
 	public Job GetJob(JOB_TYPE jobType){
-		for(int i = 0; i < Lookup.JOB_REF.Length; i++){
-			if(Lookup.GetJobInfo(i).jobType == jobType){
-				return Lookup.GetJobInfo (i);
-			}
+		switch(jobType){
+		case JOB_TYPE.ALCHEMIST:
+			return new Alchemist ();
+		case JOB_TYPE.ARCHER:
+			return new Archer ();
+		case JOB_TYPE.BRAWLER:
+			return new Brawler ();
+		case JOB_TYPE.FARMER:
+			return new Farmer ();
+		case JOB_TYPE.HUNTER:
+			return new Hunter ();
+		case JOB_TYPE.MAGE:
+			return new Mage ();
+		case JOB_TYPE.MINER:
+			return new Miner ();
+		case JOB_TYPE.QUARRYMAN:
+			return new Quarryman ();
+		case JOB_TYPE.WARRIOR:
+			return new Warrior ();
+		case JOB_TYPE.WOODSMAN:
+			return new Woodsman ();
+		default:
+			return new Job ();
 		}
-		return null;
 	}
+//	public Job GetJob(JOB_TYPE jobType){
+//		for(int i = 0; i < Lookup.JOB_REF.Length; i++){
+//			if(Lookup.GetJobInfo(i).jobType == jobType){
+//				return Lookup.GetJobInfo (i);
+//			}
+//		}
+//		return null;
+//	}
 	public int GetDailyProduction(RESOURCE resourceType) {
 		return _job.GetDailyProduction (resourceType);
 	}
@@ -97,17 +124,22 @@ public class Citizen {
 	}
 
 	internal void AssignCitizenToTile(List<HexTile> hexTiles){
-		HexTile[] viableHexTiles = _job.GetViableNeighborTiles (hexTiles).ToArray ();
-		int randomNeighbour = UnityEngine.Random.Range (0, viableHexTiles.Length);
-		this._city.ownedBiomeTiles.Add(viableHexTiles [randomNeighbour]);
-		viableHexTiles [randomNeighbour].isOccupied = true;
-		this._assignedTile = viableHexTiles[randomNeighbour];
-
-		if(this._city.kingdomTile){
-			if (!viableHexTiles [randomNeighbour].isCity) {
-				viableHexTiles [randomNeighbour].SetTileColor (Color.blue);
+		if(this.job.residence == RESIDENCE.OUTSIDE){
+			HexTile[] viableHexTiles = _job.GetViableNeighborTiles (hexTiles).ToArray ();
+			int randomNeighbour = UnityEngine.Random.Range (0, viableHexTiles.Length);
+			this._city.ownedBiomeTiles.Add(viableHexTiles [randomNeighbour]);
+			viableHexTiles [randomNeighbour].isOccupied = true;
+			this._assignedTile = viableHexTiles[randomNeighbour];
+			if(this._city.kingdomTile){
+				if (!viableHexTiles [randomNeighbour].isCity) {
+					viableHexTiles [randomNeighbour].SetTileColor (Color.blue);
+				}
 			}
+			this._city.goldValue = this._city.GetGoldValue ();
+		}else{
+			this._assignedTile = this.city.hexTile;
 		}
+
 	}
 
 	private void UpdateUpgradeRequirements(){
