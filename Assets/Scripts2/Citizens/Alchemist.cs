@@ -7,10 +7,10 @@ public class Alchemist : Job {
 
 	public Alchemist(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
-		req.resource.Add (new Resource(RESOURCE.MANA_STONE, 200));
+		req.resource.Add (new Resource(RESOURCE.MANA, 200));
 //		req.resource.Add (new Resource(RESOURCE.FOOD, 100));
 		this._upgradeRequirements = req;
-		this._resourcesProduced = new RESOURCE[]{ RESOURCE.MANA_STONE };
+		this._resourcesProduced = new RESOURCE[]{ RESOURCE.MANA };
 		this._jobType = JOB_TYPE.ALCHEMIST;
 	}
 
@@ -22,7 +22,7 @@ public class Alchemist : Job {
 		if(this.citizen == null){
 			return 0;
 		}
-		if (resourceType == RESOURCE.MANA_STONE) {
+		if (resourceType == RESOURCE.MANA) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
 			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue))) * 2f);
 		}

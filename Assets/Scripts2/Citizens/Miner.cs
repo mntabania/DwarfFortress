@@ -19,7 +19,7 @@ public class Miner: Job {
 			return 0;
 		}
 		if (resourceType == RESOURCE.METAL) {
-			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
+			int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
 			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
 		}
 		return 0;
@@ -29,7 +29,7 @@ public class Miner: Job {
 		if(this.citizen == null){
 			return 0;
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
+		int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
 		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
 	}
 
@@ -37,13 +37,13 @@ public class Miner: Job {
 		if(this.citizen == null){
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
+		int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
 		int metals =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
 		return new int[]{0,0,0,0,0,metals}; //gold, food, lumber, stone, manastone, metal
 	}
 
 	override internal List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){
-		int maxValue = hexTiles.Max(x => x.stoneValue);
-		return hexTiles.Where(x => x.stoneValue == maxValue).ToList();
+		int maxValue = hexTiles.Max(x => x.metalValue);
+		return hexTiles.Where(x => x.metalValue == maxValue).ToList();
 	}
 }
