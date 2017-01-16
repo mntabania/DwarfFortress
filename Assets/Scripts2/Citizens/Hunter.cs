@@ -12,6 +12,8 @@ public class Hunter: Job {
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.FOOD };
 		this._jobType = JOB_TYPE.HUNTER;
+		this._residence = RESIDENCE.OUTSIDE;
+
 	}
 
 	override public int GetDailyProduction(RESOURCE resourceType){
@@ -20,7 +22,7 @@ public class Hunter: Job {
 		}
 		if (resourceType == RESOURCE.FOOD) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 		}
 		return 0;
 	}
@@ -30,7 +32,7 @@ public class Hunter: Job {
 			return 0;
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 	}
 
 	override public int[] GetAllDailyProduction(){
@@ -38,7 +40,7 @@ public class Hunter: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
+		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
 		return new int[]{0,food,0,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 

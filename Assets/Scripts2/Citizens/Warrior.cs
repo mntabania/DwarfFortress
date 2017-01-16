@@ -12,6 +12,8 @@ public class Warrior: Job {
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
 		this._jobType = JOB_TYPE.WARRIOR;
+		this._residence = RESIDENCE.INSIDE;
+
 	}
 
 //	override public int GetDailyProduction(RESOURCE resourceType){

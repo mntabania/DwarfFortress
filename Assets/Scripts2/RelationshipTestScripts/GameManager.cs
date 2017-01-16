@@ -32,9 +32,9 @@ public class GameManager : MonoBehaviour {
 	void Start(){
 		MapGenerator();
 		GenerateCities();
-		GenerateCityConnections ();
 		GenerateBiomes ();
 		GenerateInitialKingdoms();
+		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (hexTiles [0].GetComponent<CityTileTest> ());

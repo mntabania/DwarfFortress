@@ -8,13 +8,19 @@ public class Job {
 
 	[SerializeField]protected JOB_TYPE _jobType;
 	[SerializeField]protected Citizen _citizen;
+//	[SerializeField]protected int _citizenLevel;
+//	[SerializeField]protected HexTile _assignedTile;
 	[SerializeField]protected CitizenUpgradeRequirements _upgradeRequirements;
 	[SerializeField]protected RESOURCE[] _resourcesProduced; //gold, food, wood, stone, mana stone
+	[SerializeField]protected RESIDENCE _residence;
 
 	public Job(){
 		
 	}
 
+	public RESIDENCE residence{
+		get{return _residence;}
+	}
 	public JOB_TYPE jobType{
 		get{ return _jobType; }
 	}
@@ -22,6 +28,14 @@ public class Job {
 		get { return _citizen; }
 		set { _citizen = value; }
 	}
+//	public int citizenLevel{
+//		get { return _citizenLevel; }
+//		set { _citizenLevel = value; }
+//	}
+//	public HexTile assignedTile{
+//		get { return _assignedTile; }
+//		set { _assignedTile = value; }
+//	}
 	public RESOURCE[] resourcesProduced{
 		get{ return _resourcesProduced; }
 	}
@@ -44,5 +58,11 @@ public class Job {
 		return hexTiles;
 	}
 
-
+	public void CopyData(Job job){
+		this._jobType = job.jobType;
+		this._citizen = job.citizen;
+		this._upgradeRequirements = job.upgradeRequirements;
+		this._resourcesProduced = job.resourcesProduced;
+		this._residence = job.residence;
+	}
 }

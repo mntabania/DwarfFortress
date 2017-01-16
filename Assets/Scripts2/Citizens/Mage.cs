@@ -11,7 +11,9 @@ public class Mage: Job {
 		req.resource.Add (new Resource(RESOURCE.MANA, 200));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
-		this._jobType = JOB_TYPE.MAGE;
+		this._jobType = JOB_TYPE.MAGE;		
+		this._residence = RESIDENCE.INSIDE;
+
 	}
 
 	//	override public int GetDailyProduction(RESOURCE resourceType){

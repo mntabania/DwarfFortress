@@ -22,6 +22,7 @@ public class CityTest{
 	public int manaStoneCount;
 	public int metalCount;
 	public int tradeGoodsCount;
+	public int goldValue;
 	public int mayorLikeRating;
 	public int citizenLimit;
 	public CityActionChances cityActionChances;
@@ -59,6 +60,7 @@ public class CityTest{
 		this.manaStoneCount = 0;
 		this.metalCount = 0;
 		this.tradeGoodsCount = 0;
+		this.goldValue = GetGoldValue ();
 		this.mayorLikeRating = 0;
 		this.citizenLimit = 4;
 		this.cityActionChances = new CityActionChances ();
@@ -78,6 +80,7 @@ public class CityTest{
 		this.allResourcesStatus = GetInitialResourcesStatus ();
 		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.isDead = false;
+		this.ownedBiomeTiles.Add (this.hexTile);
 		this.citizens = InitialCitizens();
 		AssignInitialCitizens ();
 		SelectCitizenToUpgrade ();
@@ -113,6 +116,7 @@ public class CityTest{
 		if(isDead){
 			return;
 		}
+		Debug.Log (foodRequirement);
 		this.foodCount -= foodRequirement;
 //		cityLogs += GameManager.Instance.currentDay.ToString() + ": Consumed [ff0000]" + foodRequirement.ToString() + "[-] food.\n\n"; 
 		if(this.foodCount < 0){
@@ -130,18 +134,27 @@ public class CityTest{
 			return;
 		}
 
-		int producedGold = this.richnessLevel + (UnityEngine.Random.Range (0, (int)((float)this.cityLevel * (0.2f * (float)this.richnessLevel))));
+		int halfGoldValue = (int)((float)this.goldValue / 2f);
+		int producedGold = halfGoldValue + UnityEngine.Random.Range(1, halfGoldValue + 1);
 		this.goldCount += producedGold;
 
 		for(int i = 0; i < this.citizens.Count; i++){
 			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
 			this.goldCount += resourcesProducedByCitizen[0];
 			this.foodCount += resourcesProducedByCitizen[1];
+//			Debug.Log ("********" + resourcesProducedByCitizen [1]);
 			this.lumberCount += resourcesProducedByCitizen[2];
 			this.stoneCount += resourcesProducedByCitizen[3];
 			this.manaStoneCount += resourcesProducedByCitizen[4];
 			this.metalCount += resourcesProducedByCitizen[5];
 		}
+	}
+	internal int GetGoldValue(){
+		int goldValue = 0;
+		for(int i = 0; i < this.ownedBiomeTiles.Count; i++){
+			goldValue += this.ownedBiomeTiles [i].goldValue;
+		}
+		return goldValue;
 	}
 
 	internal void ComputeForDeath(){
@@ -173,7 +186,7 @@ public class CityTest{
 		for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
 			neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
 		}
-		neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
+//		neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
 		neighbours = neighbours.Distinct().ToList();
 
 		citizen.AssignCitizenToTile (neighbours);

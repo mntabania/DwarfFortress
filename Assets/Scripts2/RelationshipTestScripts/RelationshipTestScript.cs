@@ -11,7 +11,7 @@ public class RelationshipTestScript : MonoBehaviour {
 	public List<KingdomTileTest> kingdoms;
 
 	void Awake(){
-		Instance = this;
+//		Instance = this;
 	}
 
 	// Use this for initialization
