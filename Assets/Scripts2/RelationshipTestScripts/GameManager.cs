@@ -26,15 +26,16 @@ public class GameManager : MonoBehaviour {
 
 	void Awake(){
 		Instance = this;
+		hexTiles = new List<GameObject>();
 		turnEnded += IncrementDaysOnTurn;
 	}
 
 	void Start(){
 		MapGenerator();
 		GenerateCities();
-		GenerateCityConnections ();
 		GenerateBiomes ();
 		GenerateInitialKingdoms();
+		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (hexTiles [0].GetComponent<CityTileTest> ());
