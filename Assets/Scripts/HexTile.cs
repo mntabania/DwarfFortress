@@ -19,11 +19,13 @@ public class HexTile : MonoBehaviour {
 	public float moistureNoise;
 	public float temperature;
 
-	public int woodValue = 0;
-	public int stoneValue = 0;
-	public int manaStoneValue = 0;
 	public int farmingValue = 0;
 	public int huntingValue = 0;
+	public int woodValue = 0;
+	public int stoneValue = 0;
+	public int manaValue = 0;
+	public int metalValue = 0;
+	public int goldValue = 0;
 
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
@@ -135,6 +137,10 @@ public class HexTile : MonoBehaviour {
 		gameObject.GetComponent<SpriteRenderer> ().color = color;
 	}
 
+	public void SetTileBiomeType(BIOMES biomeType){
+		this.biomeType = biomeType;
+	}
+
 	/*
 	 * TODO: Revise this to use the new formula 
 	 * in getting a hexagon's neighbours. Much more
@@ -172,100 +178,130 @@ public class HexTile : MonoBehaviour {
 	}
 
 	public void GenerateResourceValues(){
-		Dictionary<JOB_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];
+		Dictionary<BIOME_PRODUCE_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];
 		for (int i = 0; i < chancesDict.Keys.Count; i++) {
 			int choice = Random.Range (0, 100);
-			JOB_TYPE currentJobType = chancesDict.Keys.ElementAt(i);
-			int[] chancesForCurrentJobType = chancesDict [currentJobType];
+			BIOME_PRODUCE_TYPE currentProduceType = chancesDict.Keys.ElementAt(i);
+			int[] chancesForCurrentProduceType = chancesDict [currentProduceType];
 
 			int upperBound = 0;
 			int lowerBound = 0;
 			int generatedResourceValue = 0;
-			for (int j = 0; j < chancesForCurrentJobType.Length; j++) {
-				upperBound += chancesForCurrentJobType [j];
+			for (int j = 0; j < chancesForCurrentProduceType.Length; j++) {
+				upperBound += chancesForCurrentProduceType [j];
 				if (choice >= lowerBound && choice < upperBound) {
 					if (j == 0) {
-						generatedResourceValue = Random.Range (21, 36);
+						if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
+							generatedResourceValue = Random.Range (51, 81);
+						} else {
+//							generatedResourceValue = Random.Range (21, 36);
+							generatedResourceValue = 30;
+						}
 					} else if (j == 1) {
-						generatedResourceValue = Random.Range (36, 46);
+						if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
+							generatedResourceValue = Random.Range (81, 101);
+						} else {
+//							generatedResourceValue = Random.Range (36, 46);
+							generatedResourceValue = 40;
+						}
 					} else if (j == 2) {
-						generatedResourceValue = Random.Range (10, 21);
+						if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
+							generatedResourceValue = Random.Range (1, 51);
+						} else {
+//							generatedResourceValue = Random.Range (10, 21);
+							generatedResourceValue = 15;
+						}
+					} else if (j == 3) {
+						generatedResourceValue = 0;
 					}
 					break;
 				}
 				lowerBound = upperBound;
 			}
 
-			if (currentJobType == JOB_TYPE.FARMER) {
+			if (currentProduceType == BIOME_PRODUCE_TYPE.FARMING) {
 				if (elevationType == ELEVATION.MOUNTAIN) {
-					generatedResourceValue -= Random.Range (10, 21);
+					generatedResourceValue -= 5;
 					if (generatedResourceValue < 0) {
 						generatedResourceValue = 1;
 					}
 				}
 				farmingValue = generatedResourceValue;
-			} else if (currentJobType == JOB_TYPE.HUNTER) {
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.HUNTING) {
 				if (elevationType == ELEVATION.MOUNTAIN) {
-					generatedResourceValue += Random.Range (10, 21);
+					if (generatedResourceValue > 0) {
+						generatedResourceValue += 5;
+					}
 				}
 				huntingValue = generatedResourceValue;
-			} else if (currentJobType == JOB_TYPE.WOODSMAN) {
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.WOOD) {
 				woodValue = generatedResourceValue;
-			} else if (currentJobType == JOB_TYPE.MINER) {
-				if (elevationType == ELEVATION.MOUNTAIN) {
-					generatedResourceValue += Random.Range (10, 21);
-				}
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.STONE) {
 				stoneValue = generatedResourceValue;
-			} else if (currentJobType == JOB_TYPE.ALCHEMIST) {
-				manaStoneValue = generatedResourceValue;
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.MANA) {
+				if (elevationType == ELEVATION.MOUNTAIN) {
+					if (generatedResourceValue > 0) {
+						generatedResourceValue += 5;
+					}
+				}
+				manaValue = generatedResourceValue;
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.METAL) {
+				if (elevationType == ELEVATION.MOUNTAIN) {
+					if (generatedResourceValue > 0) {
+						generatedResourceValue += 5;
+					}
+				}
+				metalValue = generatedResourceValue;
+			} else if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
+				goldValue = generatedResourceValue;
 			}
 		}
 	}	
 
-	private BIOME GetBiome(){
-		if(elevationNoise <= 0.35f){
-			if(elevationNoise < 0.30f){
-				return BIOME.OCEAN;
-			}
-			return BIOME.BEACH;
-		}else{
-			if(elevationNoise > 0.3f && elevationNoise < 0.6f){
-				if(moistureNoise < 0.16f){
-					return BIOME.SUBTROPICAL_DESERT;
-				}
-				if(moistureNoise < 0.50f){
-					return BIOME.GRASSLAND;
-				}
-				if(moistureNoise < 0.83f){
-					return BIOME.TEMPERATE_DECIDUOUS_FOREST;
-				}
-				return BIOME.TEMPERATE_RAIN_FOREST;
-			}
-			else if(elevationNoise >= 0.6f && elevationNoise < 0.8f){
-				if(moistureNoise < 0.33f){
-					return BIOME.TEMPERATE_DESERT;
-				}
-				if(moistureNoise < 0.66f){
-					return BIOME.SHRUBLAND;
-				}
-				return BIOME.TAIGA;
-			}
-			else if(elevationNoise >= 0.8f){
-				if(moistureNoise < 0.1f){
-					return BIOME.SCORCHED;
-				}
-				if(moistureNoise < 0.2f){
-					return BIOME.BARE;
-				}
-				if(moistureNoise < 0.5f){
-					return BIOME.TUNDRA;
-				}
-				return BIOME.SNOW;
-			}
-		}		
-		return BIOME.TROPICAL_RAIN_FOREST;
-
-	}
+//	private BIOME GetBiome(){
+//		if(elevationNoise <= 0.35f){
+//			if(elevationNoise < 0.30f){
+//				return BIOME.OCEAN;
+//			}
+//			return BIOME.BEACH;
+//		}else{
+//			if(elevationNoise > 0.3f && elevationNoise < 0.6f){
+//				if(moistureNoise < 0.16f){
+//					return BIOME.SUBTROPICAL_DESERT;
+//				}
+//				if(moistureNoise < 0.50f){
+//					return BIOME.GRASSLAND;
+//				}
+//				if(moistureNoise < 0.83f){
+//					return BIOME.TEMPERATE_DECIDUOUS_FOREST;
+//				}
+//				return BIOME.TEMPERATE_RAIN_FOREST;
+//			}
+//			else if(elevationNoise >= 0.6f && elevationNoise < 0.8f){
+//				if(moistureNoise < 0.33f){
+//					return BIOME.TEMPERATE_DESERT;
+//				}
+//				if(moistureNoise < 0.66f){
+//					return BIOME.SHRUBLAND;
+//				}
+//				return BIOME.TAIGA;
+//			}
+//			else if(elevationNoise >= 0.8f){
+//				if(moistureNoise < 0.1f){
+//					return BIOME.SCORCHED;
+//				}
+//				if(moistureNoise < 0.2f){
+//					return BIOME.BARE;
+//				}
+//				if(moistureNoise < 0.5f){
+//					return BIOME.TUNDRA;
+//				}
+//				return BIOME.SNOW;
+//			}
+//		}		
+//		return BIOME.TROPICAL_RAIN_FOREST;
+//
+//	}
 
 	void OnMouseDown(){
 //		UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest>());
