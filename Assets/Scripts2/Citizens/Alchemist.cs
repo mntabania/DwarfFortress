@@ -23,7 +23,7 @@ public class Alchemist : Job {
 			return 0;
 		}
 		if (resourceType == RESOURCE.MANA_STONE) {
-			int halfHexValue = (int)((float)this.citizen.assignedTile.manaStoneValue / 2f);
+			int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
 			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue))) * 2f);
 		}
 		return 0;
@@ -33,7 +33,7 @@ public class Alchemist : Job {
 		if(this.citizen == null){
 			return 0;
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.manaStoneValue / 2f);
+		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
 		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
 	}
 
@@ -41,14 +41,14 @@ public class Alchemist : Job {
 		if(this.citizen == null){
 			return new int[]{ 0, 0, 0, 0, 0 };
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.manaStoneValue / 2f);
+		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
 		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue))) * 2f);
 		return new int[]{0,0,0,0,manaStones};
 	}
 
 	override internal List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){
-		int maxValue = hexTiles.Max(x => x.manaStoneValue);
-		return hexTiles.Where(x => x.manaStoneValue == maxValue).ToList();
+		int maxValue = hexTiles.Max(x => x.manaValue);
+		return hexTiles.Where(x => x.manaValue == maxValue).ToList();
 //		return hexTiles[0].ToList();
 	}
 }

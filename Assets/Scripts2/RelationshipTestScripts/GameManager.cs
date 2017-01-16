@@ -9,6 +9,13 @@ public class GameManager : MonoBehaviour {
 	public delegate void TurnEndedDelegate();
 	public TurnEndedDelegate turnEnded;
 
+	public Sprite grasslandSprite;
+	public Sprite woodlandSprite;
+	public Sprite forestSprite;
+	public Sprite desertSprite;
+	public Sprite tundraSprite;
+	public Sprite snowSprite;
+
 	public GameObject[] hexTiles;
 	public GameObject kingdomTilePrefab;
 	public List<KingdomTileTest> kingdoms;
@@ -24,7 +31,9 @@ public class GameManager : MonoBehaviour {
 
 	void Start(){
 		MapGenerator();
-		CreateCity(GridMap.Instance.listHexes [1025].GetComponent<HexTile>());
+		GenerateCities();
+		GenerateCityConnections ();
+		GenerateBiomes ();
 		GenerateInitialKingdoms();
 		GenerateInitialCitizens ();
 		StartResourceProductions ();
@@ -35,10 +44,71 @@ public class GameManager : MonoBehaviour {
 		GridMap.Instance.GenerateGrid();
 	}
 
+	void GenerateCities(){
+		CreateCity(GridMap.Instance.listHexes [293].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1244].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [2094].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
+	}
+
+	void GenerateCityConnections(){
+		for (int i = 0; i < hexTiles.Length; i++) {
+			CityTileTest currentCityTile = hexTiles[i].GetComponent<CityTileTest>();
+			int nextCityIndex = i + 1;
+			int previousCityIndex = i - 1;
+			if (nextCityIndex >= hexTiles.Length) {
+				nextCityIndex = 0;
+			}
+			if (previousCityIndex < 0) {
+				previousCityIndex = 5;
+			}
+			currentCityTile.cityAttributes.connectedCities.Add(hexTiles[nextCityIndex].GetComponent<CityTileTest>());
+			currentCityTile.cityAttributes.connectedCities.Add(hexTiles[previousCityIndex].GetComponent<CityTileTest>());
+		}
+	}
+
+	void GenerateBiomes(){
+		for (int i = 0; i < hexTiles.Length; i++) {
+			HexTile currentHexTile = hexTiles [i].GetComponent<HexTile> ();
+			HexTile[] neighbours = currentHexTile.GetTilesInRange(5);
+			BIOMES targetBiomeType = BIOMES.BARE;
+			Sprite biomeSprite = null;
+			if (i == 0) {
+				targetBiomeType = BIOMES.GRASSLAND;
+				biomeSprite = grasslandSprite;
+			} else if (i == 1) {
+				targetBiomeType = BIOMES.WOODLAND;
+				biomeSprite = woodlandSprite;
+			} else if (i == 2) {
+				targetBiomeType = BIOMES.FOREST;
+				biomeSprite = forestSprite;
+			} else if (i == 3) {
+				targetBiomeType = BIOMES.DESERT;
+				biomeSprite = desertSprite;
+			} else if (i == 4) {
+				targetBiomeType = BIOMES.TUNDRA;
+				biomeSprite = tundraSprite;
+			} else if (i == 5) {
+				targetBiomeType = BIOMES.SNOW;
+				biomeSprite = snowSprite;
+			}
+			for (int j = 0; j < neighbours.Length; j++) {
+				neighbours[j].SetTileBiomeType(targetBiomeType);
+				neighbours[j].GenerateResourceValues ();
+				neighbours[j].GetComponent<SpriteRenderer> ().sprite = biomeSprite;
+			}
+		}
+	}
+
 	void GenerateInitialKingdoms(){
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){hexTiles[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){
+			hexTiles[0].GetComponent<CityTileTest>(), hexTiles[1].GetComponent<CityTileTest>(), hexTiles[2].GetComponent<CityTileTest>(),
+			hexTiles[3].GetComponent<CityTileTest>(), hexTiles[4].GetComponent<CityTileTest>(), hexTiles[5].GetComponent<CityTileTest>(),
+		}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 
@@ -76,7 +146,12 @@ public class GameManager : MonoBehaviour {
 		tile.gameObject.AddComponent<CityTileTest>();
 		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, tile.biomeType);
 
-		this.hexTiles [0] = tile.gameObject;
+		for (int i = 0; i < this.hexTiles.Length; i++) {
+			if (this.hexTiles [i] == null) {
+				this.hexTiles [i] = tile.gameObject;
+				break;
+			}
+		}
 		tile.gameObject.GetComponent<CityTileTest> ().cityAttributes.AssignInitialCitizens();
 	}
 

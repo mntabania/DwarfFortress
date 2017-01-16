@@ -104,7 +104,9 @@ public class Citizen {
 		this._assignedTile = viableHexTiles[randomNeighbour];
 
 		if(this._city.kingdomTile){
-			viableHexTiles [randomNeighbour].SetTileColor (this._city.kingdomTile.kingdom.tileColor);
+			if (!viableHexTiles [randomNeighbour].isCity) {
+				viableHexTiles [randomNeighbour].SetTileColor (Color.blue);
+			}
 		}
 	}
 
