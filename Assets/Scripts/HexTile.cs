@@ -304,6 +304,8 @@ public class HexTile : MonoBehaviour {
 //	}
 
 	void OnMouseDown(){
-//		UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest>());
+		if (isCity) {
+			UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest> ());
+		}
 	}
 }

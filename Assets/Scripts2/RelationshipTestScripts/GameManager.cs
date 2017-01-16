@@ -24,9 +24,13 @@ public class GameManager : MonoBehaviour {
 
 	public bool isDayPaused = false;
 
+	public int daysUntilNextHarvest = 30;
+
 	void Awake(){
 		Instance = this;
+		hexTiles = new List<GameObject>();
 		turnEnded += IncrementDaysOnTurn;
+		turnEnded += WaitForHarvest;
 	}
 
 	void Start(){
@@ -170,6 +174,16 @@ public class GameManager : MonoBehaviour {
 	void IncrementDaysOnTurn(){
 		currentDay++;
 		UserInterfaceManager.Instance.UpdateDayCounter(currentDay);
+	}
+
+	void WaitForHarvest(){
+		if (daysUntilNextHarvest <= 0) {
+			//TODO: Put Harvest Code Execution here
+			daysUntilNextHarvest = 30;
+		} else {
+			daysUntilNextHarvest--;
+		}
+
 	}
 
 
