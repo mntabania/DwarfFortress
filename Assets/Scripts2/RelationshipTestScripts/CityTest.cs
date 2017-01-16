@@ -773,6 +773,16 @@ public class CityTest{
 		return -1;
 	}
 
+	public int GetNumberOfCitizensPerType(JOB_TYPE jobType){
+		int count = 0;
+		for (int i = 0; i < citizens.Count; i++) {
+			if (citizens [i].job.jobType == jobType) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	internal void UpdateResourcesStatus(){
 		int[] neededResources = NeededResources ();
 		for(int i = 0; i < this.allResourcesStatus.Count; i++){

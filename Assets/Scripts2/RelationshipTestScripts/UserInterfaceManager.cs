@@ -21,6 +21,17 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblManaStoneCount;
 	public UILabel lblCitySummary;
 
+	public UILabel lblFarmerCount;
+	public UILabel lblHunterCount;
+	public UILabel lblWoodsmanCount;
+	public UILabel lblMinerCount;
+	public UILabel lblAlchemistCount;
+	public UILabel lblWarriorCount;
+	public UILabel lblArcherCount;
+	public UILabel lblMageCount;
+	public UILabel lblQuarrymanCount;
+	public UILabel lblBrawlerCount;
+
 	public UILabel lblPause;
 
 	CityTileTest currentDisplayingCityTile;
@@ -68,6 +79,17 @@ public class UserInterfaceManager : MonoBehaviour {
 		} else {
 			lblKingdomName.text = "Kingdom: None";
 		}
+			
+		lblFarmerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.FARMER).ToString();
+		lblHunterCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.HUNTER).ToString();
+		lblWoodsmanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.WOODSMAN).ToString();
+		lblMinerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MINER).ToString();
+		lblAlchemistCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.ALCHEMIST).ToString();
+		lblWarriorCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.WARRIOR).ToString();
+		lblArcherCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.ARCHER).ToString();
+		lblMageCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MAGE).ToString();
+		lblQuarrymanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.QUARRYMAN).ToString();
+		lblBrawlerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.BRAWLER).ToString();
 
 		lblCitySummary.text = cityTile.cityAttributes.cityLogs;
 	}
