@@ -182,7 +182,7 @@ public class CityTest{
 		
 	int GetTotalChanceForUpgrade(){
 		List<Citizen> citizensToChooseFrom = citizens.OrderBy(x => x.level).ToList();
-		citizensToChooseFrom.RemoveAll (x => x.level >= 6);
+		citizensToChooseFrom.RemoveAll (x => x.level >= 10);
 		int lowestLevel = citizens.Min(x => x.level);
 		int totalChances = 0;
 		int[] currentChance = new int[]{100,60,20,5};
@@ -556,34 +556,41 @@ public class CityTest{
 
 		switch(level + 1){
 		case 2:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 2000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 50));
+//			req.resource.Add (new Resource (RESOURCE.GOLD, 2000));
+			req.resource.Add (new Resource (RESOURCE.STONE, 900));
 			break;
 		case 3:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 4000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 100));
+			req.resource.Add (new Resource (RESOURCE.STONE, 2000));
 			break;
 		case 4:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 6000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 200));
-			req.resource.Add (new Resource (RESOURCE.STONE, 100));
+			req.resource.Add (new Resource (RESOURCE.STONE, 3500));
 			break;
 		case 5:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 8000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 400));
-			req.resource.Add (new Resource (RESOURCE.STONE, 200));
+			req.resource.Add (new Resource (RESOURCE.STONE, 5000));
 			break;
 		case 6:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 10000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 800));
-			req.resource.Add (new Resource (RESOURCE.STONE, 400));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 100));
+			req.resource.Add (new Resource (RESOURCE.STONE, 6500));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 900));
+			break;
+		case 7:
+			req.resource.Add (new Resource (RESOURCE.STONE, 8000));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 2000));
+			break;
+		case 8:
+			req.resource.Add (new Resource (RESOURCE.STONE, 11000));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 3500));
+			break;
+		case 9:
+			req.resource.Add (new Resource (RESOURCE.STONE, 15000));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 5000));
+			break;
+		case 10:
+			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 6500));
 			break;
 		default:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 10000));
-			req.resource.Add (new Resource (RESOURCE.LUMBER, 800));
-			req.resource.Add (new Resource (RESOURCE.STONE, 400));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 100));
+			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
+			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 6500));
 			break;
 		}
 
@@ -592,7 +599,7 @@ public class CityTest{
 		
 	internal void AttemptToIncreaseHousing(){
 		if (CanCityAffordToUpgrade() && IsCitizenCapReached()) { //if city has the neccessary resources to upgrade and still has room for another citizen
-			if(this.cityLevel >= 6){
+			if(this.cityLevel >= 10){
 				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
 				return;
 			}
@@ -638,8 +645,8 @@ public class CityTest{
 					Citizen newCitizen = new Citizen (this.neededRole, this);
 					AssignCitizenToTile (newCitizen);
 					this.citizens.Add (newCitizen);
-					this.neededRole = JOB_TYPE.NONE;
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.neededRole.ToString() + "[-] has emerged.\n\n"; 
+					this.neededRole = JOB_TYPE.NONE;
 				}else{
 					Citizen newCitizen = new Citizen (this.newCitizenTarget, this);
 					AssignCitizenToTile (newCitizen);
@@ -664,8 +671,8 @@ public class CityTest{
 				Citizen citizen = GetCitizenForChange (this.unneededRoles[randomRole]);
 				if(this.neededRole != JOB_TYPE.NONE){
 					citizen.ChangeJob (this.neededRole);
-					this.neededRole = JOB_TYPE.NONE;
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.neededRole.ToString() + "[-]\n\n"; 
+					this.neededRole = JOB_TYPE.NONE;
 				}else{
 					citizen.ChangeJob (this.newCitizenTarget);
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 

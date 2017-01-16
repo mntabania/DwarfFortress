@@ -7,8 +7,8 @@ public class Hunter: Job {
 
 	public Hunter(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
-		req.resource.Add (new Resource(RESOURCE.FOOD, 100));
-		req.resource.Add (new Resource(RESOURCE.STONE, 100));
+//		req.resource.Add (new Resource(RESOURCE.FOOD, 100));
+		req.resource.Add (new Resource(RESOURCE.STONE, 200));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = new RESOURCE[]{ RESOURCE.FOOD };
 		this._jobType = JOB_TYPE.HUNTER;
