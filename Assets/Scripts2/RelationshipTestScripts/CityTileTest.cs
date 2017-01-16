@@ -5,6 +5,7 @@ using System.Linq;
 
 public class CityTileTest : MonoBehaviour {
 
+	public HexTile hexTile;
 	public CityTest cityAttributes; 
 
 	public List<HexTile> cityTilesByDistance;
@@ -35,10 +36,10 @@ public class CityTileTest : MonoBehaviour {
 	public void TurnActions(){
 		cityAttributes.ProduceResources();
 		cityAttributes.ConsumeFood(cityAttributes.ComputeFoodConsumption());
-		cityAttributes.SelectCitizenToUpgrade ();
+//		cityAttributes.SelectCitizenToUpgrade ();
 		cityAttributes.AssignNeededRole ();
 		cityAttributes.AssignUnneededRoles ();
-		cityAttributes.SelectCitizenForCreation (false);
+//		cityAttributes.SelectCitizenForCreation (false);
 		cityAttributes.AttemptToIncreaseHousing ();
 		cityAttributes.AttemptToUpgradeCitizen ();
 		cityAttributes.AttemptToCreateNewCitizen ();

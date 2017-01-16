@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Warrior: Job {
-
-	public static CitizenUpgradeRequirements req;
-
+	
 	public Warrior(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
 //		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));

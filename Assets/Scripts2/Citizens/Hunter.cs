@@ -35,11 +35,11 @@ public class Hunter: Job {
 
 	override public int[] GetAllDailyProduction(){
 		if(this.citizen == null){
-			return new int[]{ 0, 0, 0, 0, 0 };
+			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
 		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
-		return new int[]{0,food,0,0,0}; //gold, food, lumber, stone, manastone
+		return new int[]{0,food,0,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 
 	override internal List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){

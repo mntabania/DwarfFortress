@@ -20,14 +20,15 @@ public class CityTest{
 	public int lumberCount;
 	public int stoneCount;
 	public int manaStoneCount;
+	public int metalCount;
 	public int tradeGoodsCount;
 	public int mayorLikeRating;
 	public int citizenLimit;
 	public CityActionChances cityActionChances;
 	public CITY_STATE cityState;
-	public List<Citizen> citizens;
-	public List<CityTileTest> connectedCities;
-	public List<HexTile> ownedBiomeTiles;
+	public List<Citizen> citizens = new List<Citizen>();
+	public List<CityTileTest> connectedCities = new List<CityTileTest>();
+	public List<HexTile> ownedBiomeTiles = new List<HexTile>();
 	public Religion cityReligion;
 	public Culture cityCulture;
 	public KingdomTileTest kingdomTile;
@@ -35,17 +36,18 @@ public class CityTest{
 	public string cityLogs;
 //	public JOB_TYPE foodProductionRole;
 	public JOB_TYPE neededRole;
-	public List<RESOURCE> unneededResources;
-	public List<JOB_TYPE> unneededRoles;
+	public List<RESOURCE> unneededResources = new List<RESOURCE>();
+	public List<JOB_TYPE> unneededRoles = new List<JOB_TYPE>();
 	public JOB_TYPE newCitizenTarget;
 	public Citizen upgradeCitizenTarget;
 	public CityUpgradeRequirements cityUpgradeRequirements;
+	public List<ResourceStatus> allResourcesStatus = new List<ResourceStatus>();
 	public bool isDead;
 
-	public CityTest(HexTile hexTile, BIOMES biomeType){
+	public CityTest(HexTile hexTile, KingdomTileTest kingdom){
 		this.id = 0;
 		this.cityName = hexTile.name;
-		this.biomeType = biomeType;
+		this.biomeType = hexTile.biomeType;
 		this.cityMayor = null;
 		this.cityLevel = 1;
 		this.numOfRoads = 0;
@@ -55,17 +57,17 @@ public class CityTest{
 		this.lumberCount = 0;
 		this.stoneCount = 0;
 		this.manaStoneCount = 0;
+		this.metalCount = 0;
 		this.tradeGoodsCount = 0;
 		this.mayorLikeRating = 0;
 		this.citizenLimit = 4;
 		this.cityActionChances = new CityActionChances ();
 		this.cityState = CITY_STATE.ABUNDANT;
-		this.citizens = new List<Citizen>();
 		this.connectedCities = new List<CityTileTest>();
 		this.ownedBiomeTiles = new List<HexTile>();
 		this.cityReligion = new Religion();
 		this.cityCulture = new Culture();
-		this.kingdomTile = null;
+		this.kingdomTile = kingdom;
 		this.hexTile = hexTile;
 		this.cityLogs = string.Empty;
 //		this.foodProductionRole = FoodProductionRole ();
@@ -73,10 +75,32 @@ public class CityTest{
 		this.unneededRoles = new List<JOB_TYPE>();
 		this.upgradeCitizenTarget = null;
 		this.newCitizenTarget = JOB_TYPE.NONE;
+		this.allResourcesStatus = GetInitialResourcesStatus ();
 		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.isDead = false;
-	}
+		this.citizens = InitialCitizens();
+		AssignInitialCitizens ();
+		SelectCitizenToUpgrade ();
+		SelectCitizenForCreation (false);
 
+	}
+	internal List<Citizen> InitialCitizens(){
+		List<Citizen> citizens = new List<Citizen> ();
+		citizens.Add(new Citizen (JOB_TYPE.FARMER, this));
+		citizens.Add(new Citizen (JOB_TYPE.QUARRYMAN, this));
+		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, this));
+		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, this));
+
+		return citizens;
+	}
+	internal List<ResourceStatus> GetInitialResourcesStatus(){
+		List<ResourceStatus> resourcesStatus = new List<ResourceStatus> ();
+		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
+		for(int i = 0; i < allResources.Length; i++){
+			resourcesStatus.Add(new ResourceStatus(allResources[i], RESOURCE_STATUS.NORMAL));
+		}
+		return resourcesStatus;
+	}
 	internal int ComputeFoodConsumption(){
 		int totalFoodConsumption = 0;
 		for (int i = 0; i < citizens.Count; i++) {
@@ -116,6 +140,7 @@ public class CityTest{
 			this.lumberCount += resourcesProducedByCitizen[2];
 			this.stoneCount += resourcesProducedByCitizen[3];
 			this.manaStoneCount += resourcesProducedByCitizen[4];
+			this.metalCount += resourcesProducedByCitizen[5];
 		}
 	}
 
@@ -178,6 +203,8 @@ public class CityTest{
 				lowerBound = upperBound;
 			}
 		}
+
+		UpdateResourcesStatus ();
 	}
 		
 	int GetTotalChanceForUpgrade(){
@@ -272,29 +299,14 @@ public class CityTest{
 //		return production;
 //	}
 
-	private List<JobNeeds> GetListJobsTarget(int[] neededResources){ //gold, food, lumber, stone, manastone
+	private List<JobNeeds> GetListJobsTarget(int[] neededResources){ //gold, food, lumber, stone, manastone, metal
 
 		int resourceDeficit = 0;
 		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
 		List<JobNeeds> neededJobs = new List<JobNeeds> ();
 		for (int i = 0; i < allResources.Length; i++) {
-			switch(allResources[i]){
-			case RESOURCE.GOLD:
-				resourceDeficit = neededResources [0] - this.goldCount;
-				break;
-			case RESOURCE.FOOD:
-				resourceDeficit = neededResources [1] - this.foodCount;
-				break;
-			case RESOURCE.LUMBER:
-				resourceDeficit = neededResources [2] - this.lumberCount;
-				break;
-			case RESOURCE.STONE:
-				resourceDeficit = neededResources [3] - this.stoneCount;
-				break;
-			case RESOURCE.MANA_STONE:
-				resourceDeficit = neededResources [4] - this.manaStoneCount;
-				break;
-			}
+			
+			resourceDeficit = neededResources [i] - GetNumberOfResourcesPerType(allResources[i]);
 
 			if(resourceDeficit > 0){
 				for(int j = 0; j < Lookup.JOB_REF.Length; j++){
@@ -398,22 +410,10 @@ public class CityTest{
 		int excess = 0;
 		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
 		for (int i = 0; i < allResources.Length; i++) {
-			switch (allResources[i]) {
-			case RESOURCE.GOLD:
-				excess = this.goldCount - neededResources [0];
-				break;
-			case RESOURCE.FOOD:
+			if(allResources[i] == RESOURCE.FOOD){
 				excess = this.foodCount - (10 * ComputeFoodConsumption());
-				break;
-			case RESOURCE.LUMBER:
-				excess = this.lumberCount - neededResources [2];
-				break;
-			case RESOURCE.STONE:
-				excess = this.stoneCount - neededResources [3];
-				break;
-			case RESOURCE.MANA_STONE:
-				excess = this.manaStoneCount - neededResources [4];
-				break;
+			}else{
+				excess = GetNumberOfResourcesPerType(allResources[i]) - neededResources [i];
 			}
 
 			if (excess > 0) {
@@ -463,48 +463,48 @@ public class CityTest{
 		}
 		return unneededJobs.Distinct ().ToList();
 	}
-	internal List<JobNeeds> GetJobsWithExcessResources(int[] neededResources){
-		List<JobNeeds> unneededJobs = new List<JobNeeds>();
-		int excess = 0;
-		for(int i = 0; i < this.citizens.Count; i++){
-			switch(this.citizens[i].job.jobType){
-			case JOB_TYPE.FARMER:
-				excess = this.foodCount - neededResources [1];
-				if(excess >= 0){
-					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.FOOD, excess)));	
-				}
-				break;
-			case JOB_TYPE.HUNTER:
-				excess = this.foodCount - neededResources [1];
-				if(excess >= 0){
-					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.FOOD, excess)));	
-				}
-				break;
-			case JOB_TYPE.WOODSMAN:
-				excess = this.lumberCount - neededResources [2];
-				if(excess >= 0){
-					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.LUMBER, excess)));	
-				}
-				break;
-			case JOB_TYPE.MINER:
-				excess = this.stoneCount - neededResources [3];
-				if(excess >= 0){
-					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.STONE, excess)));	
-				}
-				break;
-			case JOB_TYPE.ALCHEMIST:
-				excess = this.manaStoneCount - neededResources [4];
-				if(excess >= 0){
-					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.MANA_STONE, excess)));	
-				}
-				break;
-			}
-		}
-		return unneededJobs.Distinct().OrderByDescending(x => x.resource.resourceQuantity).ToList();
-	}
+//	internal List<JobNeeds> GetJobsWithExcessResources(int[] neededResources){
+//		List<JobNeeds> unneededJobs = new List<JobNeeds>();
+//		int excess = 0;
+//		for(int i = 0; i < this.citizens.Count; i++){
+//			switch(this.citizens[i].job.jobType){
+//			case JOB_TYPE.FARMER:
+//				excess = this.foodCount - neededResources [1];
+//				if(excess >= 0){
+//					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.FOOD, excess)));	
+//				}
+//				break;
+//			case JOB_TYPE.HUNTER:
+//				excess = this.foodCount - neededResources [1];
+//				if(excess >= 0){
+//					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.FOOD, excess)));	
+//				}
+//				break;
+//			case JOB_TYPE.WOODSMAN:
+//				excess = this.lumberCount - neededResources [2];
+//				if(excess >= 0){
+//					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.LUMBER, excess)));	
+//				}
+//				break;
+//			case JOB_TYPE.MINER:
+//				excess = this.stoneCount - neededResources [3];
+//				if(excess >= 0){
+//					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.STONE, excess)));	
+//				}
+//				break;
+//			case JOB_TYPE.ALCHEMIST:
+//				excess = this.manaStoneCount - neededResources [4];
+//				if(excess >= 0){
+//					unneededJobs.Add (new JobNeeds(this.citizens[i].job.jobType, new Resource(RESOURCE.MANA, excess)));	
+//				}
+//				break;
+//			}
+//		}
+//		return unneededJobs.Distinct().OrderByDescending(x => x.resource.resourceQuantity).ToList();
+//	}
 
 	private int[] NeededResources(){
-		int[] neededResources = new int[]{0, 0, 0, 0, 0,}; //gold, food, lumber, stone, manastone
+		int[] neededResources = new int[]{0, 0, 0, 0, 0, 0}; //gold, food, lumber, stone, manastone, metal
 
 		//BASED ON UPGRADE CITIZEN
 		for(int i = 0; i < upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
@@ -521,8 +521,11 @@ public class CityTest{
 			case RESOURCE.STONE:
 				neededResources[3] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
-			case RESOURCE.MANA_STONE:
+			case RESOURCE.MANA:
 				neededResources[4] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				break;
+			case RESOURCE.METAL:
+				neededResources[5] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			}
 		}
@@ -542,8 +545,11 @@ public class CityTest{
 			case RESOURCE.STONE:
 				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
-			case RESOURCE.MANA_STONE:
+			case RESOURCE.MANA:
 				neededResources[4] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.METAL:
+				neededResources[5] += cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			}
 		}
@@ -570,27 +576,27 @@ public class CityTest{
 			break;
 		case 6:
 			req.resource.Add (new Resource (RESOURCE.STONE, 6500));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 900));
+			req.resource.Add (new Resource (RESOURCE.MANA, 900));
 			break;
 		case 7:
 			req.resource.Add (new Resource (RESOURCE.STONE, 8000));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 2000));
+			req.resource.Add (new Resource (RESOURCE.MANA, 2000));
 			break;
 		case 8:
 			req.resource.Add (new Resource (RESOURCE.STONE, 11000));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 3500));
+			req.resource.Add (new Resource (RESOURCE.MANA, 3500));
 			break;
 		case 9:
 			req.resource.Add (new Resource (RESOURCE.STONE, 15000));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 5000));
+			req.resource.Add (new Resource (RESOURCE.MANA, 5000));
 			break;
 		case 10:
 			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 6500));
+			req.resource.Add (new Resource (RESOURCE.MANA, 6500));
 			break;
 		default:
 			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
-			req.resource.Add (new Resource (RESOURCE.MANA_STONE, 6500));
+			req.resource.Add (new Resource (RESOURCE.MANA, 6500));
 			break;
 		}
 
@@ -611,7 +617,8 @@ public class CityTest{
 				this.cityLevel += 1;
 				ReduceResources (this.cityUpgradeRequirements.resource);
 				this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-]\n\n"; 
+				UpdateResourcesStatus ();
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-]\n\n";
 
 			} else {
 				//On not performing upgrade, increase chance to upgrade by 1
@@ -627,7 +634,8 @@ public class CityTest{
 				this.cityActionChances.upgradeCitizenChance = this.cityActionChances.defaultUpgradeCitizenChance;
 				ReduceResources (this.upgradeCitizenTarget.GetUpgradeRequirements().resource);
 				this.upgradeCitizenTarget.UpgradeCitizen();
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": The [FF0000]" + this.upgradeCitizenTarget.job.jobType.ToString() + "[-] clan's level has increased.\n\n"; 
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": The [FF0000]" + this.upgradeCitizenTarget.job.jobType.ToString() + "[-] clan's level has increased.\n\n";
+				this.upgradeCitizenTarget = null;
 				SelectCitizenToUpgrade ();
 			} else {
 				this.cityActionChances.upgradeCitizenChance += 1;
@@ -655,6 +663,7 @@ public class CityTest{
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
+//				UpdateResourcesStatus ();
 			} else {
 				this.cityActionChances.newCitizenChance += 1;
 			}
@@ -676,12 +685,11 @@ public class CityTest{
 				}else{
 					citizen.ChangeJob (this.newCitizenTarget);
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + this.unneededRoles[randomRole].ToString() + "[-] clan is now [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
-
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
-
 				this.unneededRoles.Remove(this.unneededRoles[randomRole]);
+//				UpdateResourcesStatus ();
 			} else {
 				this.cityActionChances.changeCitizenChance += 1;
 			}
@@ -729,36 +737,65 @@ public class CityTest{
 	}
 	internal void ReduceResources(List<Resource> resource){
 		for(int i = 0; i < resource.Count; i++){
-			if (resource[i].resourceType == RESOURCE.FOOD) {
+			if (resource[i].resourceType == RESOURCE.GOLD) {
+				this.goldCount -= resource[i].resourceQuantity;
+			}else if (resource[i].resourceType == RESOURCE.FOOD) {
 				this.foodCount -= resource[i].resourceQuantity;
 			} else if (resource[i].resourceType == RESOURCE.LUMBER) {
 				this.lumberCount -= resource[i].resourceQuantity;
-			} else if (resource[i].resourceType == RESOURCE.MANA_STONE) {
+			} else if (resource[i].resourceType == RESOURCE.MANA) {
 				this.manaStoneCount -= resource[i].resourceQuantity;
 			} else if (resource[i].resourceType == RESOURCE.STONE) {
 				this.stoneCount -= resource[i].resourceQuantity;
-			} else if (resource[i].resourceType == RESOURCE.GOLD) {
-				this.goldCount -= resource[i].resourceQuantity;
+			} else if (resource[i].resourceType == RESOURCE.METAL) {
+				this.metalCount -= resource[i].resourceQuantity;
 			} 
 		}
 
 	}
 	int GetNumberOfResourcesPerType(RESOURCE resourceType){
-		if (resourceType == RESOURCE.FOOD) {
+		if (resourceType == RESOURCE.GOLD) {
+			return this.goldCount;
+		}else if (resourceType == RESOURCE.FOOD) {
 			return this.foodCount;
 		} else if (resourceType == RESOURCE.LUMBER) {
 			return this.lumberCount;
-		} else if (resourceType == RESOURCE.MANA_STONE) {
+		} else if (resourceType == RESOURCE.MANA) {
 			return this.manaStoneCount;
 		} else if (resourceType == RESOURCE.STONE) {
 			return this.stoneCount;
-		} else if (resourceType == RESOURCE.GOLD) {
-			return this.goldCount;
+		} else if (resourceType == RESOURCE.METAL) {
+			return this.metalCount;
 		} 
 //		else if (resourceType == RESOURCE.TRADE_GOOD) {
 //			return this.tradeGoodsCount;
 //		}
 		return -1;
+	}
+
+	internal void UpdateResourcesStatus(){
+		int[] neededResources = NeededResources ();
+		for(int i = 0; i < this.allResourcesStatus.Count; i++){
+			if(this.allResourcesStatus[i].resource == RESOURCE.FOOD){
+				int days = (int)(this.foodCount / ComputeFoodConsumption ());
+				if(days >= 20){ //ABUNDANT
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.ABUNDANT;
+				}else if (days <= 3){ //SCARCE
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.SCARCE;
+				}else{ //NORMAL
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.NORMAL;
+				}
+			}else{
+				int excess = GetNumberOfResourcesPerType (this.allResourcesStatus [i].resource) - neededResources [i];
+				if(excess > 0){ //ABUNDANT
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.ABUNDANT;
+				}else if (excess < 0){ //SCARCE
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.SCARCE;
+				}else{  //NORMAL
+					this.allResourcesStatus[i].status = RESOURCE_STATUS.NORMAL;
+				}
+			}
+		}
 	}
 
 }

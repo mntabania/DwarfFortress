@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
 		MapGenerator();
 		CreateCity(GridMap.Instance.listHexes [1025].GetComponent<HexTile>());
 		GenerateInitialKingdoms();
-		GenerateInitialCitizens ();
+//		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (hexTiles [0].GetComponent<CityTileTest> ());
 	}
@@ -41,32 +41,22 @@ public class GameManager : MonoBehaviour {
 		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){hexTiles[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
-
 		//		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		//		goKingdom2.transform.parent = this.transform;
 		//		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){hexTiles[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		//		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		//		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 	}
-
 	private void GenerateInitialCitizens(){
-		for(int i = 0; i < this.kingdoms.Count; i++){
-			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
-				this.kingdoms [i].kingdom.cities [j].cityAttributes.citizens = InitialCitizens (this.kingdoms [i].kingdom.cities [j]);
-				this.kingdoms [i].kingdom.cities [j].cityAttributes.AssignInitialCitizens();
-			}
-		}
+//		for(int i = 0; i < this.kingdoms.Count; i++){
+//			for(int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++){
+//				this.kingdoms [i].kingdom.cities [j].cityAttributes.citizens = InitialCitizens (this.kingdoms [i].kingdom.cities [j]);
+//				this.kingdoms [i].kingdom.cities [j].cityAttributes.AssignInitialCitizens();
+//			}
+//		}
 
 	}
-	private List<Citizen> InitialCitizens(CityTileTest cityTile){
-		List<Citizen> citizens = new List<Citizen> ();
-		citizens.Add(new Citizen (JOB_TYPE.FARMER, cityTile.cityAttributes));
-		citizens.Add(new Citizen (JOB_TYPE.MINER, cityTile.cityAttributes));
-		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, cityTile.cityAttributes));
-		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, cityTile.cityAttributes));
 
-		return citizens;
-	}
 
 	void CreateCity(HexTile tile){
 		tile.SetTileColor(Color.black);
@@ -74,10 +64,11 @@ public class GameManager : MonoBehaviour {
 		tile.isOccupied = true;
 		tile.tile.canPass = false;
 		tile.gameObject.AddComponent<CityTileTest>();
-		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, tile.biomeType);
+		tile.gameObject.GetComponent<CityTileTest>().hexTile = tile;
+//		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, tile.biomeType);
 
 		this.hexTiles [0] = tile.gameObject;
-		tile.gameObject.GetComponent<CityTileTest> ().cityAttributes.AssignInitialCitizens();
+//		tile.gameObject.GetComponent<CityTileTest> ().cityAttributes.AssignInitialCitizens();
 	}
 
 	void StartResourceProductions(){
@@ -105,9 +96,9 @@ public class GameManager : MonoBehaviour {
 					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(true); //assign citizen type to the City's newCitizenTarget
 				}
 
-				if(kingdoms [i].kingdom.cities [j].cityAttributes.upgradeCitizenTarget == null){
-					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenToUpgrade();
-				}
+//				if(kingdoms [i].kingdom.cities [j].cityAttributes.upgradeCitizenTarget == null){
+//					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenToUpgrade();
+//				}
 
 			}
 		}

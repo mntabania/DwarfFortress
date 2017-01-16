@@ -35,7 +35,7 @@ public class RelationshipTestScript : MonoBehaviour {
 
 	void GenerateInitializeCities(){
 		for (int i = 0; i < hexTiles.Length; i++) {
-			hexTiles [i].GetComponent<CityTileTest> ().cityAttributes = new CityTest (hexTiles [i].GetComponent<HexTile>(), BIOMES.GRASSLAND);
+//			hexTiles [i].GetComponent<CityTileTest> ().cityAttributes = new CityTest (hexTiles [i].GetComponent<HexTile>(), BIOMES.GRASSLAND);
 //			GameManager.Instance.turnEnded += hexTiles [i].GetComponent<CityTileTest> ().TurnActions;
 		}
 		hexTiles[0].GetComponent<CityTileTest>().cityAttributes.connectedCities.Add(hexTiles[1].GetComponent<CityTileTest>());

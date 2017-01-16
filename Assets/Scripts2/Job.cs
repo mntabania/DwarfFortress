@@ -37,7 +37,7 @@ public class Job {
 		return 0;
 	}
 	public virtual int[] GetAllDailyProduction(){
-		return new int[]{0,0,0,0,0};
+		return new int[]{0,0,0,0,0,0};
 	}
 
 	internal virtual List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){

@@ -7,8 +7,12 @@ public class Lookup {
 		new Hunter(),
 		new Miner(),
 		new Woodsman(),
+		new Quarryman(),
 		new Alchemist(),
 		new Warrior(),
+		new Brawler(),
+		new Archer(),
+		new Mage(),
 	};
 	public static Job GetJobInfo(int jobId){
 		Job job = JOB_REF [jobId];

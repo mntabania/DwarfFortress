@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Woodsman: Job {
-
-	public static CitizenUpgradeRequirements req;
-
+	
 	public Woodsman(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
 		req.resource.Add (new Resource(RESOURCE.LUMBER, 200));
@@ -37,11 +35,11 @@ public class Woodsman: Job {
 
 	override public int[] GetAllDailyProduction(){
 		if(this.citizen == null){
-			return new int[]{ 0, 0, 0, 0, 0 };
+			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.woodValue / 2f);
 		int lumbers = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue))) * 2f);
-		return new int[]{0,0,lumbers,0,0}; //gold, food, lumber, stone, manastone
+		return new int[]{0,0,lumbers,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 
 	override internal List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){
