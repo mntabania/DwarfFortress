@@ -44,6 +44,8 @@ public class CityTest{
 	public List<ResourceStatus> allResourcesStatus = new List<ResourceStatus>();
 	public bool isDead;
 
+	protected int foodStockpileCount = 0;
+
 	public CityTest(HexTile hexTile, KingdomTileTest kingdom){
 		this.id = 0;
 		this.cityName = hexTile.name;
@@ -84,6 +86,7 @@ public class CityTest{
 		SelectCitizenForCreation (false);
 
 	}
+
 	internal List<Citizen> InitialCitizens(){
 		List<Citizen> citizens = new List<Citizen> ();
 		citizens.Add(new Citizen (JOB_TYPE.FARMER, this));
@@ -93,6 +96,7 @@ public class CityTest{
 
 		return citizens;
 	}
+
 	internal List<ResourceStatus> GetInitialResourcesStatus(){
 		List<ResourceStatus> resourcesStatus = new List<ResourceStatus> ();
 		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
@@ -101,6 +105,16 @@ public class CityTest{
 		}
 		return resourcesStatus;
 	}
+
+	internal void GenerateInitialFood(){
+		this.foodCount = GetNeededFoodForNumberOfDays (40);
+	}
+
+	int GetNeededFoodForNumberOfDays(int days){
+		int dailyFoodConsumption = ComputeFoodConsumption();
+		return dailyFoodConsumption * days;
+	}
+
 	internal int ComputeFoodConsumption(){
 		int totalFoodConsumption = 0;
 		for (int i = 0; i < citizens.Count; i++) {
@@ -136,12 +150,18 @@ public class CityTest{
 		for(int i = 0; i < this.citizens.Count; i++){
 			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
 			this.goldCount += resourcesProducedByCitizen[0];
-			this.foodCount += resourcesProducedByCitizen[1];
+//			this.foodCount += resourcesProducedByCitizen[1];
+			this.foodStockpileCount += resourcesProducedByCitizen[1]; //Add food to stockpile instead
 			this.lumberCount += resourcesProducedByCitizen[2];
 			this.stoneCount += resourcesProducedByCitizen[3];
 			this.manaStoneCount += resourcesProducedByCitizen[4];
 			this.metalCount += resourcesProducedByCitizen[5];
 		}
+	}
+
+	internal void TriggerFoodHarvest(){
+		this.foodCount = foodStockpileCount;
+		this.foodStockpileCount = 0;
 	}
 
 	internal void ComputeForDeath(){
@@ -807,5 +827,4 @@ public class CityTest{
 			}
 		}
 	}
-
 }
