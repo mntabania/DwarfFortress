@@ -460,20 +460,27 @@ public class CityTest{
 	}
 	private List<RESOURCE> GetUnneededResources(int[] neededResources){ //gold, food, lumber, stone, manastone
 		List<RESOURCE> unneededResources = new List<RESOURCE>();
-		int excess = 0;
-		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
-		for (int i = 0; i < allResources.Length; i++) {
-			if(allResources[i] == RESOURCE.FOOD){
-				excess = this.foodCount - (10 * ComputeFoodConsumption());
-			}else{
-				excess = GetNumberOfResourcesPerType(allResources[i]) - neededResources [i];
-			}
 
-			if (excess > 0) {
-				unneededResources.Add (allResources[i]);
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": There is an oversupply of [FF0000]" + allResources[i].ToString() + "[-]\n\n"; 
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus[i].status == RESOURCE_STATUS.ABUNDANT) {
+				unneededResources.Add (this.allResourcesStatus[i].resource);
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": There is an oversupply of [FF0000]" + this.allResourcesStatus[i].resource.ToString() + "[-]\n\n";
 			}
 		}
+//		int excess = 0;
+//		RESOURCE[] allResources = (RESOURCE[]) Enum.GetValues (typeof(RESOURCE));
+//		for (int i = 0; i < allResources.Length; i++) {
+//			if(allResources[i] == RESOURCE.FOOD){
+//				excess = this.foodCount - (10 * ComputeFoodConsumption());
+//			}else{
+//				excess = GetNumberOfResourcesPerType(allResources[i]) - neededResources [i];
+//			}
+//
+//			if (excess > 0) {
+//				unneededResources.Add (allResources[i]);
+//				cityLogs += GameManager.Instance.currentDay.ToString() + ": There is an oversupply of [FF0000]" + allResources[i].ToString() + "[-]\n\n"; 
+//			}
+//		}
 
 		return unneededResources;
 	}
