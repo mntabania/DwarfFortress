@@ -35,7 +35,7 @@ public static class Utilities {
 		},
 
 		{BIOMES.FOREST, new Dictionary<BIOME_PRODUCE_TYPE, int[]>(){
-				{BIOME_PRODUCE_TYPE.FARMING, new int[]{0, 0, 0, 100}},
+				{BIOME_PRODUCE_TYPE.FARMING, new int[]{20, 5, 75, 0}},
 				{BIOME_PRODUCE_TYPE.HUNTING, new int[]{20, 5, 75, 0}},
 				{BIOME_PRODUCE_TYPE.WOOD, new int[]{20, 75, 5, 0}},
 				{BIOME_PRODUCE_TYPE.STONE, new int[]{5, 0, 20, 75}},

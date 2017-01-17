@@ -47,7 +47,7 @@ public class Job {
 	public virtual int GetDailyProduction(RESOURCE resourceType){
 		return 0;
 	}
-	public virtual int GetDailyProduction(){
+	public virtual int GetAveDailyProduction(RESOURCE resourceType){
 		return 0;
 	}
 	public virtual int[] GetAllDailyProduction(){

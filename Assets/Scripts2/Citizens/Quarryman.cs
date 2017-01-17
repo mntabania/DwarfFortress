@@ -22,17 +22,20 @@ public class Quarryman: Job {
 		}
 		if (resourceType == RESOURCE.STONE) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * 2f);
 		}
 		return 0;
 	}
 
-	override public int GetDailyProduction(){
+	override public int GetAveDailyProduction(RESOURCE resourceType){
 		if(this.citizen == null){
 			return 0;
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		if (resourceType == RESOURCE.STONE) {
+			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+		}
+		return 0;
 	}
 
 	override public int[] GetAllDailyProduction(){

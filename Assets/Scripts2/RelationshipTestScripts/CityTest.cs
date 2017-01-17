@@ -212,6 +212,7 @@ public class CityTest{
 
 		citizen.AssignCitizenToTile (neighbours);
 	}
+		
 
 	internal void SelectCitizenToUpgrade(){
 		if(isDead){
@@ -371,13 +372,26 @@ public class CityTest{
 		if(isDead){
 			return;
 		}
-		if(this.foodCount <= -10){
+		int averageDailyProd = GetAveDailyProduction (RESOURCE.FOOD);
+		int daysUntilResourcesFinish = 0;
+		if (averageDailyProd > 0) {
+			daysUntilResourcesFinish = (int) ((GetNeededFoodForNumberOfDays(30) - this.foodStockpileCount) / averageDailyProd);
+		}
+		if(daysUntilResourcesFinish > GameManager.Instance.daysUntilNextHarvest || daysUntilResourcesFinish <= 0){
 			if(this.neededRole == JOB_TYPE.NONE){
-				int chance = UnityEngine.Random.Range (0, 2);
-				if (chance == 0) {
+				int averageFarmingValue = GetAveHexValue(BIOME_PRODUCE_TYPE.FARMING);
+				int averageHuntingValue = GetAveHexValue(BIOME_PRODUCE_TYPE.HUNTING);
+				if (averageFarmingValue > averageHuntingValue) {
 					this.neededRole = JOB_TYPE.FARMER;
-				} else {
+				} else if (averageFarmingValue < averageHuntingValue) {
 					this.neededRole = JOB_TYPE.HUNTER;
+				} else {
+					int chance = UnityEngine.Random.Range (0, 2);
+					if (chance == 0) {
+						this.neededRole = JOB_TYPE.FARMER;
+					} else {
+						this.neededRole = JOB_TYPE.HUNTER;
+					}
 				}
 			}
 		}else{
@@ -546,6 +560,9 @@ public class CityTest{
 		int[] neededResources = new int[]{0, 0, 0, 0, 0, 0}; //gold, food, lumber, stone, manastone, metal
 
 		//BASED ON UPGRADE CITIZEN
+		if (this.upgradeCitizenTarget == null) {
+			SelectCitizenToUpgrade();
+		}
 		for(int i = 0; i < this.upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
 			switch(this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType){
 			case RESOURCE.GOLD:
@@ -845,5 +862,30 @@ public class CityTest{
 				}
 			}
 		}
+	}
+
+	//Get Daily Production Based On Resource Type
+	internal int GetAveDailyProduction(RESOURCE resourceType){
+		int totalDailyProduction = 0;
+		for (int i = 0; i < this.citizens.Count; i++) {
+			totalDailyProduction += this.citizens [i].GetAveDailyProduction(resourceType);
+		}
+		return totalDailyProduction;
+	}
+
+	internal int GetAveHexValue(BIOME_PRODUCE_TYPE produceType){
+		int totalValue = 0;
+		for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
+			switch (produceType) {
+			case BIOME_PRODUCE_TYPE.FARMING:
+				totalValue += this.ownedBiomeTiles[i].farmingValue;
+				break;
+			case BIOME_PRODUCE_TYPE.HUNTING:
+				totalValue += this.ownedBiomeTiles[i].huntingValue;
+				break;
+			}
+		}
+		totalValue = totalValue / this.ownedBiomeTiles.Count;
+		return totalValue;
 	}
 }

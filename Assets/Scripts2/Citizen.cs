@@ -95,10 +95,14 @@ public class Citizen {
 		return _job.GetDailyProduction (resourceType);
 	}
 
+	public int GetAveDailyProduction(RESOURCE resourceType) {
+		return _job.GetAveDailyProduction (resourceType);
+	}
+
 	public int[] GetAllDailyProduction() {
 		return _job.GetAllDailyProduction();
 	}
-
+		
 	public CitizenUpgradeRequirements GetUpgradeRequirements(){
 		return _job.upgradeRequirements;
 	}

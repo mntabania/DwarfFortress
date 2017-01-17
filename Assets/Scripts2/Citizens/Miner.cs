@@ -22,17 +22,20 @@ public class Miner: Job {
 		}
 		if (resourceType == RESOURCE.METAL) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * 2f);
 		}
 		return 0;
 	}
 
-	override public int GetDailyProduction(){
+	override public int GetAveDailyProduction(RESOURCE resourceType){
 		if(this.citizen == null){
 			return 0;
 		}
-		int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
-		return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		if (resourceType == RESOURCE.METAL) {
+			int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+		}
+		return 0;
 	}
 
 	override public int[] GetAllDailyProduction(){
