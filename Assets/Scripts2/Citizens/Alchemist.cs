@@ -41,11 +41,11 @@ public class Alchemist : Job {
 
 	override public int[] GetAllDailyProduction(){
 		if(this.citizen == null){
-			return new int[]{ 0, 0, 0, 0, 0 };
+			return new int[]{ 0, 0, 0, 0, 0, 0};
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
 		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * 2f);
-		return new int[]{0,0,0,0,manaStones};
+		return new int[]{0,0,0,0,manaStones, 0};
 	}
 
 	override internal List<HexTile> GetViableNeighborTiles (List<HexTile> hexTiles){

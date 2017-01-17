@@ -130,7 +130,6 @@ public class CityTest{
 		if(isDead){
 			return;
 		}
-		Debug.Log (foodRequirement);
 		this.foodCount -= foodRequirement;
 //		cityLogs += GameManager.Instance.currentDay.ToString() + ": Consumed [ff0000]" + foodRequirement.ToString() + "[-] food.\n\n"; 
 		if(this.foodCount < 0){
@@ -172,7 +171,9 @@ public class CityTest{
 	}
 
 	internal void TriggerFoodHarvest(){
-		this.foodCount = foodStockpileCount;
+//		Debug.Log ("Food Harvest!: Spoiled - " + this.foodCount.ToString () + "/ New Food - " + this.foodStockpileCount.ToString ());
+		cityLogs += GameManager.Instance.currentDay.ToString() + ": Harvest Day, food is now [FF0000]" + this.foodStockpileCount.ToString() + "[-].\n\n";
+		this.foodCount = this.foodStockpileCount;
 		this.foodStockpileCount = 0;
 	}
 
@@ -185,6 +186,7 @@ public class CityTest{
 			int russianRoulette = UnityEngine.Random.Range (0, citizens.Count);
 			cityLogs += GameManager.Instance.currentDay.ToString() + ": The entire [FF0000]" + citizens[russianRoulette].job.jobType.ToString() + "[-] clan perished.\n\n"; 
 			citizens.Remove (citizens [russianRoulette]);
+			UpdateResourcesStatus();
 		}
 	}
 
@@ -371,7 +373,12 @@ public class CityTest{
 		}
 		if(this.foodCount <= -10){
 			if(this.neededRole == JOB_TYPE.NONE){
-				this.neededRole = JOB_TYPE.FARMER;
+				int chance = UnityEngine.Random.Range (0, 2);
+				if (chance == 0) {
+					this.neededRole = JOB_TYPE.FARMER;
+				} else {
+					this.neededRole = JOB_TYPE.HUNTER;
+				}
 			}
 		}else{
 			this.neededRole = JOB_TYPE.NONE;
@@ -695,7 +702,7 @@ public class CityTest{
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
-//				UpdateResourcesStatus ();
+				UpdateResourcesStatus ();
 			} else {
 				this.cityActionChances.newCitizenChance += 1;
 			}
@@ -820,9 +827,9 @@ public class CityTest{
 		for(int i = 0; i < this.allResourcesStatus.Count; i++){
 			if(this.allResourcesStatus[i].resource == RESOURCE.FOOD){
 				int days = (int)(this.foodCount / ComputeFoodConsumption ());
-				if(days >= 20){ //ABUNDANT
+				if(days >= (GameManager.Instance.daysUntilNextHarvest + 3)){ //ABUNDANT
 					this.allResourcesStatus[i].status = RESOURCE_STATUS.ABUNDANT;
-				}else if (days <= 3){ //SCARCE
+				}else if (days <= GameManager.Instance.daysUntilNextHarvest){ //SCARCE
 					this.allResourcesStatus[i].status = RESOURCE_STATUS.SCARCE;
 				}else{ //NORMAL
 					this.allResourcesStatus[i].status = RESOURCE_STATUS.NORMAL;

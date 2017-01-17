@@ -113,13 +113,8 @@ public class Citizen {
 	}
 
 	internal void ChangeJob(JOB_TYPE jobType){
-		for(int i = 0; i < Lookup.JOB_REF.Length; i++){
-			if(Lookup.GetJobInfo(i).jobType == jobType){
-				this._job = Lookup.GetJobInfo (i);
-				this._job.citizen = this;
-				break;
-			}
-		}
+		this._job = GetJob(jobType);
+		this._job.citizen = this;
 		UpdateUpgradeRequirements ();
 	}
 

@@ -31,6 +31,7 @@ public class CityTileTest : MonoBehaviour {
 
 	public void SetCityAsActiveAndSetProduction(){
 		GameManager.Instance.turnEnded += TurnActions;
+		cityAttributes.GenerateInitialFood();
 	}
 
 	public void TurnActions(){
