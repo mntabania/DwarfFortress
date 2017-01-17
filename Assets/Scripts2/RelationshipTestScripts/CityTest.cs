@@ -546,49 +546,49 @@ public class CityTest{
 		int[] neededResources = new int[]{0, 0, 0, 0, 0, 0}; //gold, food, lumber, stone, manastone, metal
 
 		//BASED ON UPGRADE CITIZEN
-		for(int i = 0; i < upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
-			switch(upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType){
+		for(int i = 0; i < this.upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
+			switch(this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType){
 			case RESOURCE.GOLD:
-				neededResources[0] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[0] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.FOOD:
-				neededResources[1] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[1] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.LUMBER:
-				neededResources[2] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[2] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.STONE:
-				neededResources[3] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[3] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.MANA:
-				neededResources[4] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[4] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			case RESOURCE.METAL:
-				neededResources[5] += upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
+				neededResources[5] += this.upgradeCitizenTarget.GetUpgradeRequirements().resource [i].resourceQuantity;
 				break;
 			}
 		}
 
 		//BASED ON HOUSING UPGRADE
-		for(int i = 0; i < cityUpgradeRequirements.resource.Count; i++){
-			switch(cityUpgradeRequirements.resource[i].resourceType){
+		for(int i = 0; i < this.cityUpgradeRequirements.resource.Count; i++){
+			switch(this.cityUpgradeRequirements.resource[i].resourceType){
 			case RESOURCE.GOLD:
-				neededResources[0] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[0] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.FOOD:
-				neededResources[1] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[1] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.LUMBER:
-				neededResources[2] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[2] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.STONE:
-				neededResources[3] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[3] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.MANA:
-				neededResources[4] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[4] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			case RESOURCE.METAL:
-				neededResources[5] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				neededResources[5] += this.cityUpgradeRequirements.resource [i].resourceQuantity;
 				break;
 			}
 		}
