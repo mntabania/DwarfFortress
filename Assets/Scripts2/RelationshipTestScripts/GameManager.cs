@@ -50,11 +50,11 @@ public class GameManager : MonoBehaviour {
 
 	void GenerateCities(){
 		CreateCity(GridMap.Instance.listHexes [293].GetComponent<HexTile>());
-//		CreateCity(GridMap.Instance.listHexes [1244].GetComponent<HexTile>());
-//		CreateCity(GridMap.Instance.listHexes [2094].GetComponent<HexTile>());
-//		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
-//		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
-//		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1244].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [2094].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
 	}
 
 	void GenerateCityConnections(){
@@ -110,7 +110,8 @@ public class GameManager : MonoBehaviour {
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
 		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){
-			cities[0].GetComponent<CityTileTest>(),
+			cities[0].GetComponent<CityTileTest>(), cities[1].GetComponent<CityTileTest>(), cities[2].GetComponent<CityTileTest>(),
+			cities[3].GetComponent<CityTileTest>(), cities[4].GetComponent<CityTileTest>(), cities[5].GetComponent<CityTileTest>(),
 		}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
