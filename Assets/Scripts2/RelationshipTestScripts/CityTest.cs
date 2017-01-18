@@ -957,8 +957,11 @@ public class CityTest{
 					if (scarceResource != null) {
 						int neededGold = scarceResource.amount * GetCostPerResourceUnit(scarceResource.resource);
 						if (neededGold < this.goldCount) {
+							cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before purchase is " + this.goldCount + "\n\n";
+							cityLogs += GameManager.Instance.currentDay.ToString () +": " + scarceResource.resource.ToString() + 
+								" before purchase is " + GetNumberOfResourcesPerType(scarceResource.resource).ToString() + "\n\n";
 							int caravanGold = neededGold;
-							this.goldCount -= caravanGold;
+							AdjustResourceCount(RESOURCE.GOLD, (caravanGold*-1));
 							Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
 							List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
 							int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
@@ -979,7 +982,10 @@ public class CityTest{
 						int neededResources = abundantResource.amount * GetCostPerResourceUnit(abundantResource.resource);
 						if (neededResources < this.GetNumberOfResourcesPerType(abundantResource.resource)) {
 							int caravanResources = neededResources;
-							this.GetNumberOfResourcesPerType(abundantResource.resource) -= caravanResources;
+							cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before selling is " + this.goldCount + "\n\n";
+							cityLogs += GameManager.Instance.currentDay.ToString () +": " + abundantResource.resource.ToString() + 
+								" before selling is " + GetNumberOfResourcesPerType(abundantResource.resource).ToString() + "\n\n";
+							AdjustResourceCount(abundantResource.resource, (caravanResources*-1));
 							Debug.Log (this.cityName + " abundant resource: " + abundantResource.resource.ToString ());
 							List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
 							int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
@@ -1017,16 +1023,20 @@ public class CityTest{
 
 				int cost = affordResource * GetCostPerResourceUnit (resourceToBuy.resource);
 
+				cityLogs += GameManager.Instance.currentDay.ToString () + ": Caravan Gold is " + caravanGold.ToString() + "Gold. \n\n";
+
 				caravanGold -= cost;
 				tradeCity.goldCount += cost;
 				TradeResources (tradeCity, resourceToBuy.resource, (affordResource * -1));
 				if (caravanGold > 0) {
-					this.goldCount += caravanGold;
+					cityLogs += GameManager.Instance.currentDay.ToString () + ": Returned " + caravanGold.ToString() + " Gold. \n\n";
+					AdjustResourceCount(RESOURCE.GOLD, caravanGold);
 				}
 				//TODO: Insert add like to both lords
 				Debug.Log ("SOMEONE BOUGHT: " + this.cityName);
+				GameManager.Instance.TogglePause();
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Bought " + affordResource.ToString () + " " + resourceToBuy.resource.ToString () + " from " + tradeCity.cityName +
-				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n";
+				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n\n";
 			} else {
 				//TODO: Reduce Like to target trade city
 			}
@@ -1054,6 +1064,8 @@ public class CityTest{
 
 				int cost = affordResource * GetCostPerResourceUnit (resourceToBeBought.resource);
 
+				cityLogs += GameManager.Instance.currentDay.ToString () + ": Caravan Resources is " + caravanResources.ToString() + "Gold. \n\n";
+
 				this.goldCount += cost;
 				tradeCity.goldCount -= cost;
 
@@ -1061,10 +1073,12 @@ public class CityTest{
 				TradeResources (tradeCity, resourceToBeBought.resource, affordResource);
 
 				if (caravanResources > 0) {
-					this.GetNumberOfResourcesPerType(resourceToBeBought) += caravanResources;
+					cityLogs += GameManager.Instance.currentDay.ToString () + ": Returned " + caravanResources.ToString() + " " + resourceToBeBought.resource.ToString() + ". \n\n";
+					AdjustResourceCount(resourceToBeBought.resource, caravanResources);
 				}
 				//TODO: Insert add like to both lords
-				Debug.LogError ("SOMEONE SOLD: " + this.cityName);
+				Debug.Log ("SOMEONE SOLD: " + this.cityName);
+				GameManager.Instance.TogglePause();
 				cityLogs += GameManager.Instance.currentDay.ToString () + "Sold " + resourceToOffer.resource.ToString () + " " + affordResource.ToString () + " to " + tradeCity.cityName +
 				"in exchange for " + cost.ToString () + " " + resourceToOffer.ToString ();
 			} else {
@@ -1174,5 +1188,28 @@ public class CityTest{
 			}
 		}
 		return null;
+	}
+
+	void AdjustResourceCount(RESOURCE resourceType, int amount){
+		switch (resourceType) {
+		case RESOURCE.FOOD:
+			this.foodCount += amount;
+			break;
+		case RESOURCE.GOLD:
+			this.goldCount += amount;
+			break;
+		case RESOURCE.LUMBER:
+			this.lumberCount += amount;
+			break;
+		case RESOURCE.STONE:
+			this.stoneCount += amount;
+			break;
+		case RESOURCE.MANA:
+			this.manaStoneCount += amount;
+			break;
+		case RESOURCE.METAL:
+			this.metalCount += amount;
+			break;
+		}
 	}
 }
