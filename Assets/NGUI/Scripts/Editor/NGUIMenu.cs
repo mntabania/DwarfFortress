@@ -711,9 +711,6 @@ static public class NGUIMenu
 
 	[MenuItem("NGUI/Normalize Depth Hierarchy &#0", false, 11)]
 	static public void Normalize () { NGUITools.NormalizeDepths(); }
-	
-	[MenuItem("NGUI/", false, 11)]
-	static void Breaker () { }
 
 	[MenuItem("NGUI/Help", false, 22)]
 	static public void Help () { NGUIHelp.Show(); }
