@@ -715,6 +715,6 @@ static public class NGUIMenu
 	[MenuItem("NGUI/", false, 11)]
 	static void Breaker () { }
 
-	[MenuItem("NGUI/Help", false, 12)]
+	[MenuItem("NGUI/Help", false, 22)]
 	static public void Help () { NGUIHelp.Show(); }
 }
