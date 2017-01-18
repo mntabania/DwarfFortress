@@ -46,5 +46,6 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.AttemptToCreateNewCitizen ();
 		cityAttributes.AttemptToChangeCitizenRole ();
 		cityAttributes.LaunchTradeMission();
+		cityAttributes.UpdateResourcesStatus();
 	}
 }

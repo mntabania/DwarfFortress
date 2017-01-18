@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour {
 
 	void Awake(){
 		Instance = this;
-		cities = new List<GameObject>();
+		this.cities = new List<GameObject>();
 		turnEnded += IncrementDaysOnTurn;
 		turnEnded += WaitForHarvest;
 	}
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour {
 //		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
-		UserInterfaceManager.Instance.SetCityInfoToShow (cities [0].GetComponent<CityTileTest> ());
+		UserInterfaceManager.Instance.SetCityInfoToShow (this.cities [0].GetComponent<CityTileTest> ());
 	}
 
 	void MapGenerator(){
@@ -58,24 +58,24 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void GenerateCityConnections(){
-		for (int i = 0; i < cities.Count; i++) {
-			CityTileTest currentCityTile = cities[i].GetComponent<CityTileTest>();
+		for (int i = 0; i < this.cities.Count; i++) {
+			CityTileTest currentCityTile = this.cities[i].GetComponent<CityTileTest>();
 			int nextCityIndex = i + 1;
 			int previousCityIndex = i - 1;
-			if (nextCityIndex >= cities.Count) {
+			if (nextCityIndex >= this.cities.Count) {
 				nextCityIndex = 0;
 			}
 			if (previousCityIndex < 0) {
 				previousCityIndex = 5;
 			}
-			currentCityTile.cityAttributes.connectedCities.Add(cities[nextCityIndex].GetComponent<CityTileTest>());
-			currentCityTile.cityAttributes.connectedCities.Add(cities[previousCityIndex].GetComponent<CityTileTest>());
+			currentCityTile.cityAttributes.connectedCities.Add(this.cities[nextCityIndex].GetComponent<CityTileTest>());
+			currentCityTile.cityAttributes.connectedCities.Add(this.cities[previousCityIndex].GetComponent<CityTileTest>());
 		}
 	}
 
 	void GenerateBiomes(){
-		for (int i = 0; i < cities.Count; i++) {
-			HexTile currentHexTile = cities [i].GetComponent<HexTile> ();
+		for (int i = 0; i < this.cities.Count; i++) {
+			HexTile currentHexTile = this.cities [i].GetComponent<HexTile> ();
 			HexTile[] neighbours = currentHexTile.GetTilesInRange(5);
 			BIOMES targetBiomeType = BIOMES.BARE;
 			Sprite biomeSprite = null;
@@ -110,11 +110,11 @@ public class GameManager : MonoBehaviour {
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
 		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){
-			cities[0].GetComponent<CityTileTest>(), cities[1].GetComponent<CityTileTest>(), cities[2].GetComponent<CityTileTest>(),
-			cities[3].GetComponent<CityTileTest>(), cities[4].GetComponent<CityTileTest>(), cities[5].GetComponent<CityTileTest>(),
+			this.cities[0].GetComponent<CityTileTest>(), this.cities[1].GetComponent<CityTileTest>(), this.cities[2].GetComponent<CityTileTest>(),
+			this.cities[3].GetComponent<CityTileTest>(), this.cities[4].GetComponent<CityTileTest>(), this.cities[5].GetComponent<CityTileTest>(),
 		}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-		kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
+		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 		//		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		//		goKingdom2.transform.parent = this.transform;
 		//		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){hexTiles[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
@@ -135,9 +135,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void StartResourceProductions(){
-		for (int i = 0; i < kingdoms.Count; i++) {
-			for (int j = 0; j < kingdoms [i].kingdom.cities.Count; j++) {
-				kingdoms [i].kingdom.cities [j].SetCityAsActiveAndSetProduction ();
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
+				this.kingdoms [i].kingdom.cities [j].SetCityAsActiveAndSetProduction ();
 			}
 		}
 		ActivateProducationCycle();
@@ -153,10 +153,10 @@ public class GameManager : MonoBehaviour {
 		}
 		turnEnded();
 
-		for (int i = 0; i < kingdoms.Count; i++) {
-			for (int j = 0; j < kingdoms [i].kingdom.cities.Count; j++) {
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
 				if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
-					kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(true); //assign citizen type to the City's newCitizenTarget
+					this.kingdoms [i].kingdom.cities [j].cityAttributes.SelectCitizenForCreation(true); //assign citizen type to the City's newCitizenTarget
 				}
 
 //				if(kingdoms [i].kingdom.cities [j].cityAttributes.upgradeCitizenTarget == null){
@@ -179,8 +179,8 @@ public class GameManager : MonoBehaviour {
 	void WaitForHarvest(){
 		if (daysUntilNextHarvest <= 1) {
 			//TODO: Put Harvest Code Execution here
-			for (int i = 0; i < cities.Count; i++) {
-				cities [i].GetComponent<CityTileTest> ().cityAttributes.TriggerFoodHarvest();
+			for (int i = 0; i < this.cities.Count; i++) {
+				this.cities [i].GetComponent<CityTileTest> ().cityAttributes.TriggerFoodHarvest();
 			}
 			daysUntilNextHarvest = 30;
 		} else {
