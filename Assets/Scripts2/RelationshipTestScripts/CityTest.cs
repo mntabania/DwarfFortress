@@ -10,7 +10,7 @@ public class CityTest{
 	public int id;
 	public string cityName;
 	public BIOMES biomeType;
-	public Mayor cityMayor;
+	public Lord cityLord;
 	public int cityLevel;
 	public int numOfRoads;
 	public int population;
@@ -51,7 +51,7 @@ public class CityTest{
 		this.id = GetID()+1;
 		this.cityName = hexTile.name;
 		this.biomeType = hexTile.biomeType;
-		this.cityMayor = null;
+		this.cityLord = null;
 		this.cityLevel = 1;
 		this.numOfRoads = 0;
 		this.population = 0;
