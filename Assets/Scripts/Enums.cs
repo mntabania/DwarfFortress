@@ -144,10 +144,6 @@ public enum RESIDENCE{
 	OUTSIDE,
 	INSIDE
 }
-public enum DECISION{
-	COOPERATE,
-	BETRAY,
-}
 
 public enum RESOURCE_STATUS{
 	SCARCE,
@@ -162,4 +158,24 @@ public enum BIOME_PRODUCE_TYPE{
 	MANA,
 	METAL,
 	GOLD,
+}
+
+public enum DECISION{
+	NEUTRAL,
+	NICE,
+	RUDE,
+}
+public enum LORD_PERSONALITY{
+	TIT_FOR_TAT,
+	VENGEFUL,
+	RATIONAL,
+	NAIVE,
+}
+
+public enum LORD_EVENTS{
+	TRADE,
+	HELP,
+	GIFT,
+	COOPERATE1,
+	COOPERATE2,
 }
