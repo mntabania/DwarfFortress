@@ -34,6 +34,9 @@ public class HexTile : MonoBehaviour {
 	public bool isRoad = false;
 	public bool isOccupied = false;
 
+	public RESOURCE primaryResourceToPurchaseTile;
+	public RESOURCE secondaryResourceToPurchaseTile;
+
 //		switch(biomeType){
 //		case BIOME.OCEAN:
 //			this.gameObject.GetComponent<SpriteRenderer>().color = new Color(0f/255f,1f/255f,105f/255f);
@@ -257,6 +260,24 @@ public class HexTile : MonoBehaviour {
 			}
 		}
 	}	
+
+	public int GetRelevantResourceValueByJobType(JOB_TYPE jobType){
+		switch (jobType) {
+		case JOB_TYPE.FARMER:
+			return farmingValue;
+		case JOB_TYPE.HUNTER:
+			return huntingValue;
+		case JOB_TYPE.WOODSMAN:
+			return woodValue;
+		case JOB_TYPE.QUARRYMAN:
+			return stoneValue;
+		case JOB_TYPE.MINER:
+			return metalValue;
+		case JOB_TYPE.ALCHEMIST:
+			return manaValue;
+		}
+		return -1;
+	}
 
 //	private BIOME GetBiome(){
 //		if(elevationNoise <= 0.35f){

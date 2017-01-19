@@ -138,7 +138,11 @@ public class Citizen {
 		}else{
 			this._assignedTile = this.city.hexTile;
 		}
+	}
 
+	internal void SetCitizenTile(HexTile hexTile){
+		this._assignedTile = hexTile;
+		hexTile.SetTileColor (Color.blue);
 	}
 
 	private void UpdateUpgradeRequirements(){

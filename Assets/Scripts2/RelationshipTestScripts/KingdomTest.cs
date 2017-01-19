@@ -14,6 +14,9 @@ public class KingdomTest{
 	public Color tileColor;
 	public List<Relationship> relationshipKingdoms;
 
+	public RESOURCE primaryRaceResource;
+	public RESOURCE secondaryRaceResource;
+
 	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
@@ -24,6 +27,7 @@ public class KingdomTest{
 		this.tileColor = tileColor;
 		this.relationshipKingdoms = new List<Relationship>();
 		SetLastID (this.id);
+		DetermineCityUpgradeResourceType();
 	}
 
 	private int GetID(){
@@ -36,6 +40,27 @@ public class KingdomTest{
 	internal void AddCityToKingdom(CityTileTest city){
 		cities.Add (city);
 		city.GetComponent<HexTile> ().SetTileColor (tileColor);
+	}
+
+	void DetermineCityUpgradeResourceType(){
+		switch (this.kingdomRace) {
+		case RACE.HUMANS:
+			this.primaryRaceResource = RESOURCE.STONE;
+			this.secondaryRaceResource = RESOURCE.METAL;
+			break;
+		case RACE.ELVES:
+			this.primaryRaceResource = RESOURCE.LUMBER;
+			this.secondaryRaceResource = RESOURCE.MANA;
+			break;
+		case RACE.MINGONS:
+			this.primaryRaceResource = RESOURCE.LUMBER;
+			this.secondaryRaceResource = RESOURCE.METAL;
+			break;
+		case RACE.CROMADS:
+			this.primaryRaceResource = RESOURCE.STONE;
+			this.secondaryRaceResource = RESOURCE.MANA;
+			break;
+		}
 	}
 
 }

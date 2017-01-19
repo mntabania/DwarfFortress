@@ -40,9 +40,10 @@ public class CityTileTest : MonoBehaviour {
 //		cityAttributes.SelectCitizenToUpgrade ();
 		cityAttributes.AssignNeededRole ();
 		cityAttributes.AssignUnneededRoles ();
+		cityAttributes.AttemptToPurchaseTile ();
 //		cityAttributes.SelectCitizenForCreation (false);
-		cityAttributes.AttemptToIncreaseHousing ();
-		cityAttributes.AttemptToUpgradeCitizen ();
+		cityAttributes.AttemptToUpgradeCity ();
+//		cityAttributes.AttemptToUpgradeCitizen ();
 		cityAttributes.AttemptToCreateNewCitizen ();
 		cityAttributes.AttemptToChangeCitizenRole ();
 		cityAttributes.LaunchTradeMission();
