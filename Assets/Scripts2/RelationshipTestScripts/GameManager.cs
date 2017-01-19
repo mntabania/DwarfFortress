@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour {
 		GenerateCities();
 		GenerateBiomes ();
 		GenerateInitialKingdoms();
+		AssignCitiesToKingdoms();
 //		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
@@ -55,6 +56,8 @@ public class GameManager : MonoBehaviour {
 		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [705].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1706].GetComponent<HexTile>());
 	}
 
 	void GenerateCityConnections(){
@@ -83,21 +86,28 @@ public class GameManager : MonoBehaviour {
 				targetBiomeType = BIOMES.GRASSLAND;
 				biomeSprite = grasslandSprite;
 			} else if (i == 1) {
-				targetBiomeType = BIOMES.WOODLAND;
-				biomeSprite = woodlandSprite;
-			} else if (i == 2) {
-				targetBiomeType = BIOMES.FOREST;
-				biomeSprite = forestSprite;
-			} else if (i == 3) {
 				targetBiomeType = BIOMES.DESERT;
 				biomeSprite = desertSprite;
+			} else if (i == 2) {
+				targetBiomeType = BIOMES.WOODLAND;
+				biomeSprite = woodlandSprite;
+			} else if (i == 3) {
+				targetBiomeType = BIOMES.GRASSLAND;
+				biomeSprite = grasslandSprite;
 			} else if (i == 4) {
-				targetBiomeType = BIOMES.TUNDRA;
-				biomeSprite = tundraSprite;
+				targetBiomeType = BIOMES.FOREST;
+				biomeSprite = forestSprite;
 			} else if (i == 5) {
+				targetBiomeType = BIOMES.WOODLAND;
+				biomeSprite = woodlandSprite;
+			}else if (i == 6) {
 				targetBiomeType = BIOMES.SNOW;
 				biomeSprite = snowSprite;
+			}else if (i == 7) {
+				targetBiomeType = BIOMES.TUNDRA;
+				biomeSprite = tundraSprite;
 			}
+
 			for (int j = 0; j < neighbours.Length; j++) {
 				neighbours[j].SetTileBiomeType(targetBiomeType);
 				neighbours[j].GenerateResourceValues ();
@@ -107,21 +117,40 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void GenerateInitialKingdoms(){
+		List<GameObject> tempCities = new List<GameObject> ();
+		tempCities.AddRange (cities);
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){
-			this.cities[0].GetComponent<CityTileTest>(), this.cities[1].GetComponent<CityTileTest>(), this.cities[2].GetComponent<CityTileTest>(),
-			this.cities[3].GetComponent<CityTileTest>(), this.cities[4].GetComponent<CityTileTest>(), this.cities[5].GetComponent<CityTileTest>(),
-		}, new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(), new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
-		//		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-		//		goKingdom2.transform.parent = this.transform;
-		//		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){hexTiles[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
-		//		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-		//		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom2.transform.parent = this.transform;
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(), new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom3.transform.parent = this.transform;
+		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(), new Color(0f/255f, 234f/255f, 255f/255f));
+		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
+
+
+		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom4.transform.parent = this.transform;
+		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(), new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
 	}
 
+	void AssignCitiesToKingdoms(){
+		for (int i = 0; i < cities.Count; i++) {
+			KingdomTileTest randomKingdom = kingdoms [Random.Range (0, kingdoms.Count)];
+			randomKingdom.AddCityToKingdom (cities [i].GetComponent<CityTileTest> ());
+		}
+	}
 
 	void CreateCity(HexTile tile){
 		tile.SetTileColor(Color.black);
@@ -144,7 +173,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ActivateProducationCycle(){
-		InvokeRepeating("EndTurn", 0f, 1f);
+		InvokeRepeating("EndTurn", 0f, 0.5f);
 	}
 		
 	public void EndTurn(){

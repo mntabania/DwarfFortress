@@ -33,4 +33,9 @@ public class KingdomTest{
 		Utilities.lastkingdomid = id;
 	}
 
+	internal void AddCityToKingdom(CityTileTest city){
+		cities.Add (city);
+		city.GetComponent<HexTile> ().SetTileColor (tileColor);
+	}
+
 }

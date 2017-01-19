@@ -168,14 +168,18 @@ public class CityTest{
 		this.goldCount += producedGold;
 
 		for(int i = 0; i < this.citizens.Count; i++){
+			int starvationModifier = 1;
+			if (this.cityState == CITY_STATE.STARVATION) {
+				starvationModifier = 2;
+			}
 			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
-			this.goldCount += resourcesProducedByCitizen[0];
+			this.goldCount += (int)(resourcesProducedByCitizen[0] / starvationModifier);
 //			this.foodCount += resourcesProducedByCitizen[1];
 			this.foodStockpileCount += resourcesProducedByCitizen[1]; //Add food to stockpile instead
-			this.lumberCount += resourcesProducedByCitizen[2];
-			this.stoneCount += resourcesProducedByCitizen[3];
-			this.manaStoneCount += resourcesProducedByCitizen[4];
-			this.metalCount += resourcesProducedByCitizen[5];
+			this.lumberCount += (int)(resourcesProducedByCitizen[2] / starvationModifier);
+			this.stoneCount += (int)(resourcesProducedByCitizen[3] / starvationModifier);
+			this.manaStoneCount += (int)(resourcesProducedByCitizen[4] / starvationModifier);
+			this.metalCount += (int)(resourcesProducedByCitizen[5] / starvationModifier);
 		}
 	}
 	internal int GetGoldValue(){
@@ -640,52 +644,73 @@ public class CityTest{
 	internal CityUpgradeRequirements UpgradeRequirements(int level){
 		CityUpgradeRequirements req = new CityUpgradeRequirements ();
 
+		RESOURCE primaryRaceResource = RESOURCE.STONE;
+		RESOURCE secondaryRaceResource = RESOURCE.STONE;
+		switch (this.kingdomTile.kingdom.kingdomRace) {
+		case RACE.HUMANS:
+			primaryRaceResource = RESOURCE.STONE;
+			secondaryRaceResource = RESOURCE.METAL;
+			break;
+		case RACE.ELVES:
+			primaryRaceResource = RESOURCE.LUMBER;
+			secondaryRaceResource = RESOURCE.MANA;
+			break;
+		case RACE.MINGONS:
+			primaryRaceResource = RESOURCE.LUMBER;
+			secondaryRaceResource = RESOURCE.METAL;
+			break;
+		case RACE.CROMADS:
+			primaryRaceResource = RESOURCE.STONE;
+			secondaryRaceResource = RESOURCE.MANA;
+			break;
+		}
+
 		switch(level + 1){
 		case 2:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 4000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 900));
+			req.resource.Add (new Resource (primaryRaceResource, 900));
 			break;
 		case 3:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 8000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 2000));
+			req.resource.Add (new Resource (primaryRaceResource, 2000));
 			break;
 		case 4:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 12000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 3500));
+			req.resource.Add (new Resource (primaryRaceResource, 3500));
 			break;
 		case 5:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 16000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 5000));
+			req.resource.Add (new Resource (primaryRaceResource, 5000));
 			break;
 		case 6:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 20000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 6500));
-			req.resource.Add (new Resource (RESOURCE.MANA, 900));
+			req.resource.Add (new Resource (primaryRaceResource, 6500));
+			req.resource.Add (new Resource (secondaryRaceResource, 900));
 			break;
 		case 7:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 24000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 8000));
-			req.resource.Add (new Resource (RESOURCE.MANA, 2000));
+			req.resource.Add (new Resource (primaryRaceResource, 8000));
+			req.resource.Add (new Resource (secondaryRaceResource, 2000));
 			break;
 		case 8:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 28000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 11000));
-			req.resource.Add (new Resource (RESOURCE.MANA, 3500));
+			req.resource.Add (new Resource (primaryRaceResource, 11000));
+			req.resource.Add (new Resource (secondaryRaceResource, 3500));
 			break;
 		case 9:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 32000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 15000));
-			req.resource.Add (new Resource (RESOURCE.MANA, 5000));
+			req.resource.Add (new Resource (primaryRaceResource, 15000));
+			req.resource.Add (new Resource (secondaryRaceResource, 5000));
 			break;
 		case 10:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 36000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
-			req.resource.Add (new Resource (RESOURCE.MANA, 6500));
+			req.resource.Add (new Resource (primaryRaceResource, 20000));
+			req.resource.Add (new Resource (secondaryRaceResource, 6500));
 			break;
 		default:
 			req.resource.Add (new Resource (RESOURCE.GOLD, 36000));
-			req.resource.Add (new Resource (RESOURCE.STONE, 20000));
-			req.resource.Add (new Resource (RESOURCE.MANA, 6500));
+			req.resource.Add (new Resource (primaryRaceResource, 20000));
+			req.resource.Add (new Resource (secondaryRaceResource, 6500));
 			break;
 		}
 
@@ -1054,7 +1079,6 @@ public class CityTest{
 							cityLogs += GameManager.Instance.currentDay.ToString () +": " + abundantResource.resource.ToString() + 
 								" before selling is " + GetNumberOfResourcesPerType(abundantResource.resource).ToString() + "\n\n";
 							AdjustResourceCount(abundantResource.resource, (caravanResources*-1));
-							Debug.Log (this.cityName + " abundant resource: " + abundantResource.resource.ToString ());
 							List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
 							int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
 							Sell (cities [0], abundantResource, caravanResources);
@@ -1069,7 +1093,7 @@ public class CityTest{
 					Debug.Log(this.cityName + " Can't trade, gold is normal amount");
 				}
 			} else {
-				this.cityActionChances.tradeMissionChance += 2;
+				this.cityActionChances.tradeMissionChance += 1;
 			}
 		}
 	}
@@ -1157,15 +1181,15 @@ public class CityTest{
 	int GetCostPerResourceUnit(RESOURCE resourceType){
 		switch (resourceType) {
 		case RESOURCE.FOOD:
-			return 10;
+			return 15;
 		case RESOURCE.LUMBER:
-			return 20;
+			return 30;
 		case RESOURCE.STONE:
-			return 20;
+			return 30;
 		case RESOURCE.MANA:
-			return 20;
+			return 30;
 		case RESOURCE.METAL:
-			return 20;
+			return 30;
 		}
 		return 0;
 	}
