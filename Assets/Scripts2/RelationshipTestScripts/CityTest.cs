@@ -1068,62 +1068,72 @@ public class CityTest{
 			int chance = UnityEngine.Random.Range(0, 100);
 			if (chance < this.cityActionChances.tradeMissionChance) {
 				this.cityActionChances.tradeMissionChance = this.cityActionChances.defaultTradeMissionChance;
-				if (IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
-					/*
-					 * You are the buyer 
-					 * */
-					ResourceStatus scarceResource = GetResourceByStatus (RESOURCE_STATUS.SCARCE);
-					if (scarceResource != null) {
-						int neededGold = scarceResource.amount * GetCostPerResourceUnit(scarceResource.resource);
-						if (neededGold < this.goldCount) {
-							cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before purchase is " + this.goldCount + "\n\n";
-							cityLogs += GameManager.Instance.currentDay.ToString () +": " + scarceResource.resource.ToString() + 
-								" before purchase is " + GetNumberOfResourcesPerType(scarceResource.resource).ToString() + "\n\n";
-							int caravanGold = neededGold;
-							AdjustResourceCount(RESOURCE.GOLD, (caravanGold*-1));
-							Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
-							List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
-							int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
-							Buy (cities [0], RESOURCE.GOLD, scarceResource, caravanGold);
-						} else {
-							Debug.Log ("Gold Defficiency");
-						}
-					} else {
-						Debug.Log (this.cityName + " Cannot find someone to buy from");
-					}
-
-				} else if (IsResourceStatus (RESOURCE_STATUS.SCARCE, RESOURCE.GOLD)) {
-					/*
-					 * You are the seller
-					 * */
-					ResourceStatus abundantResource = GetResourceByStatus (RESOURCE_STATUS.ABUNDANT);
-					if (abundantResource != null) {
-						int sellableResources = abundantResource.amount;
-						if (sellableResources < this.GetNumberOfResourcesPerType(abundantResource.resource)) {
-							int caravanResources = sellableResources;
-							cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before selling is " + this.goldCount + "\n\n";
-							cityLogs += GameManager.Instance.currentDay.ToString () +": " + abundantResource.resource.ToString() + 
-								" before selling is " + GetNumberOfResourcesPerType(abundantResource.resource).ToString() + "\n\n";
-							AdjustResourceCount(abundantResource.resource, (caravanResources*-1));
-							List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
-							int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
-							Sell (cities [0], abundantResource, caravanResources);
-						} else {
-							Debug.Log (abundantResource.resource.ToString() +  " Defficiency");
-						}
-					} else {
-						Debug.Log (this.cityName + " Cannot find someone to sell to or have nothing to sell");
-					}
-				} else {
-					//GOLD IS NORMAL
-					Debug.Log(this.cityName + " Can't trade, gold is normal amount");
+				int chanceTradeHelpGift = UnityEngine.Random.Range (0, 100);
+				if(chanceTradeHelpGift < 70){//TRADE
+					TradeMission();
+				}else if(chanceTradeHelpGift >= 70 && chanceTradeHelpGift < 85){//HELP
+					AskHelp();
+				}else{//GIFT
+					GiveGift();
 				}
+
 			} else {
 				this.cityActionChances.tradeMissionChance += 1;
 			}
 		}
 	}
+	internal void TradeMission(){
+		if (IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
+			/*
+					 * You are the buyer 
+					 * */
+			ResourceStatus scarceResource = GetResourceByStatus (RESOURCE_STATUS.SCARCE);
+			if (scarceResource != null) {
+				int neededGold = scarceResource.amount * GetCostPerResourceUnit(scarceResource.resource);
+				if (neededGold < this.goldCount) {
+					cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before purchase is " + this.goldCount + "\n\n";
+					cityLogs += GameManager.Instance.currentDay.ToString () +": " + scarceResource.resource.ToString() + 
+						" before purchase is " + GetNumberOfResourcesPerType(scarceResource.resource).ToString() + "\n\n";
+					int caravanGold = neededGold;
+					AdjustResourceCount(RESOURCE.GOLD, (caravanGold*-1));
+					Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
+					List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
+					int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
+					Buy (cities [0], RESOURCE.GOLD, scarceResource, caravanGold);
+				} else {
+					Debug.Log ("Gold Defficiency");
+				}
+			} else {
+				Debug.Log (this.cityName + " Cannot find someone to buy from");
+			}
 
+		} else if (IsResourceStatus (RESOURCE_STATUS.SCARCE, RESOURCE.GOLD)) {
+			/*
+					 * You are the seller
+					 * */
+			ResourceStatus abundantResource = GetResourceByStatus (RESOURCE_STATUS.ABUNDANT);
+			if (abundantResource != null) {
+				int sellableResources = abundantResource.amount;
+				if (sellableResources < this.GetNumberOfResourcesPerType(abundantResource.resource)) {
+					int caravanResources = sellableResources;
+					cityLogs += GameManager.Instance.currentDay.ToString () +": Gold before selling is " + this.goldCount + "\n\n";
+					cityLogs += GameManager.Instance.currentDay.ToString () +": " + abundantResource.resource.ToString() + 
+						" before selling is " + GetNumberOfResourcesPerType(abundantResource.resource).ToString() + "\n\n";
+					AdjustResourceCount(abundantResource.resource, (caravanResources*-1));
+					List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
+					int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
+					Sell (cities [0], abundantResource, caravanResources);
+				} else {
+					Debug.Log (abundantResource.resource.ToString() +  " Defficiency");
+				}
+			} else {
+				Debug.Log (this.cityName + " Cannot find someone to sell to or have nothing to sell");
+			}
+		} else {
+			//GOLD IS NORMAL
+			Debug.Log(this.cityName + " Can't trade, gold is normal amount");
+		}
+	}
 	void Buy(CityTest tradeCity, RESOURCE resourceToOffer, ResourceStatus resourceToBuy, int caravanGold){
 
 
@@ -1172,8 +1182,9 @@ public class CityTest{
 				//TODO: Reduce Like to target trade city
 
 			//ASSUMPTION: TRADE REJECTED
-			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
-			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+			Debug.Log("BUY: TRADE REJECTED. DONT HAVE ENOUGH!");
+//			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+//			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
 		
 	}
@@ -1223,12 +1234,103 @@ public class CityTest{
 			}
 		} else {
 			//TODO: Reduce Like to target trade city
-			Debug.Log("TRADE REJECTED");
-			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
-			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+			Debug.Log("SELL: TRADE REJECTED. DONT HAVE ENOUGH!");
+//			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+//			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
 	}
 
+	internal void AskHelp(){
+		ResourceStatus scarceResource = GetResourceByStatus (RESOURCE_STATUS.SCARCE);
+		if (scarceResource != null) {
+//			int neededAmount = scarceResource.amount;
+//				cityLogs += GameManager.Instance.currentDay.ToString () + ": Gold before purchase is " + this.goldCount + "\n\n";
+			cityLogs += GameManager.Instance.currentDay.ToString () + ": " + scarceResource.resource.ToString () +
+			" before help is " + GetNumberOfResourcesPerType (scarceResource.resource).ToString () + "\n\n";
+//			int caravanAmount = neededAmount;
+//			AdjustResourceCount (RESOURCE.GOLD, (caravanGold * -1));
+			Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
+			List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
+			int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
+			Help (cities [0], scarceResource);
+		}else{
+			cityLogs += GameManager.Instance.currentDay.ToString () + ": There is no one to whom "+ this.cityName +" can ask for help.\n\n";
+		}
+	}
+	internal void Help(CityTest tradeCity, ResourceStatus askedResource){
+		ResourceStatus resourceToBeProvided = tradeCity.GetResourceStatusByType (askedResource.resource);
+
+		if(resourceToBeProvided.status == RESOURCE_STATUS.ABUNDANT){
+			DECISION tradeCityDecision = tradeCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.HELP, this.kingdomTile.kingdom.lord);
+			if(tradeCityDecision == DECISION.NICE){
+				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.NICE, LORD_EVENTS.HELP);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.NICE, DECISION.NEUTRAL, LORD_EVENTS.HELP);
+
+				int finalResourceAmount = 0;
+				if(askedResource.amount <= resourceToBeProvided.amount){
+					finalResourceAmount = askedResource.amount;
+				}else{
+					finalResourceAmount = resourceToBeProvided.amount;
+				}
+
+				this.AdjustResourceCount(askedResource.resource, finalResourceAmount);
+				tradeCity.AdjustResourceCount(askedResource.resource, -finalResourceAmount);
+
+			}else{
+				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.HELP);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.HELP);
+
+			}
+		}else{
+			Debug.Log ("HELP REJECTED. DONT HAVE ENOUGH!");
+		}
+	}
+
+	internal void GiveGift(){
+		ResourceStatus abundantResource = GetResourceByStatus (RESOURCE_STATUS.ABUNDANT);
+		if (abundantResource != null) {
+//			int excessAmount = abundantResource.amount;
+			//				cityLogs += GameManager.Instance.currentDay.ToString () + ": Gold before purchase is " + this.goldCount + "\n\n";
+			cityLogs += GameManager.Instance.currentDay.ToString () + ": " + abundantResource.resource.ToString () +
+				" before gift is " + GetNumberOfResourcesPerType (abundantResource.resource).ToString () + "\n\n";
+			//			int caravanAmount = neededAmount;
+			//			AdjustResourceCount (RESOURCE.GOLD, (caravanGold * -1));
+			Debug.Log (this.cityName + " abundant resource: " + abundantResource.resource.ToString ());
+			List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
+			int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
+			Gift (cities [0], abundantResource);
+		}else{
+			cityLogs += GameManager.Instance.currentDay.ToString () + ": There is no one to whom "+ this.cityName +" can ask for help.\n\n";
+		}
+	}
+	internal void Gift(CityTest tradeCity, ResourceStatus giftResource){
+		ResourceStatus resourceToBeAsked = tradeCity.GetResourceStatusByType (giftResource.resource);
+
+		if(resourceToBeAsked.status == RESOURCE_STATUS.SCARCE){
+			DECISION tradeCityDecision = tradeCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.GIFT, this.kingdomTile.kingdom.lord);
+			if(tradeCityDecision == DECISION.NICE){
+				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.NICE, LORD_EVENTS.GIFT);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.NICE, DECISION.NEUTRAL, LORD_EVENTS.GIFT);
+
+				int finalResourceAmount = 0;
+				if(giftResource.amount <= resourceToBeAsked.amount){
+					finalResourceAmount = giftResource.amount;
+				}else{
+					finalResourceAmount = resourceToBeAsked.amount;
+				}
+
+				this.AdjustResourceCount(giftResource.resource, -finalResourceAmount);
+				tradeCity.AdjustResourceCount(giftResource.resource, finalResourceAmount);
+
+			}else{
+				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.HELP);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.HELP);
+
+			}
+		}else{
+			Debug.Log ("GIFT REJECTED. ALREADY HAVE ENOUGH!");
+		}
+	}
 	int GetCostPerResourceUnit(RESOURCE resourceType){
 		switch (resourceType) {
 		case RESOURCE.FOOD:
@@ -1248,10 +1350,12 @@ public class CityTest{
 	List<CityTest> GetCitiesByStatus(RESOURCE_STATUS status, RESOURCE resource){
 		List<CityTest> cities = new List<CityTest>();
 		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
-			for (int j = 0; j < GameManager.Instance.kingdoms[i].kingdom.cities.Count; j++) {
-				CityTest currentCity = GameManager.Instance.kingdoms[i].kingdom.cities[j].cityAttributes;
-				if (currentCity.IsResourceStatus(status, resource)) {
-					cities.Add (currentCity);
+			if (GameManager.Instance.kingdoms [i].kingdom.id != this.kingdomTile.kingdom.id) {
+				for (int j = 0; j < GameManager.Instance.kingdoms [i].kingdom.cities.Count; j++) {
+					CityTest currentCity = GameManager.Instance.kingdoms [i].kingdom.cities [j].cityAttributes;
+					if (currentCity.IsResourceStatus (status, resource)) {
+						cities.Add (currentCity);
+					}
 				}
 			}
 		}
@@ -1293,8 +1397,8 @@ public class CityTest{
 
 		for (int i = 0; i < filteredResources.Count; i++) {
 			for (int j = 0; j < GameManager.Instance.kingdoms.Count; j++) {
-				for (int k = 0; k < GameManager.Instance.kingdoms[j].kingdom.cities.Count; k++) {
-					if (GameManager.Instance.kingdoms[j].kingdom.cities[k].cityAttributes.id != this.id) {
+				if (GameManager.Instance.kingdoms [j].kingdom.id != this.kingdomTile.kingdom.id) {
+					for (int k = 0; k < GameManager.Instance.kingdoms[j].kingdom.cities.Count; k++) {
 						if (GameManager.Instance.kingdoms[j].kingdom.cities[k].cityAttributes.IsResourceStatus(oppositeStatus, filteredResources [i].resource)) {
 							return filteredResources[i];
 						}

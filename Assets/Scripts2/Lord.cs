@@ -97,26 +97,26 @@ public class Lord {
 
 		Relationship relationshipWithOtherLord = this.SearchRelationship (targetLord);
 		Relationship relationshipFromOtherLord = targetLord.SearchRelationship (this);
-		DECISION decision = DECISION.NEUTRAL;
+//		DECISION decision = DECISION.NEUTRAL;
 		switch(this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
-			decision = TitForTat (relationshipWithOtherLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+//			decision = TitForTat (relationshipWithOtherLord);
+//			relationshipFromOtherLord.previousDecision = decision;
+			return TitForTat (relationshipWithOtherLord);
 		case LORD_PERSONALITY.VENGEFUL:
-			decision = Vengeful (relationshipWithOtherLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+//			decision = Vengeful (relationshipWithOtherLord);
+//			relationshipFromOtherLord.previousDecision = decision;
+			return Vengeful (relationshipWithOtherLord);
 		case LORD_PERSONALITY.RATIONAL:
-			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+//			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
+//			relationshipFromOtherLord.previousDecision = decision;
+			return Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
 		case LORD_PERSONALITY.NAIVE:
-			decision = Naive (relationshipWithOtherLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+//			decision = Naive (relationshipWithOtherLord);
+//			relationshipFromOtherLord.previousDecision = decision;
+			return Naive (relationshipWithOtherLord);
 		}
-		return decision;
+		return DECISION.NEUTRAL;
 	}
 	private DECISION TitForTat(Relationship relationshipWithOtherLord){
 		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
