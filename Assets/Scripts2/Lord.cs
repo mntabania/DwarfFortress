@@ -14,7 +14,7 @@ public class Lord {
 	public int racism;
 	public int religiousTolerance;
 	public int likeCitizen;
-	public CityTest city;
+	public KingdomTest kingdom;
 	public LORD_PERSONALITY personality;
 	public CHARACTER character;
 	public List<GOALS> goals;
@@ -24,9 +24,9 @@ public class Lord {
 	public List<Relationship> relationshipLords;
 
 
-	public Lord(CityTest city){
+	public Lord(KingdomTest kingdom){
 		this.id = 1 + GetID ();
-		this.name = "LORD" + this.id;
+		this.name = "LORD" + this.id.ToString();
 		this.predictability = UnityEngine.Random.Range (0, 10);
 		this.persistence = UnityEngine.Random.Range (0, 10);
 		this.trustworthiness = UnityEngine.Random.Range (0, 10);
@@ -37,7 +37,7 @@ public class Lord {
 		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));		
 		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
-		this.city = city;
+		this.kingdom = kingdom;
 		this.goals = new List<GOALS> ();
 		this.tasks = new List<List<string>> ();
 		this.publicImages = new List<PUBLIC_IMAGE> ();
@@ -54,10 +54,10 @@ public class Lord {
 	}
 
 	internal void CreateInitialRelationshipsToLords(){
-		for (int i = 0; i < this.city.kingdomTile.kingdom.cities.Count; i++) {
-			CityTest otherCity = this.city.kingdomTile.kingdom.cities [i].cityAttributes;
-			if (otherCity.id != this.city.id) {
-				relationshipLords.Add (new Relationship (otherCity.cityLord.id, otherCity.cityLord.name, DECISION.NEUTRAL, 0));
+		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
+			KingdomTest otherKingdom = GameManager.Instance.kingdoms[i].kingdom;
+			if (otherKingdom.id != this.kingdom.id) {
+				this.relationshipLords.Add (new Relationship (otherKingdom.lord.id, otherKingdom.lord.name, DECISION.NEUTRAL, 0));
 			}
 		}
 	}
@@ -86,20 +86,37 @@ public class Lord {
 			relationship.like += (eventEffect * 10);
 			break;
 		}
+		if(relationship.like > 100){
+			relationship.like = 100;
+		} else if (relationship.like < -100){
+			relationship.like = -100;
+		}
+		relationship.previousDecision = targetDecision;
 	}
 	internal DECISION ComputeDecisionBasedOnPersonality(LORD_EVENTS eventType, Lord targetLord){
-		Relationship relationshipWithOtherLord = SearchRelationship (targetLord);
+
+		Relationship relationshipWithOtherLord = this.SearchRelationship (targetLord);
+		Relationship relationshipFromOtherLord = targetLord.SearchRelationship (this);
+		DECISION decision = DECISION.NEUTRAL;
 		switch(this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
-			return TitForTat (relationshipWithOtherLord);
+			decision = TitForTat (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
 		case LORD_PERSONALITY.VENGEFUL:
-			return Vengeful (relationshipWithOtherLord);
+			decision = Vengeful (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
 		case LORD_PERSONALITY.RATIONAL:
-			return Rational (eventType, relationshipWithOtherLord);
+			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
 		case LORD_PERSONALITY.NAIVE:
-			return Naive (relationshipWithOtherLord);
+			decision = Naive (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
 		}
-		return DECISION.NEUTRAL;
+		return decision;
 	}
 	private DECISION TitForTat(Relationship relationshipWithOtherLord){
 		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
@@ -146,7 +163,7 @@ public class Lord {
 
 		}
 	}
-	private DECISION Rational(LORD_EVENTS eventType, Relationship relationshipWithOtherLord){
+	private DECISION Rational(LORD_EVENTS eventType, Relationship relationshipWithOtherLord, Relationship relationshipFromOtherLord){
 		int niceEffect = 0;
 		int rudeEffect = 0;
 
@@ -165,26 +182,34 @@ public class Lord {
 				return DECISION.RUDE;
 			}
 		}else{
-			if(relationshipWithOtherLord.like >= 0){
-				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.NICE);
-				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.NICE);
-			}else{
-				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
-				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
-
-			}
-
 			int chance = UnityEngine.Random.Range (0, 100);
-			if(niceEffect >= rudeEffect){
-				if(chance < 90){
+			if(relationshipFromOtherLord.like < 0){
+				if(chance < 50){
 					return DECISION.NICE;
+				}else{
+					niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
+					rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
+					if(niceEffect >= rudeEffect){
+						return DECISION.NICE;
+
+					}else{
+						return DECISION.RUDE;
+					}
 				}
-				return DECISION.RUDE;
+				
 			}else{
-				if(chance < 90){
-					return DECISION.RUDE;
+				if(chance < 50){
+					return DECISION.NICE;
+				}else{
+					niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.NICE);
+					rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.NICE);
+					if(niceEffect >= rudeEffect){
+						return DECISION.NICE;
+
+					}else{
+						return DECISION.RUDE;
+					}
 				}
-				return DECISION.NICE;
 			}
 		}
 	}
@@ -212,7 +237,7 @@ public class Lord {
 
 		}
 	}
-	private Relationship SearchRelationship(Lord targetLord){
+	internal Relationship SearchRelationship(Lord targetLord){
 		for(int i = 0; i < this.relationshipLords.Count; i++){
 			if(this.relationshipLords[i].id == targetLord.id){
 				return this.relationshipLords[i];

@@ -38,7 +38,8 @@ public class GameManager : MonoBehaviour {
 		GenerateCities();
 		GenerateBiomes ();
 		GenerateInitialKingdoms();
-		AssignCitiesToKingdoms();
+		CreateInitialRelationshipsToLords ();
+//		AssignCitiesToKingdoms();
 //		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
@@ -56,8 +57,8 @@ public class GameManager : MonoBehaviour {
 		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
-		CreateCity(GridMap.Instance.listHexes [705].GetComponent<HexTile>());
-		CreateCity(GridMap.Instance.listHexes [1706].GetComponent<HexTile>());
+//		CreateCity(GridMap.Instance.listHexes [705].GetComponent<HexTile>());
+//		CreateCity(GridMap.Instance.listHexes [1706].GetComponent<HexTile>());
 	}
 
 	void GenerateCityConnections(){
@@ -121,30 +122,50 @@ public class GameManager : MonoBehaviour {
 		tempCities.AddRange (cities);
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(), new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(), new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[1].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 
 		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom3.transform.parent = this.transform;
-		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(), new Color(0f/255f, 234f/255f, 255f/255f));
+		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
 		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
 
 
 		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom4.transform.parent = this.transform;
-		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(), new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
 		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
-	}
 
+		GameObject goKingdom5 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom5.transform.parent = this.transform;
+		goKingdom5.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom5.name = goKingdom5.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom5.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom6 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom6.transform.parent = this.transform;
+		goKingdom6.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
+	}
+	internal void CreateInitialRelationshipsToLords(){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			this.kingdoms [i].kingdom.lord.CreateInitialRelationshipsToLords ();
+//			CityTest otherCity = this.city.kingdomTile.kingdom.cities [i].cityAttributes;
+//			if (otherCity.id != this.city.id) {
+//				this.relationshipLords.Add (new Relationship (otherCity.cityLord.id, otherCity.cityLord.name, DECISION.NEUTRAL, 0));
+//			}
+		}
+	}
 	void AssignCitiesToKingdoms(){
 		for (int i = 0; i < cities.Count; i++) {
 			KingdomTileTest randomKingdom = kingdoms [Random.Range (0, kingdoms.Count)];

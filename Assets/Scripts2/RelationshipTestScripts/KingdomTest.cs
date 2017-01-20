@@ -7,7 +7,7 @@ public class KingdomTest{
 
 	public int id;
 	public string kingdomName;
-	public King king;
+	public Lord lord;
 	public List<CityTileTest> cities;
 	public RACE kingdomRace;
 	public bool isDead;
@@ -17,7 +17,7 @@ public class KingdomTest{
 	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
-		this.king = new King("king");
+		this.lord = new Lord(this);
 		this.cities = cities;
 		this.kingdomRace = race;
 		this.isDead = false;

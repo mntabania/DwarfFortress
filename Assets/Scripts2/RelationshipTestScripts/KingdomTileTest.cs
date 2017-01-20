@@ -20,13 +20,9 @@ public class KingdomTileTest : MonoBehaviour {
 		for (int i = 0; i < this.kingdom.cities.Count; i++) {
 			this.kingdom.cities [i].cityAttributes = new CityTest (this.kingdom.cities[i].hexTile, this);
 //			this.kingdom.cities [i].cityAttributes.kingdomTile = this;
-			this.kingdom.cities [i].cityAttributes.cityLord = new Lord (this.kingdom.cities [i].cityAttributes);
-			this.kingdom.cities [i].cityAttributes.cityLord = new Lord (this.kingdom.cities[i].cityAttributes);
+//			this.kingdom.cities [i].cityAttributes.cityLord = new Lord (this.kingdom.cities [i].cityAttributes);
 			this.kingdom.cities [i].GetComponent<SpriteRenderer> ().color = this.kingdom.cities [i].cityAttributes.kingdomTile.kingdom.tileColor;
 			//			this.kingdom.cities [i].cityAttributes.faction = this.kingdom.factions [0];
-		}
-		for (int i = 0; i < this.kingdom.cities.Count; i++) {
-			this.kingdom.cities [i].cityAttributes.cityLord.CreateInitialRelationshipsToLords ();
 		}
 		//		this.kingdom = kingdom;
 		//		this.cities = kingdom.cities;

@@ -10,7 +10,7 @@ public class CityTest{
 	public int id;
 	public string cityName;
 	public BIOMES biomeType;
-	public Lord cityLord;
+//	public Lord cityLord;
 	public int cityLevel;
 	public int numOfRoads;
 	public int population;
@@ -58,7 +58,7 @@ public class CityTest{
 		this.id = GetID()+1;
 		this.cityName = hexTile.name;
 		this.biomeType = hexTile.biomeType;
-		this.cityLord = null;
+//		this.cityLord = null;
 		this.cityLevel = 1;
 		this.numOfRoads = 0;
 		this.population = 0;
@@ -1099,11 +1099,19 @@ public class CityTest{
 	}
 
 	void Buy(CityTest tradeCity, RESOURCE resourceToOffer, ResourceStatus resourceToBuy, int caravanGold){
-		int chance = UnityEngine.Random.Range(0, 100);
-		int successChance = 70 + (0 * 5);
-		if (chance < successChance) {
-			if (tradeCity.GetNumberOfResourcesPerType (resourceToBuy.resource) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, resourceToBuy.resource)) {
-				int affordResource = (int)(this.GetResourceStatusByType(resourceToOffer).amount / GetCostPerResourceUnit (resourceToBuy.resource));
+
+
+		if (tradeCity.GetNumberOfResourcesPerType (resourceToBuy.resource) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, resourceToBuy.resource)) {
+//			int chance = UnityEngine.Random.Range(0, 100);
+//			int successChance = 70 + (0 * 5);
+			DECISION tradeCityDecision = tradeCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.TRADE, this.kingdomTile.kingdom.lord);
+
+			if (tradeCityDecision == DECISION.NICE) {
+				this.kingdomTile.kingdom.lord.AdjustLikeness (tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.NICE, LORD_EVENTS.TRADE);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.NICE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+
+
+				int affordResource = (int)(this.GetResourceStatusByType (resourceToOffer).amount / GetCostPerResourceUnit (resourceToBuy.resource));
 				int affordToSell = tradeCity.GetResourceStatusByType (resourceToBuy.resource).amount;
 				if (affordResource > resourceToBuy.amount) {
 					affordResource = resourceToBuy.amount;
@@ -1115,14 +1123,14 @@ public class CityTest{
 
 				int cost = affordResource * GetCostPerResourceUnit (resourceToBuy.resource);
 
-				cityLogs += GameManager.Instance.currentDay.ToString () + ": Caravan Gold is " + caravanGold.ToString() + " Gold. \n\n";
+				cityLogs += GameManager.Instance.currentDay.ToString () + ": Caravan Gold is " + caravanGold.ToString () + " Gold. \n\n";
 
 				caravanGold -= cost;
 				tradeCity.goldCount += cost;
 				TradeResources (tradeCity, resourceToBuy.resource, (affordResource * -1));
 				if (caravanGold > 0) {
-					cityLogs += GameManager.Instance.currentDay.ToString () + ": Returned " + caravanGold.ToString() + " Gold. \n\n";
-					AdjustResourceCount(RESOURCE.GOLD, caravanGold);
+					cityLogs += GameManager.Instance.currentDay.ToString () + ": Returned " + caravanGold.ToString () + " Gold. \n\n";
+					AdjustResourceCount (RESOURCE.GOLD, caravanGold);
 				}
 				//TODO: Insert add like to both lords
 				Debug.Log ("SOMEONE BOUGHT: " + this.cityName);
@@ -1130,19 +1138,31 @@ public class CityTest{
 				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n\n";
 			} else {
 				//TODO: Reduce Like to target trade city
-			}
+
+				this.kingdomTile.kingdom.lord.AdjustLikeness (tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+			} 
 		} else {
-			//TODO: Reduce Like to target trade city
+				//TODO: Reduce Like to target trade city
+
+			//ASSUMPTION: TRADE REJECTED
+			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
+		
 	}
 
 	void Sell(CityTest tradeCity, ResourceStatus resourceToOffer, int caravanResources){
 		ResourceStatus resourceToBeBought = tradeCity.GetResourceStatusByType (resourceToOffer.resource);
 
-		int chance = UnityEngine.Random.Range(0, 100);
-		int successChance = 70 + (0 * 5);
-		if (chance < successChance) {
-			if (tradeCity.GetNumberOfResourcesPerType (RESOURCE.GOLD) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
+		if (tradeCity.GetNumberOfResourcesPerType (RESOURCE.GOLD) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
+//			int chance = UnityEngine.Random.Range(0, 100);
+//			int successChance = 70 + (0 * 5);
+			DECISION tradeCityDecision = tradeCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.TRADE, this.kingdomTile.kingdom.lord);
+			if (tradeCityDecision == DECISION.NICE) {
+				this.kingdomTile.kingdom.lord.AdjustLikeness (tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.NICE, LORD_EVENTS.TRADE);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.NICE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+
 				int affordResourceOfTradeCity = (int)(tradeCity.GetResourceStatusByType(RESOURCE.GOLD).amount / GetCostPerResourceUnit (resourceToOffer.resource));
 				int affordToSell = this.GetResourceStatusByType (resourceToOffer.resource).amount;
 				if (affordResourceOfTradeCity > resourceToBeBought.amount) {
@@ -1172,9 +1192,14 @@ public class CityTest{
 					" in exchange for " + cost.ToString () + " Gold \n\n";
 			} else {
 				//TODO: Reduce Like to target trade city
+				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 			}
 		} else {
 			//TODO: Reduce Like to target trade city
+			Debug.Log("TRADE REJECTED");
+			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
+			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
 	}
 
@@ -1197,10 +1222,12 @@ public class CityTest{
 
 	List<CityTest> GetCitiesByStatus(RESOURCE_STATUS status, RESOURCE resource){
 		List<CityTest> cities = new List<CityTest>();
-		for (int i = 0; i < this.kingdomTile.kingdom.cities.Count; i++) {
-			CityTest currentCity = this.kingdomTile.kingdom.cities[i].cityAttributes;
-			if (currentCity.IsResourceStatus(status, resource)) {
-				cities.Add (currentCity);
+		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
+			for (int j = 0; j < GameManager.Instance.kingdoms[i].kingdom.cities.Count; j++) {
+				CityTest currentCity = GameManager.Instance.kingdoms[i].kingdom.cities[j].cityAttributes;
+				if (currentCity.IsResourceStatus(status, resource)) {
+					cities.Add (currentCity);
+				}
 			}
 		}
 		cities.OrderByDescending(x => x.goldCount).ToList();
@@ -1240,10 +1267,12 @@ public class CityTest{
 		}
 
 		for (int i = 0; i < filteredResources.Count; i++) {
-			for (int j = 0; j < this.kingdomTile.kingdom.cities.Count; j++) {
-				if (this.kingdomTile.kingdom.cities [j].cityAttributes.id != this.id) {
-					if (this.kingdomTile.kingdom.cities [j].cityAttributes.IsResourceStatus(oppositeStatus, filteredResources [i].resource)) {
-						return filteredResources[i];
+			for (int j = 0; j < GameManager.Instance.kingdoms.Count; j++) {
+				for (int k = 0; k < GameManager.Instance.kingdoms[j].kingdom.cities.Count; k++) {
+					if (GameManager.Instance.kingdoms[j].kingdom.cities[k].cityAttributes.id != this.id) {
+						if (GameManager.Instance.kingdoms[j].kingdom.cities[k].cityAttributes.IsResourceStatus(oppositeStatus, filteredResources [i].resource)) {
+							return filteredResources[i];
+						}
 					}
 				}
 			}
