@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour {
 			HexTile currentHexTile = this.cities [i].GetComponent<HexTile> ();
 			HexTile[] neighbours = currentHexTile.GetTilesInRange(5);
 			BIOMES targetBiomeType = BIOMES.BARE;
+			RESOURCE primaryResource = RESOURCE.FOOD;
+			RESOURCE secondaryResource = RESOURCE.FOOD;
 			Sprite biomeSprite = null;
 			if (i == 0) {
 				targetBiomeType = BIOMES.GRASSLAND;
@@ -113,6 +115,33 @@ public class GameManager : MonoBehaviour {
 				neighbours[j].SetTileBiomeType(targetBiomeType);
 				neighbours[j].GenerateResourceValues ();
 				neighbours[j].GetComponent<SpriteRenderer> ().sprite = biomeSprite;
+
+				switch (targetBiomeType) {
+				case BIOMES.GRASSLAND:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.STONE;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.MANA;
+					break;
+				case BIOMES.WOODLAND:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.LUMBER;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.METAL;
+					break;
+				case BIOMES.FOREST:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.LUMBER;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.MANA;
+					break;
+				case BIOMES.DESERT:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.STONE;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.METAL;
+					break;
+				case BIOMES.TUNDRA:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.LUMBER;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.MANA;
+					break;
+				case BIOMES.SNOW:
+					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.STONE;
+					neighbours[j].secondaryResourceToPurchaseTile = RESOURCE.METAL;
+					break;
+				}
 			}
 		}
 	}

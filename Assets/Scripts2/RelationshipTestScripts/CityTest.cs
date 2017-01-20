@@ -21,12 +21,6 @@ public class CityTest{
 	public int stoneCount;
 	public int manaStoneCount;
 	public int metalCount;
-//	public ResourceStatus gold;
-//	public ResourceStatus food;
-//	public ResourceStatus lumber;
-//	public ResourceStatus stone;
-//	public ResourceStatus mana;
-//	public ResourceStatus metal;
 	public int goldValue;
 	public int mayorLikeRating;
 	public int citizenLimit;
@@ -40,7 +34,6 @@ public class CityTest{
 	public KingdomTileTest kingdomTile;
 	public HexTile hexTile;
 	public string cityLogs;
-//	public JOB_TYPE foodProductionRole;
 	public JOB_TYPE neededRole;
 	public List<RESOURCE> unneededResources = new List<RESOURCE>();
 	public List<JOB_TYPE> unneededRoles = new List<JOB_TYPE>();
@@ -80,18 +73,17 @@ public class CityTest{
 		this.kingdomTile = kingdom;
 		this.hexTile = hexTile;
 		this.cityLogs = string.Empty;
-//		this.foodProductionRole = FoodProductionRole ();
 		this.neededRole = JOB_TYPE.NONE;
 		this.unneededRoles = new List<JOB_TYPE>();
 		this.upgradeCitizenTarget = null;
 		this.newCitizenTarget = JOB_TYPE.NONE;
 		this.allResourcesStatus = GetInitialResourcesStatus ();
-		this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
 		this.isDead = false;
 		this.ownedBiomeTiles.Add (this.hexTile);
 		this.citizens = InitialCitizens();
 		this.createCitizenCost = 500;
 		this.changeCitizenJobCost = 500;
+		UpdateCityUpgradeRequirements();
 		AssignInitialCitizens ();
 		SelectCitizenToUpgrade ();
 		SelectCitizenForCreation (false);
@@ -174,7 +166,6 @@ public class CityTest{
 			}
 			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
 			this.goldCount += (int)(resourcesProducedByCitizen[0] / starvationModifier);
-//			this.foodCount += resourcesProducedByCitizen[1];
 			this.foodStockpileCount += resourcesProducedByCitizen[1]; //Add food to stockpile instead
 			this.lumberCount += (int)(resourcesProducedByCitizen[2] / starvationModifier);
 			this.stoneCount += (int)(resourcesProducedByCitizen[3] / starvationModifier);
@@ -215,25 +206,29 @@ public class CityTest{
 			return;
 		}
 		for (int i = 0; i < this.citizens.Count; i++) {
-			AssignCitizenToTile (this.citizens [i]);
+			List<HexTile> neighbours = new List<HexTile>();
+			for (int j = 0; j < this.ownedBiomeTiles.Count; j++) {
+				neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
+			}
+			//		neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
+			neighbours = neighbours.Distinct().ToList();
+
+			this.citizens[i].AssignCitizenToTile(neighbours);
 		}
 	}
 
-	internal void AssignCitizenToTile(Citizen citizen){
-		if(isDead){
-			return;
+	void AssignCitizenToTile(Citizen citizen){
+		if (citizen.job.residence == RESIDENCE.OUTSIDE) {
+			List<HexTile> tilesToChooseFrom = this.ownedBiomeTiles.Where (x => !x.isOccupied).ToList();
+			tilesToChooseFrom.OrderByDescending (x => x.GetRelevantResourceValueByJobType (citizen.job.jobType));
+			citizen.SetCitizenTile (tilesToChooseFrom[0]);
+		} else {
+			citizen.SetCitizenTile(this.hexTile);
 		}
-		List<HexTile> neighbours = new List<HexTile>();
-		for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
-			neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
-		}
-//		neighbours.AddRange(this.hexTile.GetListTilesInRange (0.5f));
-		neighbours = neighbours.Distinct().ToList();
 
-		citizen.AssignCitizenToTile (neighbours);
 	}
 		
-
+	#region Citizen Upgrade Functions
 	internal void SelectCitizenToUpgrade(){
 		if(isDead){
 			return;
@@ -241,7 +236,7 @@ public class CityTest{
 		if(this.upgradeCitizenTarget != null){
 			return;
 		}
-		int totalChance = GetTotalChanceForUpgrade ();
+		int totalChance = GetTotalChanceForCitizenUpgrade ();
 		if(totalChance <= 0){
 			return;
 		}
@@ -262,7 +257,7 @@ public class CityTest{
 		UpdateResourcesStatus ();
 	}
 		
-	int GetTotalChanceForUpgrade(){
+	int GetTotalChanceForCitizenUpgrade(){
 		List<Citizen> citizensToChooseFrom = new List<Citizen> (); 
 		citizensToChooseFrom.AddRange(citizens.OrderBy(x => x.level).ToList());
 		citizensToChooseFrom.RemoveAll (x => x.level >= 10);
@@ -287,8 +282,9 @@ public class CityTest{
 		}
 		return totalChances;
 	}
+	#endregion
 
-
+	#region Citizen Creation Functions
 	internal void SelectCitizenForCreation(bool is7Days){
 		if(isDead){
 			return;
@@ -345,6 +341,7 @@ public class CityTest{
 		}
 		return totalChances;
 	}
+	#endregion
 
 //	private int GetDailyProduction(RESOURCE resourceType){
 //		int production = 0;
@@ -641,99 +638,37 @@ public class CityTest{
 		return neededResources;
 	}
 		
-	internal CityUpgradeRequirements UpgradeRequirements(int level){
+	internal void UpdateCityUpgradeRequirements(){
 		CityUpgradeRequirements req = new CityUpgradeRequirements ();
 
-		RESOURCE primaryRaceResource = RESOURCE.STONE;
-		RESOURCE secondaryRaceResource = RESOURCE.STONE;
-		switch (this.kingdomTile.kingdom.kingdomRace) {
-		case RACE.HUMANS:
-			primaryRaceResource = RESOURCE.STONE;
-			secondaryRaceResource = RESOURCE.METAL;
-			break;
-		case RACE.ELVES:
-			primaryRaceResource = RESOURCE.LUMBER;
-			secondaryRaceResource = RESOURCE.MANA;
-			break;
-		case RACE.MINGONS:
-			primaryRaceResource = RESOURCE.LUMBER;
-			secondaryRaceResource = RESOURCE.METAL;
-			break;
-		case RACE.CROMADS:
-			primaryRaceResource = RESOURCE.STONE;
-			secondaryRaceResource = RESOURCE.MANA;
-			break;
+		int cityLevelThreshold = 5;
+
+		int goldNeededForUpgrade = 2000 + (500 * this.cityLevel);
+		int primaryResourceNeededForUpgrade = 300 + (50 * this.cityLevel);
+
+		req.resource.Add (new Resource (RESOURCE.GOLD, goldNeededForUpgrade));
+		req.resource.Add (new Resource (this.kingdomTile.kingdom.primaryRaceResource, primaryResourceNeededForUpgrade));
+
+		if (this.cityLevel >= 6) {
+			int secondaryResourceNeededForUpgrade = 100 + (20 * (this.cityLevel - cityLevelThreshold));
+			req.resource.Add (new Resource (this.kingdomTile.kingdom.primaryRaceResource, secondaryResourceNeededForUpgrade));
 		}
 
-		switch(level + 1){
-		case 2:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 4000));
-			req.resource.Add (new Resource (primaryRaceResource, 900));
-			break;
-		case 3:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 8000));
-			req.resource.Add (new Resource (primaryRaceResource, 2000));
-			break;
-		case 4:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 12000));
-			req.resource.Add (new Resource (primaryRaceResource, 3500));
-			break;
-		case 5:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 16000));
-			req.resource.Add (new Resource (primaryRaceResource, 5000));
-			break;
-		case 6:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 20000));
-			req.resource.Add (new Resource (primaryRaceResource, 6500));
-			req.resource.Add (new Resource (secondaryRaceResource, 900));
-			break;
-		case 7:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 24000));
-			req.resource.Add (new Resource (primaryRaceResource, 8000));
-			req.resource.Add (new Resource (secondaryRaceResource, 2000));
-			break;
-		case 8:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 28000));
-			req.resource.Add (new Resource (primaryRaceResource, 11000));
-			req.resource.Add (new Resource (secondaryRaceResource, 3500));
-			break;
-		case 9:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 32000));
-			req.resource.Add (new Resource (primaryRaceResource, 15000));
-			req.resource.Add (new Resource (secondaryRaceResource, 5000));
-			break;
-		case 10:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 36000));
-			req.resource.Add (new Resource (primaryRaceResource, 20000));
-			req.resource.Add (new Resource (secondaryRaceResource, 6500));
-			break;
-		default:
-			req.resource.Add (new Resource (RESOURCE.GOLD, 36000));
-			req.resource.Add (new Resource (primaryRaceResource, 20000));
-			req.resource.Add (new Resource (secondaryRaceResource, 6500));
-			break;
-		}
-
-		return req;
+		this.cityUpgradeRequirements = req;
 	}
 		
-	internal void AttemptToIncreaseHousing(){
-		if (CanCityAffordToUpgrade() && IsCitizenCapReached()) { //if city has the neccessary resources to upgrade and still has room for another citizen
-			if(this.cityLevel >= 10){
-				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
-				return;
-			}
+	internal void AttemptToUpgradeCity(){
+		if (HasEnoughResourcesForAction(this.cityUpgradeRequirements.resource) && IsCitizenCapReached()) { //if city has the neccessary resources to upgrade and still has room for another citizen
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.increaseHousingChance) {
 				//Increase Housing Triggered, Increase Citizen Limit by 1
 				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
 				this.citizenLimit += 1;
 				this.cityLevel += 1;
-				ReduceResources (this.cityUpgradeRequirements.resource);
-				this.cityUpgradeRequirements = UpgradeRequirements (this.cityLevel);
-				UpdateResourcesStatus ();
+				ReduceResources(this.cityUpgradeRequirements.resource);
+				UpdateCityUpgradeRequirements();
+				UpdateResourcesStatus();
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-]\n\n";
-
 			} else {
 				//On not performing upgrade, increase chance to upgrade by 1
 				this.cityActionChances.increaseHousingChance += 1;
@@ -742,7 +677,7 @@ public class CityTest{
 	}
 
 	internal void AttemptToUpgradeCitizen(){
-		if(CanAffordToUpgradeCitizen()){
+		if(HasEnoughResourcesForAction(this.upgradeCitizenTarget.GetUpgradeRequirements().resource)){
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.upgradeCitizenChance) {
 				this.cityActionChances.upgradeCitizenChance = this.cityActionChances.defaultUpgradeCitizenChance;
@@ -758,22 +693,28 @@ public class CityTest{
 	}
 
 	internal void AttemptToCreateNewCitizen(){
-		if(!IsCitizenCapReached() && CanAffordToCreateCitizen()){
+		JOB_TYPE citizenToCreateJobType = JOB_TYPE.NONE;
+
+		if (this.neededRole != JOB_TYPE.NONE) {
+			citizenToCreateJobType = this.neededRole;
+		} else {
+			citizenToCreateJobType = this.newCitizenTarget;
+		}
+
+		if(!IsCitizenCapReached() && HasEnoughResourcesForAction(GetCitizenCreationCostPerType(citizenToCreateJobType))){
+			Debug.LogError ("Requirements met!");
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.newCitizenChance) {
 				this.cityActionChances.newCitizenChance = this.cityActionChances.defaultNewCitizenChance;
+				Debug.LogError ("Citizen Created!");
+				Citizen newCitizen = new Citizen (citizenToCreateJobType, this);
+				AssignCitizenToTile (newCitizen);
+				this.citizens.Add (newCitizen);
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + citizenToCreateJobType.ToString() + "[-] has emerged.\n\n"; 
 
-				if(this.neededRole != JOB_TYPE.NONE){
-					Citizen newCitizen = new Citizen (this.neededRole, this);
-					AssignCitizenToTile (newCitizen);
-					this.citizens.Add (newCitizen);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.neededRole.ToString() + "[-] has emerged.\n\n"; 
+				if(this.neededRole == citizenToCreateJobType){
 					this.neededRole = JOB_TYPE.NONE;
 				}else{
-					Citizen newCitizen = new Citizen (this.newCitizenTarget, this);
-					AssignCitizenToTile (newCitizen);
-					this.citizens.Add (newCitizen);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": A new [FF0000]" + this.newCitizenTarget.ToString() + "[-] has emerged.\n\n";
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
@@ -817,6 +758,78 @@ public class CityTest{
 		}
 	}
 
+	internal void AttemptToPurchaseTile(){
+		HexTile chosenHexTile = SelectHexTileToPurchase();
+
+		int ownedTilesThreshold = 10;
+
+		Resource[] tilePurchaseCost;
+		if (this.ownedBiomeTiles.Count > ownedTilesThreshold) {
+			tilePurchaseCost = new Resource[] {
+				new Resource (RESOURCE.GOLD, (300 * this.ownedBiomeTiles.Count)),
+				new Resource (chosenHexTile.primaryResourceToPurchaseTile, 40 + (20 * this.ownedBiomeTiles.Count)),
+				new Resource (chosenHexTile.secondaryResourceToPurchaseTile, 100 + (20 * (this.ownedBiomeTiles.Count - ownedTilesThreshold)))
+			};
+		} else {
+			tilePurchaseCost = new Resource[] {
+				new Resource (RESOURCE.GOLD, (300 * this.ownedBiomeTiles.Count)),
+				new Resource (chosenHexTile.primaryResourceToPurchaseTile, 40 + (20 * this.ownedBiomeTiles.Count)),
+			};
+		}
+
+		if (HasEnoughResourcesForAction(tilePurchaseCost.ToList())) {
+			int chance = UnityEngine.Random.Range (0, 100);
+			if (chance < this.cityActionChances.purchaseTileChance) {
+					//Buy the tile
+					this.cityActionChances.purchaseTileChance = this.cityActionChances.defaultPurchaseTileChance;
+					this.ownedBiomeTiles.Add(chosenHexTile);
+					chosenHexTile.SetTileColor(Color.red);
+					ReduceResources(tilePurchaseCost.ToList());
+					cityLogs += GameManager.Instance.currentDay.ToString () + ": Purchased Tile [FF0000]" + chosenHexTile.name + "[-] for [FF0000] ";
+					for (int i = 0; i < tilePurchaseCost.Length; i++) {
+						cityLogs += tilePurchaseCost [i].resourceQuantity + " " + tilePurchaseCost [i].resourceType + "\n";
+					}
+					cityLogs +="[-]\n";
+			} else {
+				this.cityActionChances.purchaseTileChance += 1;
+			}
+		}
+
+	}
+
+	HexTile SelectHexTileToPurchase(){
+		RESOURCE scarceResource = GetRandomResourceTypeByStatus(RESOURCE_STATUS.SCARCE);
+		cityLogs += GameManager.Instance.currentDay.ToString () + ": Looking for tile with rich [FF0000]" + scarceResource.ToString() + "[-].\n\n";
+		List<HexTile> neighbours = new List<HexTile>();
+		for (int i = 0; i < this.ownedBiomeTiles.Count; i++) {
+			neighbours.AddRange (this.ownedBiomeTiles [i].GetListTilesInRange(0.5f));
+		}
+
+		neighbours = neighbours.Distinct().ToList();
+
+		if (scarceResource == RESOURCE.FOOD) {
+			neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList();
+			int highestFarmingValue = neighbours [0].farmingValue;
+			neighbours = neighbours.OrderByDescending (x => (x.huntingValue)).ToList();
+			int highestHuntingValue = neighbours [0].huntingValue;
+			if (highestFarmingValue >= highestHuntingValue) {
+				neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList();
+			}
+		} else if (scarceResource == RESOURCE.GOLD) {
+			neighbours = neighbours.OrderByDescending (x => (x.goldValue)).ToList();
+		} else if (scarceResource == RESOURCE.LUMBER) {
+			neighbours = neighbours.OrderByDescending (x => (x.woodValue)).ToList();
+		} else if (scarceResource == RESOURCE.MANA) {
+			neighbours = neighbours.OrderByDescending (x => (x.manaValue)).ToList();
+		} else if (scarceResource == RESOURCE.METAL) {
+			neighbours = neighbours.OrderByDescending (x => (x.metalValue)).ToList();
+		} else if (scarceResource == RESOURCE.STONE) {
+			neighbours = neighbours.OrderByDescending (x => (x.stoneValue)).ToList();
+		}
+
+		return neighbours[0];
+	} 
+
 	internal JOB_TYPE GetRandomUnneededRole(){
 		List<JOB_TYPE> jobTypes = new List<JOB_TYPE> ();
 		jobTypes.AddRange(this.unneededRoles);
@@ -855,14 +868,26 @@ public class CityTest{
 
 		return unneededCitizens [UnityEngine.Random.Range (0, unneededCitizens.Count)];
 	}
-	bool CanAffordToUpgradeCitizen(){
-		for(int i = 0; i < this.upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
-			if(GetNumberOfResourcesPerType(this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType) < this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceQuantity){
+
+	bool HasEnoughResourcesForAction(List<Resource> expenses){
+		for (int i = 0; i < expenses.Count; i++) {
+			Resource currentResource = expenses [i];
+			if(this.GetNumberOfResourcesPerType(currentResource.resourceType) < currentResource.resourceQuantity){
+				//this city lacks quantity of one resource, return false
 				return false;
 			}
 		}
 		return true;
 	}
+
+//	bool CanAffordToUpgradeCitizen(){
+//		for(int i = 0; i < this.upgradeCitizenTarget.GetUpgradeRequirements().resource.Count; i++){
+//			if(GetNumberOfResourcesPerType(this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceType) < this.upgradeCitizenTarget.GetUpgradeRequirements().resource[i].resourceQuantity){
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	bool CanAffordToCreateCitizen(){
 		if (this.newCitizenTarget != null) {
@@ -882,18 +907,18 @@ public class CityTest{
 		return true;
 	}
 
-	bool CanCityAffordToUpgrade(){
-		CityUpgradeRequirements upgradeRequirements = this.cityUpgradeRequirements;
-		for (int i = 0; i < upgradeRequirements.resource.Count; i++) {
-			RESOURCE resourceType = upgradeRequirements.resource [i].resourceType;
-			if(upgradeRequirements.resource [i].resourceQuantity >= GetNumberOfResourcesPerType(resourceType)){
-				//The city lacks atleast one resource for upgrade, return false
-				return false;
-			}
-		}
-		//The loop has finished, meaning the city has all the needed resources to upgrade, return true
-		return true;
-	}
+//	bool CanCityAffordToUpgrade(){
+//		CityUpgradeRequirements upgradeRequirements = this.cityUpgradeRequirements;
+//		for (int i = 0; i < upgradeRequirements.resource.Count; i++) {
+//			RESOURCE resourceType = upgradeRequirements.resource [i].resourceType;
+//			if(upgradeRequirements.resource [i].resourceQuantity >= GetNumberOfResourcesPerType(resourceType)){
+//				//The city lacks atleast one resource for upgrade, return false
+//				return false;
+//			}
+//		}
+//		//The loop has finished, meaning the city has all the needed resources to upgrade, return true
+//		return true;
+//	}
 
 	bool IsCitizenCapReached(){
 		if (this.citizens.Count < citizenLimit) {
@@ -1037,6 +1062,7 @@ public class CityTest{
 		return totalValue;
 	}
 
+	#region Trade Mission Functions
 	internal void LaunchTradeMission(){
 		if (IsReadyForTrade ()) {
 			int chance = UnityEngine.Random.Range(0, 100);
@@ -1219,7 +1245,6 @@ public class CityTest{
 		return 0;
 	}
 
-
 	List<CityTest> GetCitiesByStatus(RESOURCE_STATUS status, RESOURCE resource){
 		List<CityTest> cities = new List<CityTest>();
 		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
@@ -1299,6 +1324,19 @@ public class CityTest{
 		return false;
 	}
 
+	RESOURCE GetRandomResourceTypeByStatus(RESOURCE_STATUS status){
+		List<RESOURCE> resourceTypes = new List<RESOURCE>();
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus[i].status == status) {
+				resourceTypes.Add (allResourcesStatus [i].resource);
+			}
+		}
+		if (resourceTypes.Count > 0) {
+			return resourceTypes [UnityEngine.Random.Range (0, resourceTypes.Count)];
+		}
+		return RESOURCE.FOOD;
+	}
+
 	internal ResourceStatus GetResourceStatusByType(RESOURCE resourceType){
 		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
 			if (this.allResourcesStatus [i].resource == resourceType) {
@@ -1307,6 +1345,7 @@ public class CityTest{
 		}
 		return null;
 	}
+	#endregion
 
 	void AdjustResourceCount(RESOURCE resourceType, int amount){
 		switch (resourceType) {
@@ -1329,5 +1368,80 @@ public class CityTest{
 			this.metalCount += amount;
 			break;
 		}
+	}
+		
+	List<Resource> GetCitizenCreationCostPerType(JOB_TYPE jobType){
+		int numOfCitizensThreshold = 3;
+
+		int numOfCitizensOfSameType = 0;
+		for (int i = 0; i < this.citizens.Count; i++) {
+			if (this.citizens [i].job.jobType == jobType) {
+				numOfCitizensOfSameType++;
+			}
+		}
+		RESOURCE primaryCreationResource = RESOURCE.FOOD;
+		RESOURCE secondaryCreationResource = RESOURCE.FOOD;
+
+		switch (jobType) {
+		case JOB_TYPE.FARMER:
+			primaryCreationResource = RESOURCE.LUMBER;
+			primaryCreationResource = RESOURCE.METAL;
+			break;
+		case JOB_TYPE.HUNTER:
+			primaryCreationResource = RESOURCE.STONE;
+			primaryCreationResource = RESOURCE.MANA;
+			break;
+		case JOB_TYPE.WOODSMAN:
+			primaryCreationResource = RESOURCE.LUMBER;
+			primaryCreationResource = RESOURCE.MANA;
+			break;
+		case JOB_TYPE.QUARRYMAN:
+			primaryCreationResource = RESOURCE.STONE;
+			primaryCreationResource = RESOURCE.METAL;
+			break;
+		case JOB_TYPE.ALCHEMIST:
+			primaryCreationResource = RESOURCE.LUMBER;
+			primaryCreationResource = RESOURCE.MANA;
+			break;
+		case JOB_TYPE.MINER:
+			primaryCreationResource = RESOURCE.STONE;
+			primaryCreationResource = RESOURCE.METAL;
+			break;
+		case JOB_TYPE.BRAWLER:
+			primaryCreationResource = RESOURCE.STONE;
+			primaryCreationResource = RESOURCE.MANA;
+			break;
+		case JOB_TYPE.ARCHER:
+			primaryCreationResource = RESOURCE.LUMBER;
+			primaryCreationResource = RESOURCE.METAL;
+			break;
+		case JOB_TYPE.WARRIOR:
+			primaryCreationResource = RESOURCE.STONE;
+			primaryCreationResource = RESOURCE.METAL;
+			break;
+		case JOB_TYPE.MAGE:
+			primaryCreationResource = RESOURCE.LUMBER;
+			primaryCreationResource = RESOURCE.MANA;
+			break;
+		}
+
+		List<Resource> citizenCreationCosts;
+		int primaryCreationResourceCount = 80 + (20 * numOfCitizensOfSameType);
+
+		if (numOfCitizensOfSameType > numOfCitizensThreshold) {
+			int secondaryCreationResourceCount = 80 + (20 * numOfCitizensOfSameType - numOfCitizensThreshold);
+			citizenCreationCosts = new List<Resource>(){
+				new Resource(RESOURCE.GOLD, 500 + (50 * numOfCitizensOfSameType)),
+				new Resource (primaryCreationResource, primaryCreationResourceCount),
+				new Resource(secondaryCreationResource, secondaryCreationResourceCount)
+			};
+		} else {
+			citizenCreationCosts = new List<Resource> () {
+				new Resource (RESOURCE.GOLD, 500 + (50 * numOfCitizensOfSameType)),
+				new Resource (primaryCreationResource, primaryCreationResourceCount)
+			};
+		}
+
+		return citizenCreationCosts;
 	}
 }
