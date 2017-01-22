@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
 		GenerateInitialKingdoms();
 		CreateInitialRelationshipsToLords ();
 //		AssignCitiesToKingdoms();
-//		GenerateCityConnections ();
+		GenerateCityConnections ();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (this.cities [0].GetComponent<CityTileTest> ());

@@ -142,7 +142,14 @@ public class Citizen {
 
 	internal void SetCitizenTile(HexTile hexTile){
 		this._assignedTile = hexTile;
-		hexTile.SetTileColor (Color.blue);
+		if (!hexTile.isCity) {
+			hexTile.isOccupied = true;
+			hexTile.SetTileColor (Color.blue);
+		}
+	}
+
+	internal void ResetLevel(){
+		this._level = 1;
 	}
 
 	private void UpdateUpgradeRequirements(){

@@ -221,8 +221,22 @@ public class CityTest{
 		if (citizen.job.residence == RESIDENCE.OUTSIDE) {
 			List<HexTile> tilesToChooseFrom = this.ownedBiomeTiles.Where (x => !x.isOccupied).ToList();
 			tilesToChooseFrom.OrderByDescending (x => x.GetRelevantResourceValueByJobType (citizen.job.jobType));
-			citizen.SetCitizenTile (tilesToChooseFrom[0]);
+			if (tilesToChooseFrom.Count > 0) {
+				if (citizen.assignedTile == null) {
+					citizen.SetCitizenTile (tilesToChooseFrom [0]);
+				} else {
+					int currentAssignedTileValue = citizen.assignedTile.GetRelevantResourceValueByJobType (citizen.job.jobType);
+					int candidateTileValue = tilesToChooseFrom [0].GetRelevantResourceValueByJobType (citizen.job.jobType);
+					if (candidateTileValue > currentAssignedTileValue) {
+						citizen.assignedTile.SetTileAsUnoccupied();
+						citizen.SetCitizenTile (tilesToChooseFrom [0]);
+					}
+				}
+			}
 		} else {
+			if (citizen.assignedTile != null) {
+				citizen.assignedTile.SetTileAsUnoccupied ();
+			}
 			citizen.SetCitizenTile(this.hexTile);
 		}
 
@@ -702,11 +716,9 @@ public class CityTest{
 		}
 
 		if(!IsCitizenCapReached() && HasEnoughResourcesForAction(GetCitizenCreationCostPerType(citizenToCreateJobType))){
-			Debug.LogError ("Requirements met!");
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.newCitizenChance) {
 				this.cityActionChances.newCitizenChance = this.cityActionChances.defaultNewCitizenChance;
-				Debug.LogError ("Citizen Created!");
 				Citizen newCitizen = new Citizen (citizenToCreateJobType, this);
 				AssignCitizenToTile (newCitizen);
 				this.citizens.Add (newCitizen);
@@ -728,7 +740,11 @@ public class CityTest{
 	}
 
 	internal void AttemptToChangeCitizenRole(){
-		if(this.unneededRoles.Count > 0 && CanAffordToChangeCitizenJob()){
+		List<Resource> changeCitizenRoleCost = new List<Resource> () {
+			new Resource(RESOURCE.GOLD, this.changeCitizenJobCost)
+		};
+
+		if(this.unneededRoles.Count > 0 && HasEnoughResourcesForAction(changeCitizenRoleCost)){
 			JOB_TYPE randomJob = GetRandomUnneededRole();
 			if (randomJob == JOB_TYPE.NONE) {
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": Cannot change citizen job with its own job. \n\n";
@@ -740,17 +756,19 @@ public class CityTest{
 				Citizen citizen = GetCitizenForChange (randomJob);
 				if(this.neededRole != JOB_TYPE.NONE){
 					citizen.ChangeJob (this.neededRole);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + randomJob.ToString() + "[-] clan is now [FF0000]" + this.neededRole.ToString() + "[-]\n\n"; 
 					this.neededRole = JOB_TYPE.NONE;
 				}else{
 					citizen.ChangeJob (this.newCitizenTarget);
-					cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + randomJob.ToString() + "[-] clan is now [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation (false);
 				}
+				citizen.ResetLevel();
+				//Check for another tile the citizen can be relocated to
+				AssignCitizenToTile(citizen);
 				AdjustResourceCount (RESOURCE.GOLD, -this.changeCitizenJobCost);
 				RemoveUnneededResources (randomJob);
 				this.unneededRoles.Remove(randomJob);
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + randomJob.ToString() + "[-] clan is now [FF0000]" + citizen.job.jobType.ToString() + "[-]\n\n"; 
 //				UpdateResourcesStatus ();
 			} else {
 				this.cityActionChances.changeCitizenChance += 1;
@@ -889,23 +907,23 @@ public class CityTest{
 //		return true;
 //	}
 
-	bool CanAffordToCreateCitizen(){
-		if (this.newCitizenTarget != null) {
-			if (this.goldCount < this.createCitizenCost) {
-				return false;
-			}
-		}
-		return true;
-	}
+//	bool CanAffordToCreateCitizen(){
+//		if (this.newCitizenTarget != null) {
+//			if (this.goldCount < this.createCitizenCost) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
-	bool CanAffordToChangeCitizenJob(){
-		if (this.newCitizenTarget != null) {
-			if (this.goldCount < this.changeCitizenJobCost) {
-				return false;
-			}
-		}
-		return true;
-	}
+//	bool CanAffordToChangeCitizenJob(){
+//		if (this.newCitizenTarget != null) {
+//			if (this.goldCount < this.changeCitizenJobCost) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 //	bool CanCityAffordToUpgrade(){
 //		CityUpgradeRequirements upgradeRequirements = this.cityUpgradeRequirements;
@@ -1489,43 +1507,43 @@ public class CityTest{
 		switch (jobType) {
 		case JOB_TYPE.FARMER:
 			primaryCreationResource = RESOURCE.LUMBER;
-			primaryCreationResource = RESOURCE.METAL;
+			secondaryCreationResource = RESOURCE.METAL;
 			break;
 		case JOB_TYPE.HUNTER:
 			primaryCreationResource = RESOURCE.STONE;
-			primaryCreationResource = RESOURCE.MANA;
+			secondaryCreationResource = RESOURCE.MANA;
 			break;
 		case JOB_TYPE.WOODSMAN:
 			primaryCreationResource = RESOURCE.LUMBER;
-			primaryCreationResource = RESOURCE.MANA;
+			secondaryCreationResource = RESOURCE.MANA;
 			break;
 		case JOB_TYPE.QUARRYMAN:
 			primaryCreationResource = RESOURCE.STONE;
-			primaryCreationResource = RESOURCE.METAL;
+			secondaryCreationResource = RESOURCE.METAL;
 			break;
 		case JOB_TYPE.ALCHEMIST:
 			primaryCreationResource = RESOURCE.LUMBER;
-			primaryCreationResource = RESOURCE.MANA;
+			secondaryCreationResource = RESOURCE.MANA;
 			break;
 		case JOB_TYPE.MINER:
 			primaryCreationResource = RESOURCE.STONE;
-			primaryCreationResource = RESOURCE.METAL;
+			secondaryCreationResource = RESOURCE.METAL;
 			break;
 		case JOB_TYPE.BRAWLER:
 			primaryCreationResource = RESOURCE.STONE;
-			primaryCreationResource = RESOURCE.MANA;
+			secondaryCreationResource = RESOURCE.MANA;
 			break;
 		case JOB_TYPE.ARCHER:
 			primaryCreationResource = RESOURCE.LUMBER;
-			primaryCreationResource = RESOURCE.METAL;
+			secondaryCreationResource = RESOURCE.METAL;
 			break;
 		case JOB_TYPE.WARRIOR:
 			primaryCreationResource = RESOURCE.STONE;
-			primaryCreationResource = RESOURCE.METAL;
+			secondaryCreationResource = RESOURCE.METAL;
 			break;
 		case JOB_TYPE.MAGE:
 			primaryCreationResource = RESOURCE.LUMBER;
-			primaryCreationResource = RESOURCE.MANA;
+			secondaryCreationResource = RESOURCE.MANA;
 			break;
 		}
 

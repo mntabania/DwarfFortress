@@ -279,6 +279,13 @@ public class HexTile : MonoBehaviour {
 		return -1;
 	}
 
+	public void SetTileAsUnoccupied(){
+		if (!isCity) {
+			this.isOccupied = false;
+			SetTileColor (Color.red);
+		}
+	}
+
 //	private BIOME GetBiome(){
 //		if(elevationNoise <= 0.35f){
 //			if(elevationNoise < 0.30f){
