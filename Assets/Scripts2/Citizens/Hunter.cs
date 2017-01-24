@@ -22,7 +22,7 @@ public class Hunter: Job {
 		}
 		if (resourceType == RESOURCE.FOOD) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.hunterMultiplier);
 		}
 		return 0;
 	}
@@ -33,7 +33,7 @@ public class Hunter: Job {
 		}
 		if (resourceType == RESOURCE.FOOD) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.hunterMultiplier);
 		}
 		return 0;
 	}
@@ -43,7 +43,7 @@ public class Hunter: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
-		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.hunterMultiplier);
 		return new int[]{0,food,0,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 

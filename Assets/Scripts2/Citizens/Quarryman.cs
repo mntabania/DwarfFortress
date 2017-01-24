@@ -22,7 +22,7 @@ public class Quarryman: Job {
 		}
 		if (resourceType == RESOURCE.STONE) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * this.citizen.city.quarrymanMultiplier);
 		}
 		return 0;
 	}
@@ -33,7 +33,7 @@ public class Quarryman: Job {
 		}
 		if (resourceType == RESOURCE.STONE) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.quarrymanMultiplier);
 		}
 		return 0;
 	}
@@ -43,7 +43,7 @@ public class Quarryman: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.stoneValue / 2f);
-		int stones = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		int stones = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.quarrymanMultiplier);
 		return new int[]{0,0,0,stones,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 

@@ -22,7 +22,7 @@ public class Miner: Job {
 		}
 		if (resourceType == RESOURCE.METAL) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * this.citizen.city.minerMultiplier);
 		}
 		return 0;
 	}
@@ -33,7 +33,7 @@ public class Miner: Job {
 		}
 		if (resourceType == RESOURCE.METAL) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.minerMultiplier);
 		}
 		return 0;
 	}
@@ -43,7 +43,7 @@ public class Miner: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.metalValue / 2f);
-		int metals =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		int metals =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.minerMultiplier);
 		return new int[]{0,0,0,0,0,metals}; //gold, food, lumber, stone, manastone, metal
 	}
 

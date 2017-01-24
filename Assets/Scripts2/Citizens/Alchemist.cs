@@ -26,7 +26,7 @@ public class Alchemist : Job {
 		}
 		if (resourceType == RESOURCE.MANA) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * this.citizen.city.alchemistMultiplier);
 		}
 		return 0;
 	}
@@ -37,7 +37,7 @@ public class Alchemist : Job {
 		}
 		if (resourceType == RESOURCE.MANA) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.alchemistMultiplier);
 		}
 		return 0;
 	}
@@ -47,7 +47,7 @@ public class Alchemist : Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0};
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.manaValue / 2f);
-		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * 2f);
+		int manaStones =  (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * this.citizen.city.alchemistMultiplier);
 		return new int[]{0,0,0,0,manaStones, 0};
 	}
 

@@ -22,7 +22,7 @@ public class Woodsman: Job {
 		}
 		if (resourceType == RESOURCE.LUMBER) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.woodValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue/2f))) * this.citizen.city.woodsmanMultiplier);
 		}
 		return 0;
 	}
@@ -33,7 +33,7 @@ public class Woodsman: Job {
 		}
 		if (resourceType == RESOURCE.LUMBER) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.woodValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.woodsmanMultiplier);
 		}
 		return 0;
 	}
@@ -43,7 +43,7 @@ public class Woodsman: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.woodValue / 2f);
-		int lumbers = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+		int lumbers = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.woodsmanMultiplier);
 		return new int[]{0,0,lumbers,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 
