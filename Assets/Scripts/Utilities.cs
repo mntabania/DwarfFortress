@@ -13,9 +13,18 @@ public static class Utilities {
 	public static int lastKingId = 0;
 	public static int lastCityId = 0;
 
+	public static float farmerMultiplier = 2f;
+	public static float hunterMultiplier = 2f;
+	public static float alchemistMultiplier = 2f;
+	public static float quarrymanMultiplier = 2f;
+	public static float minerMultiplier = 2f;
+	public static float woodsmanMultiplier = 2f;
+
+
+
 	private static System.Random rng = new System.Random();  
 
-	public static void Shuffle<T>(IList<T> list)  
+	public static List<T> Shuffle<T>(List<T> list)  
 	{  
 		int n = list.Count;  
 		while (n > 1) {  

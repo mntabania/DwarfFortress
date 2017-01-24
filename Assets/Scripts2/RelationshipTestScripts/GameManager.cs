@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour {
 	public bool isDayPaused = false;
 
 	public int daysUntilNextHarvest = 30;
+	public bool harvestTime;
 
 	void Awake(){
 		Instance = this;
@@ -262,8 +263,10 @@ public class GameManager : MonoBehaviour {
 				this.cities [i].GetComponent<CityTileTest> ().cityAttributes.TriggerFoodHarvest();
 			}
 			daysUntilNextHarvest = 30;
+			harvestTime = true;
 		} else {
 			daysUntilNextHarvest--;
+			harvestTime = false;
 		}
 
 	}

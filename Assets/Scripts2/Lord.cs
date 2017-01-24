@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public class Lord {
@@ -16,6 +17,7 @@ public class Lord {
 	public int likeCitizen;
 	public KingdomTest kingdom;
 	public LORD_PERSONALITY personality;
+	public LordInternalPersonality internalPersonality;
 	public CHARACTER character;
 	public List<GOALS> goals;
 	public List<List<string>> tasks;
@@ -34,7 +36,8 @@ public class Lord {
 		this.skill = UnityEngine.Random.Range (0, 10);
 		this.racism = UnityEngine.Random.Range (0, 10);
 		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
-		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));		
+		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
+		this.internalPersonality = new LordInternalPersonality ("");
 		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
 		this.kingdom = kingdom;
@@ -61,6 +64,8 @@ public class Lord {
 			}
 		}
 	}
+
+	#region DECISION-MAKING
 	internal void AdjustLikeness(Lord targetLord, DECISION sourceDecision, DECISION targetDecision, LORD_EVENTS eventType){
 		Relationship relationship = SearchRelationship (targetLord);
 		int eventEffect = EventEffect (eventType, sourceDecision, targetDecision);
@@ -383,4 +388,290 @@ public class Lord {
 		}
 		return 0;
 	}
+	#endregion
+
+	#region INTERNAL PERSONALITY
+	internal void PositiveInternalPersonalityEvents(){
+		CityTest randomCity = this.kingdom.cities [UnityEngine.Random.Range (0, this.kingdom.cities.Count)].cityAttributes;
+		switch(internalPersonality.goodPersonality){
+		case LORD_INTERNAL_PERSONALITY_POSITIVE.GALLANT:
+			Gallant (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_POSITIVE.GREEN_THUMB:
+			GreenThumb (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_POSITIVE.MONEYMAKER:
+			Moneymaker (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_POSITIVE.INSPIRING:
+			Inspiring (randomCity);
+			break;
+		}
+	}
+	private void Gallant(CityTest chosenCity){
+		int chance = UnityEngine.Random.Range (0, 100);
+		if(chance < internalPersonality.gallantChance){
+			if(chosenCity.goldCount < 500 || chosenCity.unrest <= 0){
+				chosenCity.goldCount -= 500;
+				chosenCity.unrest -= 10;
+				if(chosenCity.unrest < 0){
+					chosenCity.unrest = 0;
+				}
+				Debug.Log (chosenCity.cityName + ": GALLANT TRIGGERED!");
+
+			}else{
+				Debug.Log ("GALLANT: NOT ENOUGH GOLD OR UNREST IS ZERO(0).");
+			}
+		}
+	}
+	private void GreenThumb(CityTest chosenCity){
+		if(GameManager.Instance.daysUntilNextHarvest <= 1){
+			int chance = UnityEngine.Random.Range (0, 100);
+			if(chance < internalPersonality.greenthumbChance){
+				chosenCity.farmerMultiplier = 3f;
+				Debug.Log (chosenCity.cityName + ": GREEN THUMB TRIGGERED!");
+			}else{
+				chosenCity.farmerMultiplier = 2f;
+			}
+		}
+	}
+	private void Moneymaker(CityTest chosenCity){
+		int chance = UnityEngine.Random.Range (0, 100);
+		if(chance < internalPersonality.moneymakerChance){
+			chosenCity.goldMultiplier = 2f;
+			Debug.Log (chosenCity.cityName + ": MONEYMAKER TRIGGERED!");
+		}else{
+			chosenCity.goldMultiplier = 1f;
+		}
+	}
+	private void Inspiring(CityTest chosenCity){
+		int chance = UnityEngine.Random.Range (0, 100);
+		if(chance < internalPersonality.inspiringChance){
+			chosenCity.farmerMultiplier = 3f;
+			chosenCity.hunterMultiplier = 3f;
+			chosenCity.woodsmanMultiplier = 3f;
+			chosenCity.quarrymanMultiplier = 3f;
+			chosenCity.minerMultiplier = 3f;
+			chosenCity.alchemistMultiplier = 3f;
+
+			chosenCity.unrest -= 5;
+			if(chosenCity.unrest < 0){
+				chosenCity.unrest = 0;
+			}
+			Debug.Log (chosenCity.cityName + ": INSPIRING TRIGGERED!");
+		}else{
+			chosenCity.farmerMultiplier = 2f;
+			chosenCity.hunterMultiplier = 2f;
+			chosenCity.woodsmanMultiplier = 2f;
+			chosenCity.quarrymanMultiplier = 2f;
+			chosenCity.minerMultiplier = 2f;
+			chosenCity.alchemistMultiplier = 2f;		
+		}
+	}
+
+
+	internal void NegativeInternalPersonalityEvents(){
+		CityTest randomCity = this.kingdom.cities [UnityEngine.Random.Range (0, this.kingdom.cities.Count)].cityAttributes;
+		switch(internalPersonality.badPersonality){
+		case LORD_INTERNAL_PERSONALITY_NEGATIVE.CORRUPT:
+			Corrupt (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_NEGATIVE.VIOLENT:
+			Violent (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_NEGATIVE.TYRANT:
+			Tyrant (randomCity);
+			break;
+		case LORD_INTERNAL_PERSONALITY_NEGATIVE.DESTRUCTIVE:
+			Destructive (randomCity);
+			break;
+		}
+	}
+
+	private void Corrupt(CityTest chosenCity){
+		int chance = UnityEngine.Random.Range (0, 100);
+		if(chance < internalPersonality.corruptChance){
+			float goldStealPercentage = UnityEngine.Random.Range (2, 6) / 100f;
+			int stolenGold = (int)((float)chosenCity.goldCount * goldStealPercentage);
+
+			if(chosenCity.goldCount >= stolenGold){
+				chosenCity.goldCount -= stolenGold;
+				chosenCity.unrest += 5;
+				if(chosenCity.unrest > 100){
+					chosenCity.unrest = 100;
+				}
+				Debug.Log (chosenCity.cityName + ": CORRUPT TRIGGERED!");
+				Debug.Log ("Gold Steal Percentage: " + goldStealPercentage);
+				Debug.Log ("Lord has stole: " + stolenGold + " gold.");
+			}else{
+				Debug.Log (chosenCity.cityName + ": CORRUPT! Lord can't steal gold. Not enough gold.");
+			}
+		}
+	}
+	private void Violent(CityTest chosenCity){
+		float chance = UnityEngine.Random.Range (0f, 100f);
+		if(chance < internalPersonality.voilentChance){
+			Citizen citizenToBeKilled = chosenCity.citizens [UnityEngine.Random.Range (0, chosenCity.citizens.Count)];
+
+			chosenCity.unrest += 10;
+			if(chosenCity.unrest > 100){
+				chosenCity.unrest = 100;
+			}
+
+			Debug.Log (chosenCity.cityName + ": VIOLENT TRIGGERED!");
+			Debug.Log (chosenCity.cityName + ": Lord has killed " + citizenToBeKilled.name + ", " + citizenToBeKilled.job.jobType.ToString() + ".");
+		}
+	}
+	private void Tyrant(CityTest chosenCity){
+		float chance = UnityEngine.Random.Range (0f, 100f);
+		if(chance < internalPersonality.tyrantChance){
+			chosenCity.farmerMultiplier = 1f;
+			chosenCity.hunterMultiplier = 1f;
+			chosenCity.woodsmanMultiplier = 1f;
+			chosenCity.quarrymanMultiplier = 1f;
+			chosenCity.minerMultiplier = 1f;
+			chosenCity.alchemistMultiplier = 1f;
+
+			chosenCity.unrest += 5;
+			if(chosenCity.unrest > 100){
+				chosenCity.unrest = 100;
+			}
+
+			Debug.Log (chosenCity.cityName + ": TYRANT TRIGGERED!");
+		}else{
+			chosenCity.farmerMultiplier = 2f;
+			chosenCity.hunterMultiplier = 2f;
+			chosenCity.woodsmanMultiplier = 2f;
+			chosenCity.quarrymanMultiplier = 2f;
+			chosenCity.minerMultiplier = 2f;
+			chosenCity.alchemistMultiplier = 2f;		
+		}
+	}
+
+	private void Destructive(CityTest chosenCity){
+		float chance = UnityEngine.Random.Range (0f, 100f);
+		if(chance < internalPersonality.destructiveChance){
+			int randomDecrease = UnityEngine.Random.Range (2, 6);
+			if(chosenCity.ownedBiomeTiles.Count <= 0){
+				Debug.Log ("NO OWNED OTHER TILES EXCEPT ITS OWN!");
+				return;
+			}
+
+			HexTile randomTile = chosenCity.ownedBiomeTiles [UnityEngine.Random.Range (1, chosenCity.ownedBiomeTiles.Count)];
+			List<string> hexNames = new List<string> {
+				"farm",
+				"hunt",
+				"wood",
+				"stone",
+				"mana",
+				"metal",
+				"gold"
+			};
+			hexNames = Utilities.Shuffle (hexNames);
+			Debug.Log (chosenCity.cityName + ": DESTRUCTIVE TRIGGERED ON TILE - " + randomTile.name);
+			for(int i = 0; i < hexNames.Count; i++){
+				if(hexNames[i] == "farm"){
+					if(randomTile.farmingValue == 0){
+						continue;
+					}else{
+						randomTile.farmingValue -= randomDecrease;
+						if(randomTile.farmingValue <= 0){
+							randomTile.farmingValue = 0;
+						}
+						Debug.Log (randomTile.name + ": FARMING VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else if(hexNames[i] == "hunt"){
+					if(randomTile.huntingValue == 0){
+						continue;
+					}else{
+						randomTile.huntingValue -= randomDecrease;
+						if(randomTile.huntingValue <= 0){
+							randomTile.huntingValue = 0;
+						}
+						Debug.Log (randomTile.name + ": HUNTING VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else if(hexNames[i] == "wood"){
+					if(randomTile.woodValue == 0){
+						continue;
+					}else{
+						randomTile.woodValue -= randomDecrease;
+						if(randomTile.woodValue <= 0){
+							randomTile.woodValue = 0;
+						}
+						Debug.Log (randomTile.name + ": WOOD VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else if(hexNames[i] == "stone"){
+					if(randomTile.stoneValue == 0){
+						continue;
+					}else{
+						randomTile.stoneValue -= randomDecrease;
+						if(randomTile.stoneValue <= 0){
+							randomTile.stoneValue = 0;
+						}
+						Debug.Log (randomTile.name + ": STONE VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else if(hexNames[i] == "mana"){
+					if(randomTile.manaValue == 0){
+						continue;
+					}else{
+						randomTile.manaValue -= randomDecrease;
+						if(randomTile.manaValue <= 0){
+							randomTile.manaValue = 0;
+						}
+						Debug.Log (randomTile.name + ": MANA VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else if(hexNames[i] == "metal"){
+					if(randomTile.metalValue == 0){
+						continue;
+					}else{
+						randomTile.metalValue -= randomDecrease;
+						if(randomTile.metalValue <= 0){
+							randomTile.metalValue = 0;
+						}
+						Debug.Log (randomTile.name + ": METAL VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+				else {
+					if(randomTile.goldValue == 0){
+						continue;
+					}else{
+						randomTile.goldValue -= randomDecrease;
+						if(randomTile.goldValue <= 0){
+							randomTile.goldValue = 0;
+						}
+						Debug.Log (randomTile.name + ": GOLD VALUE HAS DECREASED BY " + randomDecrease);
+						break;
+					}
+				}
+
+
+			}
+
+
+			chosenCity.unrest += 5;
+			if(chosenCity.unrest > 100){
+				chosenCity.unrest = 100;
+			}
+				
+		}
+	}
+
+	#endregion
 }

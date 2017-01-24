@@ -21,7 +21,7 @@ public class Farmer: Job {
 		}
 		if (resourceType == RESOURCE.FOOD) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.farmingValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range(1, halfHexValue + 1))) * this.citizen.city.farmerMultiplier);
 		}
 		return 0;
 	}
@@ -32,7 +32,7 @@ public class Farmer: Job {
 		}
 		if (resourceType == RESOURCE.FOOD) {
 			int halfHexValue = (int)((float)this.citizen.assignedTile.farmingValue / 2f);
-			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * 2f);
+			return (int)((halfHexValue + (this.citizen.level * (halfHexValue / 2f))) * this.citizen.city.farmerMultiplier);
 		}
 		return 0;
 	}
@@ -42,8 +42,7 @@ public class Farmer: Job {
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.farmingValue / 2f);
-		int random = UnityEngine.Random.Range (1, halfHexValue + 1);
-		int food = (int)((halfHexValue + (this.citizen.level * random)) * 2f);
+		int food = (int)((halfHexValue + (this.citizen.level * UnityEngine.Random.Range (1, halfHexValue + 1))) * this.citizen.city.farmerMultiplier);
 		return new int[]{0,food,0,0,0,0}; //gold, food, lumber, stone, manastone, metal
 	}
 

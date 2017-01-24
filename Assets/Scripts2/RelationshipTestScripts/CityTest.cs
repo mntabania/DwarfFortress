@@ -24,6 +24,14 @@ public class CityTest{
 	public int goldValue;
 	public int mayorLikeRating;
 	public int citizenLimit;
+	public int unrest;
+	public float farmerMultiplier;
+	public float hunterMultiplier;
+	public float alchemistMultiplier;
+	public float quarrymanMultiplier;
+	public float minerMultiplier;
+	public float woodsmanMultiplier;
+	public float goldMultiplier;
 	public CityActionChances cityActionChances;
 	public CITY_STATE cityState;
 	public List<Citizen> citizens = new List<Citizen>();
@@ -64,6 +72,14 @@ public class CityTest{
 		this.goldValue = GetGoldValue ();
 		this.mayorLikeRating = 0;
 		this.citizenLimit = 4;
+		this.unrest = 0;
+		this.farmerMultiplier = 2f;
+		this.hunterMultiplier = 2f;
+		this.alchemistMultiplier = 2f;
+		this.quarrymanMultiplier = 2f;
+		this.minerMultiplier = 2f;
+		this.woodsmanMultiplier = 2f;
+		this.goldMultiplier = 1f;
 		this.cityActionChances = new CityActionChances ();
 		this.cityState = CITY_STATE.ABUNDANT;
 		this.connectedCities = new List<CityTileTest>();
@@ -156,7 +172,7 @@ public class CityTest{
 		}
 
 		int halfGoldValue = (int)((float)this.goldValue / 2f);
-		int producedGold = halfGoldValue + UnityEngine.Random.Range(1, halfGoldValue + 1);
+		int producedGold = (int)((float)(halfGoldValue + UnityEngine.Random.Range(1, halfGoldValue + 1)) * goldMultiplier);
 		this.goldCount += producedGold;
 
 		for(int i = 0; i < this.citizens.Count; i++){
@@ -182,6 +198,7 @@ public class CityTest{
 	}
 
 	internal void TriggerFoodHarvest(){
+		
 //		Debug.Log ("Food Harvest!: Spoiled - " + this.foodCount.ToString () + "/ New Food - " + this.foodStockpileCount.ToString ());
 		cityLogs += GameManager.Instance.currentDay.ToString() + ": Harvest Day, food is now [FF0000]" + this.foodStockpileCount.ToString() + "[-].\n\n";
 		this.foodCount = this.foodStockpileCount;
