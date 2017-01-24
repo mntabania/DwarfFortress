@@ -39,7 +39,7 @@ public class Hunter: Job {
 	}
 
 	override public int[] GetAllDailyProduction(){
-		if(this.citizen == null){
+		if(this.citizen == null || this.citizen.assignedTile == null){
 			return new int[]{ 0, 0, 0, 0, 0, 0 };
 		}
 		int halfHexValue = (int)((float)this.citizen.assignedTile.huntingValue / 2f);
