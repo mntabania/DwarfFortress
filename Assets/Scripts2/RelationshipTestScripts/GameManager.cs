@@ -268,9 +268,81 @@ public class GameManager : MonoBehaviour {
 
 	}
 
+	internal void CooperateEvent1(){
+		List<KingdomTileTest> kingdoms = new List<KingdomTileTest> ();
+		kingdoms.AddRange (this.kingdoms);
+		kingdoms = Utilities.Shuffle (kingdoms);
 
+		if(kingdoms.Count > 1){
 
+			/*
+			A huge monster guarding some treasure is discovered. 
+			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
+			One can be betrayed by unleashing the monster onto the other Lord's realm while the other takes all the treasure. 
+			If both attempt to do this, the monster stays and the treasure remains guarded.
+			*/
 
+			Lord lord1 = kingdoms [0].kingdom.lord;
+			Lord lord2 = kingdoms [1].kingdom.lord;
+
+			DECISION lord1Decision = lord1.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE1, lord2);
+			DECISION lord2Decision = lord2.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE1, lord1);
+
+			if(lord1Decision == DECISION.NICE && lord2Decision == DECISION.NICE){
+				
+			}else if(lord1Decision == DECISION.NICE && lord2Decision == DECISION.RUDE){
+
+			}else if(lord1Decision == DECISION.RUDE && lord2Decision == DECISION.NICE){
+
+			}else if(lord1Decision == DECISION.RUDE && lord2Decision == DECISION.RUDE){
+
+			}
+
+			lord1.AdjustLikeness (lord2, lord1Decision, lord2Decision, LORD_EVENTS.COOPERATE1);
+			lord2.AdjustLikeness (lord1, lord2Decision, lord1Decision, LORD_EVENTS.COOPERATE1);
+
+		}else{
+			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
+		}
+	}
+
+	internal void CooperateEvent2(){
+		List<KingdomTileTest> kingdoms = new List<KingdomTileTest> ();
+		kingdoms.AddRange (this.kingdoms);
+		kingdoms = Utilities.Shuffle (kingdoms);
+
+		if(kingdoms.Count > 1){
+
+			/*
+			A huge monster guarding some treasure is discovered. 
+			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
+			One can be betrayed by unleashing the monster onto the other Lord's realm while the other takes all the treasure. 
+			If both attempt to do this, the monster stays and the treasure remains guarded.
+			*/
+
+			Lord lord1 = kingdoms [0].kingdom.lord;
+			Lord lord2 = kingdoms [1].kingdom.lord;
+
+			DECISION lord1Decision = lord1.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE2, lord2);
+			DECISION lord2Decision = lord2.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE2, lord1);
+
+			if(lord1Decision == DECISION.NICE && lord2Decision == DECISION.NICE){
+
+			}else if(lord1Decision == DECISION.NICE && lord2Decision == DECISION.RUDE){
+
+			}else if(lord1Decision == DECISION.RUDE && lord2Decision == DECISION.NICE){
+
+			}else if(lord1Decision == DECISION.RUDE && lord2Decision == DECISION.RUDE){
+
+			}
+
+			lord1.AdjustLikeness (lord2, lord1Decision, lord2Decision, LORD_EVENTS.COOPERATE2);
+			lord2.AdjustLikeness (lord1, lord2Decision, lord1Decision, LORD_EVENTS.COOPERATE2);
+
+		}else{
+			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
+		}
+	}
 
 
 }
