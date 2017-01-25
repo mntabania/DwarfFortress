@@ -9,7 +9,7 @@ public class CityActionChances{
 	internal int defaultNewCitizenChance = 2;
 	internal int defaultChangeCitizenChance = 5;
 	internal int defaultTradeMissionChance = 2;
-	internal int defaultPurchaseTileChance = 2;
+	internal int defaultPurchaseTileChance = 3;
 
 	public int oversupplyChance;
 	public int increaseHousingChance;

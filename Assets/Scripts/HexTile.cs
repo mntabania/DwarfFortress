@@ -37,6 +37,8 @@ public class HexTile : MonoBehaviour {
 	public RESOURCE primaryResourceToPurchaseTile;
 	public RESOURCE secondaryResourceToPurchaseTile;
 
+	int[] allResourceValues;
+
 //		switch(biomeType){
 //		case BIOME.OCEAN:
 //			this.gameObject.GetComponent<SpriteRenderer>().color = new Color(0f/255f,1f/255f,105f/255f);
@@ -259,6 +261,8 @@ public class HexTile : MonoBehaviour {
 				goldValue = generatedResourceValue;
 			}
 		}
+
+		allResourceValues = new int[]{ farmingValue, huntingValue, woodValue, stoneValue, manaValue, metalValue };
 	}	
 
 	public int GetRelevantResourceValueByJobType(JOB_TYPE jobType){
@@ -279,6 +283,42 @@ public class HexTile : MonoBehaviour {
 		return -1;
 	}
 
+	public JOB_TYPE GetBestJobForTile(){
+		int bestJobIndex = 0;
+		int highestResourceValue = 0;
+		for (int i = 0; i < allResourceValues.Length; i++) {
+			if (allResourceValues [i] > highestResourceValue) {
+				highestResourceValue = allResourceValues [i];
+				bestJobIndex = i;
+			}
+		}
+
+		if (bestJobIndex == 0) {
+			return JOB_TYPE.FARMER;
+		} else if (bestJobIndex == 1) {
+			return JOB_TYPE.HUNTER;
+		} else if (bestJobIndex == 2) {
+			return JOB_TYPE.WOODSMAN;
+		} else if (bestJobIndex == 3) {
+			return JOB_TYPE.QUARRYMAN;
+		} else if (bestJobIndex == 4) {
+			return JOB_TYPE.ALCHEMIST;
+		} else if (bestJobIndex == 5) {
+			return JOB_TYPE.MINER;
+		}
+		return JOB_TYPE.FARMER;
+	}
+
+	public int GetHighestResourceValue(){
+		int highestResourceValue = 0;
+		for (int i = 0; i < allResourceValues.Length; i++) {
+			if (allResourceValues [i] > highestResourceValue) {
+				highestResourceValue = allResourceValues [i];
+			}
+		}
+		return highestResourceValue;
+	}
+		
 	public void SetTileAsUnoccupied(){
 		if (!isCity) {
 			this.isOccupied = false;

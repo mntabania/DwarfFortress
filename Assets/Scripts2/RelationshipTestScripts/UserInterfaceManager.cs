@@ -50,16 +50,16 @@ public class UserInterfaceManager : MonoBehaviour {
 		currentDisplayingCityTile = cityTile;
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
 		lblCityLevel.text = "Lvl: " + cityTile.cityAttributes.cityLevel.ToString();
-		if (cityTile.cityAttributes.upgradeCitizenTarget != null) {
-			lblUpgradeCitizenTarget.text = "Upgrade: " + cityTile.cityAttributes.upgradeCitizenTarget.job.jobType.ToString ();
+//		if (cityTile.cityAttributes.neededRole != null) {
+			lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
 		
-			for (int i = 0; i < cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource.Count; i++) {
-				Resource currentResource = cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource [i];
-				lblUpgradeCitizenCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString ();
-			}
-		} else {
-			lblUpgradeCitizenTarget.text = "Upgrade: NONE";
-		}
+//			for (int i = 0; i < cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource.Count; i++) {
+//				Resource currentResource = cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource [i];
+//				lblUpgradeCitizenCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString ();
+//			}
+//		} else {
+//			lblUpgradeCitizenTarget.text = "Upgrade: NONE";
+//		}
 
 		if (cityTile.cityAttributes.newCitizenTarget != JOB_TYPE.NONE) {
 			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
