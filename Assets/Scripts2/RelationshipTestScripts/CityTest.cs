@@ -1189,7 +1189,7 @@ public class CityTest{
 	internal void TradeMission(){
 		if (IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
 			/*
-					 * You are the buyer 
+					* You are the buyer 
 					 * */
 			ResourceStatus scarceResource = GetResourceByStatus (RESOURCE_STATUS.SCARCE);
 			if (scarceResource != null) {
@@ -1240,7 +1240,7 @@ public class CityTest{
 	}
 	void Buy(CityTest tradeCity, RESOURCE resourceToOffer, ResourceStatus resourceToBuy, int caravanGold){
 
-
+		UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.cityName + " wants to BUY " + resourceToBuy.resource.ToString () + " from " + tradeCity.cityName + "\n\n";
 		if (tradeCity.GetNumberOfResourcesPerType (resourceToBuy.resource) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, resourceToBuy.resource)) {
 //			int chance = UnityEngine.Random.Range(0, 100);
 //			int successChance = 70 + (0 * 5);
@@ -1276,17 +1276,24 @@ public class CityTest{
 				Debug.Log ("SOMEONE BOUGHT: " + this.cityName);
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Bought " + affordResource.ToString () + " " + resourceToBuy.resource.ToString () + " from " + tradeCity.cityName +
 				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n\n";
+
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.cityName + " ACCEPTED the trade.\n\n";
 			} else {
 				//TODO: Reduce Like to target trade city
 
 				this.kingdomTile.kingdom.lord.AdjustLikeness (tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
 				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.cityName + " REJECTED the trade.\n\n";
+
 			} 
 		} else {
 				//TODO: Reduce Like to target trade city
 
 			//ASSUMPTION: TRADE REJECTED
-			Debug.Log("BUY: TRADE REJECTED. DONT HAVE ENOUGH!");
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: Trade has failed because " + tradeCity.cityName + "'s " + resourceToBuy.resource.ToString() 
+				+ " is not enough or SCARCE.\n\n";
+
 //			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
 //			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
@@ -1294,6 +1301,8 @@ public class CityTest{
 	}
 
 	void Sell(CityTest tradeCity, ResourceStatus resourceToOffer, int caravanResources){
+		UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.cityName + " wants to SELL " + resourceToOffer.resource.ToString () + " to " + tradeCity.cityName + "\n\n";
+
 		ResourceStatus resourceToBeBought = tradeCity.GetResourceStatusByType (resourceToOffer.resource);
 
 		if (tradeCity.GetNumberOfResourcesPerType (RESOURCE.GOLD) > 0 && tradeCity.IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
@@ -1331,14 +1340,20 @@ public class CityTest{
 				//TODO: Insert add like to both lords
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Sold " + affordResourceOfTradeCity.ToString ()  + " " + resourceToOffer.resource.ToString () + " to " + tradeCity.cityName +
 					" in exchange for " + cost.ToString () + " Gold \n\n";
+
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.cityName + " ACCEPTED the trade.\n\n";
+
 			} else {
 				//TODO: Reduce Like to target trade city
 				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
 				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
+
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.cityName + " REJECTED the trade.\n\n";
+
 			}
 		} else {
 			//TODO: Reduce Like to target trade city
-			Debug.Log("SELL: TRADE REJECTED. DONT HAVE ENOUGH!");
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: Trade has failed because " + tradeCity.cityName + " doesn't have enough GOLD.\n\n";
 //			this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE);
 //			tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE);
 		}
@@ -1362,6 +1377,8 @@ public class CityTest{
 		}
 	}
 	internal void Help(CityTest tradeCity, ResourceStatus askedResource){
+		UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": HELP: " + this.cityName + " is asking for " + askedResource.resource.ToString () + " from " + tradeCity.cityName + ".\n\n";
+
 		ResourceStatus resourceToBeProvided = tradeCity.GetResourceStatusByType (askedResource.resource);
 
 		if(resourceToBeProvided.status == RESOURCE_STATUS.ABUNDANT){
@@ -1380,13 +1397,21 @@ public class CityTest{
 				this.AdjustResourceCount(askedResource.resource, finalResourceAmount);
 				tradeCity.AdjustResourceCount(askedResource.resource, -finalResourceAmount);
 
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": HELP: " + tradeCity.cityName + " ACCEPTED to PROVIDE HELP to " + this.cityName + ".\n\n";
+
+
 			}else{
 				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.HELP);
 				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.HELP);
 
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": HELP: " + tradeCity.cityName + " REJECTED to PROVIDE HELP to " + this.cityName + ".\n\n";
+
+
 			}
 		}else{
 			Debug.Log ("HELP REJECTED. DONT HAVE ENOUGH!");
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": HELP: " + tradeCity.cityName + " CAN'T PROVIDE HELP because its " + askedResource.resource.ToString() + " is SCARCE.\n\n";
+
 		}
 	}
 
@@ -1408,6 +1433,8 @@ public class CityTest{
 		}
 	}
 	internal void Gift(CityTest tradeCity, ResourceStatus giftResource){
+		UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": GIFT: " + this.cityName + " wants to give " + giftResource.resource.ToString () + " to " + tradeCity.cityName + ".\n\n";
+
 		ResourceStatus resourceToBeAsked = tradeCity.GetResourceStatusByType (giftResource.resource);
 
 		if(resourceToBeAsked.status == RESOURCE_STATUS.SCARCE){
@@ -1426,13 +1453,21 @@ public class CityTest{
 				this.AdjustResourceCount(giftResource.resource, -finalResourceAmount);
 				tradeCity.AdjustResourceCount(giftResource.resource, finalResourceAmount);
 
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": GIFT: " + tradeCity.cityName + " is happy and ACCEPTED the " + giftResource.resource.ToString() + " given by " + this.cityName + ".\n\n";
+
+
 			}else{
 				this.kingdomTile.kingdom.lord.AdjustLikeness(tradeCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.HELP);
 				tradeCity.kingdomTile.kingdom.lord.AdjustLikeness (this.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.HELP);
 
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": GIFT: " + tradeCity.cityName + " REJECTED the " + giftResource.resource.ToString() + " given by " + this.cityName + ".\n\n";
+
+
 			}
 		}else{
 			Debug.Log ("GIFT REJECTED. ALREADY HAVE ENOUGH!");
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": GIFT: " + tradeCity.cityName + " has declined the " + giftResource.resource.ToString() + " because it's already ABUNDANT.\n\n";
+
 		}
 	}
 	int GetCostPerResourceUnit(RESOURCE resourceType){

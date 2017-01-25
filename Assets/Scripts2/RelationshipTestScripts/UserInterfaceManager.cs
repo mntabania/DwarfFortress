@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class UserInterfaceManager : MonoBehaviour {
 
@@ -20,6 +21,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblStoneCount;
 	public UILabel lblManaStoneCount;
 	public UILabel lblCitySummary;
+	public UILabel lblExternalAffairs;
 	public UILabel lblMetalCount;
 
 	public UILabel lblFarmerCount;
@@ -39,6 +41,9 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblPause;
 
 	CityTileTest currentDisplayingCityTile;
+
+	internal List<string> externalAffairsLogList = new List<string>(){string.Empty};
+	public int currentIndex = 0;
 
 	void Awake () {
 		Instance = this;
@@ -141,6 +146,23 @@ public class UserInterfaceManager : MonoBehaviour {
 		if (currentDisplayingCityTile != null) {
 			SetCityInfoToShow (currentDisplayingCityTile);
 		}
+
+		lblExternalAffairs.text = externalAffairsLogList [currentIndex];
 	}
 
+	public void OnClickNextPage(){
+		currentIndex++;
+		if(currentIndex > (externalAffairsLogList.Count - 1)){
+			currentIndex = externalAffairsLogList.Count - 1;
+		}
+		lblExternalAffairs.text = externalAffairsLogList [currentIndex];
+	}
+
+	public void OnClickPrevPage(){
+		currentIndex--;
+		if(currentIndex < 0){
+			currentIndex = 0;
+		}
+		lblExternalAffairs.text = externalAffairsLogList [currentIndex];
+	}
 }
