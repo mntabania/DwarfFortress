@@ -254,8 +254,8 @@ public class GameManager : MonoBehaviour {
 	void IncrementDaysOnTurn(){
 		currentDay++;
 		UserInterfaceManager.Instance.UpdateDayCounter(currentDay);
+		CheckLordsInternalPersonality ();
 	}
-
 	void WaitForHarvest(){
 		if (daysUntilNextHarvest <= 1) {
 			//TODO: Put Harvest Code Execution here
@@ -270,7 +270,12 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
-
+	internal void CheckLordsInternalPersonality(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			this.kingdoms [i].kingdom.lord.PositiveInternalPersonalityEvents ();
+			this.kingdoms [i].kingdom.lord.NegativeInternalPersonalityEvents ();
+		}
+	}
 	internal void CooperateEvent1(){
 		List<KingdomTileTest> kingdoms = new List<KingdomTileTest> ();
 		kingdoms.AddRange (this.kingdoms);
