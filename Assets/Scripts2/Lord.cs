@@ -15,6 +15,8 @@ public class Lord {
 	public int racism;
 	public int religiousTolerance;
 	public int likeCitizen;
+	public int accumulatedScore;
+	public int dealings;
 	public KingdomTest kingdom;
 	public LORD_PERSONALITY personality;
 	public LordInternalPersonality internalPersonality;
@@ -69,19 +71,23 @@ public class Lord {
 	internal void AdjustLikeness(Lord targetLord, DECISION sourceDecision, DECISION targetDecision, LORD_EVENTS eventType){
 		Relationship relationship = SearchRelationship (targetLord);
 		int eventEffect = EventEffect (eventType, sourceDecision, targetDecision);
-
+		this.accumulatedScore += eventEffect;
+		this.dealings++;
+		int multiplier = 0;
 		switch (this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
-			relationship.like += (eventEffect * 5);
-
-			if(eventType == LORD_EVENTS.COOPERATE1 || eventType == LORD_EVENTS.COOPERATE2){
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
-					+ targetLord.name + " by " + (eventEffect * 5) + ".\n\n";
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 15;
 			}
+			relationship.like += (eventEffect * multiplier);
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
 
 			break;
 		case LORD_PERSONALITY.VENGEFUL:
-			int multiplier = 5;
+			multiplier = 5;
 			if(eventEffect < 0){
 				multiplier = 25;
 			}
@@ -92,20 +98,28 @@ public class Lord {
 
 			break;
 		case LORD_PERSONALITY.RATIONAL:
-			relationship.like += (eventEffect * 10);
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 25;
+			}
+			relationship.like += (eventEffect * multiplier);
 
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
-				+ targetLord.name + " by " + (eventEffect * 10) + ".\n\n";
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
 
 			break;
 		case LORD_PERSONALITY.NAIVE:
 			if(relationship.like < 0 && eventEffect >= 0){
 				relationship.like = 0;
 			}
-			relationship.like += (eventEffect * 10);
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 20;
+			}
+			relationship.like += (eventEffect * multiplier);
 
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
-				+ targetLord.name + " by " + (eventEffect * 10) + ".\n\n";
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
 			break;
 		}
 		if(relationship.like > 100){

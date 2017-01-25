@@ -287,7 +287,7 @@ public class GameManager : MonoBehaviour {
 	}
 	internal void TriggerCooperateEvents(){
 		int chance = UnityEngine.Random.Range (0, 100);
-		if(chance < 3){
+		if(chance < 15){
 			int randomEvent = UnityEngine.Random.Range (0, 2);
 			if(randomEvent == 0){
 				CooperateEvent1 ();
