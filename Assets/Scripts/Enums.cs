@@ -89,6 +89,7 @@ public enum JOB_TYPE{
 //	HEALER,
 //	BUILDER,
 //	ENCHANTER,
+	PIONEER,
 	NONE
 }
 
