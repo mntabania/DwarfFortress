@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour {
 	public GameObject kingdomTilePrefab;
 	public List<KingdomTileTest> kingdoms;
 
+	public List<CooperateEvents> pendingCooperateEvents = new List<CooperateEvents>();
+
 	public int currentDay = 0;
 
 	public bool isDayPaused = false;
@@ -30,11 +32,12 @@ public class GameManager : MonoBehaviour {
 	void Awake(){
 		Instance = this;
 		this.cities = new List<GameObject>();
-		turnEnded += IncrementDaysOnTurn;
-		turnEnded += WaitForHarvest;
+
 	}
 
 	void Start(){
+		turnEnded += IncrementDaysOnTurn;
+		turnEnded += WaitForHarvest;
 		MapGenerator();
 		GenerateCities();
 		GenerateBiomes ();
@@ -221,6 +224,8 @@ public class GameManager : MonoBehaviour {
 //				this.kingdoms [i].kingdom.cities [j].hexTile.isOccupied = true;
 			}
 		}
+		turnEnded += TriggerCooperateEvents;
+		turnEnded += CheckCooperateEvents;
 		ActivateProducationCycle();
 	}
 
@@ -255,8 +260,12 @@ public class GameManager : MonoBehaviour {
 	void IncrementDaysOnTurn(int currentDay){
 		this.currentDay++;
 		UserInterfaceManager.Instance.UpdateDayCounter(this.currentDay);
+		if((currentDay % 50) == 0){
+			UserInterfaceManager.Instance.externalAffairsLogList.Add (string.Empty);
+			UserInterfaceManager.Instance.currentIndex = UserInterfaceManager.Instance.externalAffairsLogList.Count - 1;
+		}
+		CheckLordsInternalPersonality ();
 	}
-
 	void WaitForHarvest(int currentDay){
 		if (daysUntilNextHarvest <= 1) {
 			//TODO: Put Harvest Code Execution here
@@ -271,14 +280,30 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
-
+	internal void CheckLordsInternalPersonality(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			this.kingdoms [i].kingdom.lord.PositiveInternalPersonalityEvents ();
+			this.kingdoms [i].kingdom.lord.NegativeInternalPersonalityEvents ();
+		}
+	}
+	internal void TriggerCooperateEvents(){
+		int chance = UnityEngine.Random.Range (0, 100);
+		if(chance < 15){
+			int randomEvent = UnityEngine.Random.Range (0, 2);
+			if(randomEvent == 0){
+				CooperateEvent1 ();
+			}else{
+				CooperateEvent2 ();
+			}
+		}
+	}
 	internal void CooperateEvent1(){
 		List<KingdomTileTest> kingdoms = new List<KingdomTileTest> ();
 		kingdoms.AddRange (this.kingdoms);
-		kingdoms = Utilities.Shuffle (kingdoms);
+
 
 		if(kingdoms.Count > 1){
-
+			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
@@ -301,9 +326,10 @@ public class GameManager : MonoBehaviour {
 			}else if(lord1Decision == DECISION.RUDE && lord2Decision == DECISION.RUDE){
 
 			}
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += this.currentDay.ToString () + ": COOPERATE EVENT 1: " + lord1.name + " decided to be " + lord1Decision.ToString() 
+				+ ". " + lord2.name + " decided to be " + lord2Decision.ToString() + ".\n\n";
 
-			lord1.AdjustLikeness (lord2, lord1Decision, lord2Decision, LORD_EVENTS.COOPERATE1);
-			lord2.AdjustLikeness (lord1, lord2Decision, lord1Decision, LORD_EVENTS.COOPERATE1);
+			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE1, (currentDay + 5)));
 
 		}else{
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
@@ -313,10 +339,10 @@ public class GameManager : MonoBehaviour {
 	internal void CooperateEvent2(){
 		List<KingdomTileTest> kingdoms = new List<KingdomTileTest> ();
 		kingdoms.AddRange (this.kingdoms);
-		kingdoms = Utilities.Shuffle (kingdoms);
+
 
 		if(kingdoms.Count > 1){
-
+			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
@@ -340,13 +366,46 @@ public class GameManager : MonoBehaviour {
 
 			}
 
-			lord1.AdjustLikeness (lord2, lord1Decision, lord2Decision, LORD_EVENTS.COOPERATE2);
-			lord2.AdjustLikeness (lord1, lord2Decision, lord1Decision, LORD_EVENTS.COOPERATE2);
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += this.currentDay.ToString () + ": COOPERATE EVENT 2: " + lord1.name + " decided to be " + lord1Decision.ToString() 
+				+ ". " + lord2.name + " decided to be " + lord2Decision.ToString() + ".\n\n";
+			
+			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE2, (currentDay + 5)));
+
 
 		}else{
-			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
+			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (2)");
 		}
 	}
+	internal void CheckCooperateEvents(){
+		if(this.pendingCooperateEvents.Count > 0){
+			for(int i = 0; i < this.pendingCooperateEvents.Count; i++){
+				if(currentDay == this.pendingCooperateEvents[i].daysLeft){
+					Lord lord1 = SearchLordById (this.pendingCooperateEvents [i].lord1Id);
+					Lord lord2 = SearchLordById (this.pendingCooperateEvents [i].lord2Id);
+
+					if(lord1 == null || lord2 == null){
+						Debug.Log ("CAN'T ADJUST LIKENESS. AT LEAST 1 LORD IS DEAD.");
+						continue;
+					}
+
+					lord1.AdjustLikeness (lord2, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].eventType);
+					lord2.AdjustLikeness (lord1, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].eventType);
 
 
+					this.pendingCooperateEvents.RemoveAt (i);
+					break;
+
+				}
+			}
+		}
+	}
+	internal Lord SearchLordById(int id){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			if(this.kingdoms[i].kingdom.lord.id == id){
+				return this.kingdoms [i].kingdom.lord;
+			}
+		}
+
+		return null;
+	}
 }

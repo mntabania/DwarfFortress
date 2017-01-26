@@ -15,6 +15,8 @@ public class Lord {
 	public int racism;
 	public int religiousTolerance;
 	public int likeCitizen;
+	public int accumulatedScore;
+	public int dealings;
 	public KingdomTest kingdom;
 	public LORD_PERSONALITY personality;
 	public LordInternalPersonality internalPersonality;
@@ -69,26 +71,55 @@ public class Lord {
 	internal void AdjustLikeness(Lord targetLord, DECISION sourceDecision, DECISION targetDecision, LORD_EVENTS eventType){
 		Relationship relationship = SearchRelationship (targetLord);
 		int eventEffect = EventEffect (eventType, sourceDecision, targetDecision);
-
+		this.accumulatedScore += eventEffect;
+		this.dealings++;
+		int multiplier = 0;
 		switch (this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
-			relationship.like += (eventEffect * 5);
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 15;
+			}
+			relationship.like += (eventEffect * multiplier);
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
+
 			break;
 		case LORD_PERSONALITY.VENGEFUL:
-			int multiplier = 5;
+			multiplier = 5;
 			if(eventEffect < 0){
 				multiplier = 25;
 			}
 			relationship.like += (eventEffect * multiplier);
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
+
 			break;
 		case LORD_PERSONALITY.RATIONAL:
-			relationship.like += (eventEffect * 10);
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 25;
+			}
+			relationship.like += (eventEffect * multiplier);
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
+
 			break;
 		case LORD_PERSONALITY.NAIVE:
 			if(relationship.like < 0 && eventEffect >= 0){
 				relationship.like = 0;
 			}
-			relationship.like += (eventEffect * 10);
+			multiplier = 5;
+			if(eventEffect < 0){
+				multiplier = 20;
+			}
+			relationship.like += (eventEffect * multiplier);
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + (eventEffect * multiplier) + ".\n\n";
 			break;
 		}
 		if(relationship.like > 100){
@@ -96,35 +127,43 @@ public class Lord {
 		} else if (relationship.like < -100){
 			relationship.like = -100;
 		}
-		relationship.previousDecision = targetDecision;
+//		relationship.previousDecision = targetDecision;
+
+
 	}
 	internal DECISION ComputeDecisionBasedOnPersonality(LORD_EVENTS eventType, Lord targetLord){
 
 		Relationship relationshipWithOtherLord = this.SearchRelationship (targetLord);
 		Relationship relationshipFromOtherLord = targetLord.SearchRelationship (this);
-//		DECISION decision = DECISION.NEUTRAL;
+		DECISION decision = DECISION.NEUTRAL;
+		relationshipFromOtherLord.isFirstEncounter = false;
 		switch(this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
-//			decision = TitForTat (relationshipWithOtherLord);
-//			relationshipFromOtherLord.previousDecision = decision;
-			return TitForTat (relationshipWithOtherLord);
+			decision = TitForTat (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
+//			return TitForTat (relationshipWithOtherLord);
 		case LORD_PERSONALITY.VENGEFUL:
-//			decision = Vengeful (relationshipWithOtherLord);
-//			relationshipFromOtherLord.previousDecision = decision;
-			return Vengeful (relationshipWithOtherLord);
+			decision = Vengeful (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
+//			return Vengeful (relationshipWithOtherLord);
 		case LORD_PERSONALITY.RATIONAL:
-//			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
-//			relationshipFromOtherLord.previousDecision = decision;
-			return Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
+			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
+//			return Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
 		case LORD_PERSONALITY.NAIVE:
-//			decision = Naive (relationshipWithOtherLord);
-//			relationshipFromOtherLord.previousDecision = decision;
-			return Naive (relationshipWithOtherLord);
+			decision = Naive (relationshipWithOtherLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
+//			return Naive (relationshipWithOtherLord);
 		}
 		return DECISION.NEUTRAL;
 	}
 	private DECISION TitForTat(Relationship relationshipWithOtherLord){
-		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
+		if(relationshipWithOtherLord.isFirstEncounter){
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
 			int chance = UnityEngine.Random.Range (0, 100);
 			if(chance < 90){
 				return DECISION.NICE;
@@ -132,6 +171,8 @@ public class Lord {
 			return DECISION.RUDE;
 		}else{
 			int chance = UnityEngine.Random.Range (0, 100);
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 80% chance to choose "
+				+ relationshipWithOtherLord.previousDecision.ToString () + " because " + relationshipWithOtherLord.name + " chose " + relationshipWithOtherLord.previousDecision.ToString () + " during their latest encounter.\n\n";
 			if(chance < 80){
 				return relationshipWithOtherLord.previousDecision;
 			}else{
@@ -145,7 +186,8 @@ public class Lord {
 		}
 	}
 	private DECISION Vengeful(Relationship relationshipWithOtherLord){
-		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
+		if(relationshipWithOtherLord.isFirstEncounter){
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
 			int chance = UnityEngine.Random.Range (0, 100);
 			if(chance < 90){
 				return DECISION.NICE;
@@ -153,12 +195,14 @@ public class Lord {
 			return DECISION.RUDE;
 		}else{
 			if(relationshipWithOtherLord.like >= 0){
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE because he likes " + relationshipWithOtherLord.name + ".\n\n";
 				int chance = UnityEngine.Random.Range (0, 100);
 				if(chance < 90){
 					return DECISION.NICE;
 				}
 				return DECISION.RUDE;
 			}else{
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose RUDE because he dislikes " + relationshipWithOtherLord.name + ".\n\n";
 				int chance = UnityEngine.Random.Range (0, 100);
 				if(chance < 90){
 					return DECISION.RUDE;
@@ -172,28 +216,54 @@ public class Lord {
 		int niceEffect = 0;
 		int rudeEffect = 0;
 
-		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
-			if(relationshipWithOtherLord.like >= 0){
-				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.NICE);
-				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.NICE);
-			}else{
-				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
-				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
-			}
-
-			if(niceEffect >= rudeEffect){
+		if(relationshipWithOtherLord.isFirstEncounter){
+			List<int> effects = new List<int> {EventEffect (eventType, DECISION.NICE, DECISION.NICE), EventEffect (eventType, DECISION.RUDE, DECISION.NICE)
+				, EventEffect (eventType, DECISION.NICE, DECISION.RUDE), EventEffect (eventType, DECISION.RUDE, DECISION.RUDE)};
+//			if (relationshipWithOtherLord.like >= 0){
+//				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.NICE);
+//				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.NICE);
+//			}else{
+//				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
+//				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
+//			}
+			int index = effects.IndexOf(effects.Max());
+			if(index == 0){
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 100% chance to choose " + DECISION.NICE.ToString() + " during first encounter because it has " 
+					+ effects[index] + " max effect.\n\n";
+				return DECISION.NICE;
+			}else if(index == 1){
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 100% chance to choose " + DECISION.RUDE.ToString() + " during first encounter because it has " 
+					+ effects[index] + " max effect.\n\n";
+				return DECISION.RUDE;
+			}else if(index == 2){
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 100% chance to choose " + DECISION.NICE.ToString() + " during first encounter because it has " 
+					+ effects[index] + " max effect.\n\n";
 				return DECISION.NICE;
 			}else{
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 100% chance to choose " + DECISION.RUDE.ToString() + " during first encounter because it has " 
+					+ effects[index] + " max effect.\n\n";
 				return DECISION.RUDE;
 			}
 		}else{
 			int chance = UnityEngine.Random.Range (0, 100);
 			if(relationshipFromOtherLord.like < 0){
+				
+				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
+				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
+
+
+				if(niceEffect >= rudeEffect){
+					UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose NICE because " 
+						+ relationshipWithOtherLord.name + " dislikes him and it has " + niceEffect + " max effect if " + relationshipWithOtherLord.name + " chooses RUDE.\n\n";
+
+				}else{
+					UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose RUDE because " 
+						+ relationshipWithOtherLord.name + " dislikes him and it has " + rudeEffect + " max effect if " + relationshipWithOtherLord.name + " chooses RUDE.\n\n";
+				}
+
 				if(chance < 50){
 					return DECISION.NICE;
 				}else{
-					niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.RUDE);
-					rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.RUDE);
 					if(niceEffect >= rudeEffect){
 						return DECISION.NICE;
 
@@ -203,6 +273,19 @@ public class Lord {
 				}
 				
 			}else{
+				niceEffect = EventEffect (eventType, DECISION.NICE, DECISION.NICE);
+				rudeEffect = EventEffect (eventType, DECISION.RUDE, DECISION.NICE);
+
+
+				if(niceEffect >= rudeEffect){
+					UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose NICE because " 
+						+ relationshipWithOtherLord.name + " likes him and it has " + niceEffect + " max effect if " + relationshipWithOtherLord.name + " chooses NICE.\n\n";
+
+				}else{
+					UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose RUDE because " 
+						+ relationshipWithOtherLord.name + " likes him and it has " + rudeEffect + " max effect if " + relationshipWithOtherLord.name + " chooses NICE.\n\n";
+				}
+
 				if(chance < 50){
 					return DECISION.NICE;
 				}else{
@@ -219,7 +302,8 @@ public class Lord {
 		}
 	}
 	private DECISION Naive(Relationship relationshipWithOtherLord){
-		if(relationshipWithOtherLord.previousDecision == DECISION.NEUTRAL){
+		if(relationshipWithOtherLord.isFirstEncounter){
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
 			int chance = UnityEngine.Random.Range (0, 100);
 			if(chance < 90){
 				return DECISION.NICE;
@@ -227,12 +311,16 @@ public class Lord {
 			return DECISION.RUDE;
 		}else{
 			if(relationshipWithOtherLord.like >= 0){
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE because he likes " + relationshipWithOtherLord.name + ".\n\n";
+
 				int chance = UnityEngine.Random.Range (0, 100);
 				if(chance < 90){
 					return DECISION.NICE;
 				}
 				return DECISION.RUDE;
 			}else{
+				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose NICE because he dislikes " + relationshipWithOtherLord.name + ".\n\n";
+
 				int chance = UnityEngine.Random.Range (0, 100);
 				if(chance < 50){
 					return DECISION.NICE;
