@@ -161,34 +161,34 @@ public class GameManager : MonoBehaviour {
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom3.transform.parent = this.transform;
-//		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
-//		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
-//
-//
-//		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom4.transform.parent = this.transform;
-//		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom5 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom5.transform.parent = this.transform;
-//		goKingdom5.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom5.name = goKingdom5.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom5.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom6 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom6.transform.parent = this.transform;
-//		goKingdom6.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom3.transform.parent = this.transform;
+		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
+		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
+
+
+		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom4.transform.parent = this.transform;
+		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom5 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom5.transform.parent = this.transform;
+		goKingdom5.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom5.name = goKingdom5.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom5.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom6 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom6.transform.parent = this.transform;
+		goKingdom6.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
 	}
 	internal void CreateInitialRelationshipsToLords(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
@@ -238,7 +238,15 @@ public class GameManager : MonoBehaviour {
 			return;
 		}
 		turnEnded(this.currentDay);
+		if((this.currentDay % 500) == 0){
+			Debug.Log ("-----------------500 DAYS!------------------");
+			Debug.Log ("TRADE COUNT: " + Utilities.tradeCount);
+			Debug.Log ("HELP COUNT: " + Utilities.helpCount);
+			Debug.Log ("GIFT COUNT: " + Utilities.giftCount);
+			Debug.Log ("COOPERATE 1 COUNT: " + Utilities.cooperate1Count);
+			Debug.Log ("COOPERATE 2 COUNT: " + Utilities.cooperate2Count);
 
+		}
 //		for (int i = 0; i < this.kingdoms.Count; i++) {
 //			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
 //				if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
@@ -331,6 +339,9 @@ public class GameManager : MonoBehaviour {
 
 			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE1, (currentDay + 5)));
 
+			Utilities.cooperate1Count++;
+
+
 		}else{
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
 		}
@@ -371,6 +382,7 @@ public class GameManager : MonoBehaviour {
 			
 			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE2, (currentDay + 5)));
 
+			Utilities.cooperate2Count++;
 
 		}else{
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (2)");

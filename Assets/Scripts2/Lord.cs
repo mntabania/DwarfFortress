@@ -373,7 +373,7 @@ public class Lord {
 				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 					+ this.name + " has 20% chance to choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 
-				int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, LORD_PERSONALITY.TIT_FOR_TAT);
+				int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
 				int randomChance = UnityEngine.Random.Range (0, 100);
 				if(randomChance < niceChance){
 					return DECISION.NICE;
@@ -406,7 +406,7 @@ public class Lord {
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 				+ this.name + " will choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 			
-			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, LORD_PERSONALITY.EMOTIONAL);
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
 			int randomChance = UnityEngine.Random.Range (0, 100);
 			if(randomChance < niceChance){
 				return DECISION.NICE;
@@ -549,7 +549,7 @@ public class Lord {
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 				+ this.name + " will choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 			
-			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, LORD_PERSONALITY.NAIVE);
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
 			int randomChance = UnityEngine.Random.Range (0, 100);
 			if(randomChance < niceChance){
 				return DECISION.NICE;
@@ -583,8 +583,8 @@ public class Lord {
 		}
 		return null;
 	}
-	private int NiceChanceBasedOnLordRelationship(LORD_RELATIONSHIP lordRelationship, LORD_PERSONALITY lordPersonality){
-		if(lordPersonality == LORD_PERSONALITY.TIT_FOR_TAT){
+	private int NiceChanceBasedOnLordRelationship(LORD_RELATIONSHIP lordRelationship, Lord targetLord){
+		if(this.personality == LORD_PERSONALITY.TIT_FOR_TAT){
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
 				return 5;
@@ -593,7 +593,10 @@ public class Lord {
 			case LORD_RELATIONSHIP.COLD:
 				return 25;
 			case LORD_RELATIONSHIP.NEUTRAL:
-				return 60;
+				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+					return 60;
+				}
+				return 40;
 			case LORD_RELATIONSHIP.WARM:
 				return 70;
 			case LORD_RELATIONSHIP.FRIEND:
@@ -601,7 +604,28 @@ public class Lord {
 			case LORD_RELATIONSHIP.ALLY:
 				return 95;
 			}
-		}else if(lordPersonality == LORD_PERSONALITY.EMOTIONAL){
+		}else if(this.personality == LORD_PERSONALITY.EMOTIONAL){
+			switch(lordRelationship){
+			case LORD_RELATIONSHIP.RIVAL:
+				return 5;
+			case LORD_RELATIONSHIP.ENEMY:
+				return 15;
+			case LORD_RELATIONSHIP.COLD:
+				return 25;
+			case LORD_RELATIONSHIP.NEUTRAL:
+				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+					return 60;
+				}
+				return 40;
+			case LORD_RELATIONSHIP.WARM:
+				return 70;
+			case LORD_RELATIONSHIP.FRIEND:
+				return 85;
+			case LORD_RELATIONSHIP.ALLY:
+				return 95;
+			}
+		}
+		else if(this.personality == LORD_PERSONALITY.RATIONAL){ //not used
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
 				return 5;
@@ -619,34 +643,19 @@ public class Lord {
 				return 95;
 			}
 		}
-		else if(lordPersonality == LORD_PERSONALITY.RATIONAL){
+		else if(this.personality == LORD_PERSONALITY.NAIVE){
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
 				return 5;
 			case LORD_RELATIONSHIP.ENEMY:
-				return 15;
+				return 25;
 			case LORD_RELATIONSHIP.COLD:
 				return 25;
 			case LORD_RELATIONSHIP.NEUTRAL:
+				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+					return 95;
+				}
 				return 60;
-			case LORD_RELATIONSHIP.WARM:
-				return 70;
-			case LORD_RELATIONSHIP.FRIEND:
-				return 85;
-			case LORD_RELATIONSHIP.ALLY:
-				return 95;
-			}
-		}
-		else if(lordPersonality == LORD_PERSONALITY.NAIVE){
-			switch(lordRelationship){
-			case LORD_RELATIONSHIP.RIVAL:
-				return 5;
-			case LORD_RELATIONSHIP.ENEMY:
-				return 25;
-			case LORD_RELATIONSHIP.COLD:
-				return 25;
-			case LORD_RELATIONSHIP.NEUTRAL:
-				return 95;
 			case LORD_RELATIONSHIP.WARM:
 				return 95;
 			case LORD_RELATIONSHIP.FRIEND:

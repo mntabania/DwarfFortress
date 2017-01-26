@@ -1290,7 +1290,8 @@ public class CityTest{
 
 				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.kingdomTile.kingdom.lord.name + " REJECTED the trade.\n\n";
 
-			} 
+			}
+			Utilities.tradeCount++;
 		} else {
 				//TODO: Reduce Like to target trade city
 
@@ -1355,6 +1356,8 @@ public class CityTest{
 				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + tradeCity.kingdomTile.kingdom.lord.name + " REJECTED the trade.\n\n";
 
 			}
+			Utilities.tradeCount++;
+
 		} else {
 			//TODO: Reduce Like to target trade city
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: Trade has failed because " + tradeCity.kingdomTile.kingdom.lord.name + " doesn't have enough GOLD.\n\n";
@@ -1412,6 +1415,8 @@ public class CityTest{
 
 
 			}
+			Utilities.helpCount++;
+
 		}else{
 			Debug.Log ("HELP REJECTED. DONT HAVE ENOUGH!");
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": HELP: " + tradeCity.kingdomTile.kingdom.lord.name + " CAN'T PROVIDE HELP because its " + askedResource.resource.ToString() + " is SCARCE.\n\n";
@@ -1468,6 +1473,8 @@ public class CityTest{
 
 
 			}
+			Utilities.giftCount++;
+
 		}else{
 			Debug.Log ("GIFT REJECTED. ALREADY HAVE ENOUGH!");
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": GIFT: " + tradeCity.kingdomTile.kingdom.lord.name + " has declined the " + giftResource.resource.ToString() + " because it's already ABUNDANT.\n\n";
