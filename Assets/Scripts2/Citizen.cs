@@ -79,6 +79,8 @@ public class Citizen {
 			return new Warrior ();
 		case JOB_TYPE.WOODSMAN:
 			return new Woodsman ();
+		case JOB_TYPE.PIONEER:
+			return new Pioneer ();
 		default:
 			return new Job ();
 		}
@@ -119,7 +121,9 @@ public class Citizen {
 	internal void ChangeJob(JOB_TYPE jobType){
 		this._job = GetJob(jobType);
 		this._job.citizen = this;
-		UpdateUpgradeRequirements ();
+		if (jobType != JOB_TYPE.PIONEER) {
+			UpdateUpgradeRequirements ();
+		}
 	}
 
 	internal void AssignCitizenToTile(List<HexTile> hexTiles){

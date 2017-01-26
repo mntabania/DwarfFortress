@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class UserInterfaceManager : MonoBehaviour {
 
@@ -47,6 +48,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public void SetCityInfoToShow(CityTileTest cityTile){
 		lblUpgradeCitizenCost.text = "";
 		lblUpgradeCityCost.text = "";
+		lblCreateCitizenCost.text = "";
 		currentDisplayingCityTile = cityTile;
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
 		lblCityLevel.text = "Lvl: " + cityTile.cityAttributes.cityLevel.ToString();
@@ -65,6 +67,11 @@ public class UserInterfaceManager : MonoBehaviour {
 			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
 		} else {
 			lblCreateCitizenTarget.text = "Create: NONE";
+		}
+
+		List<Resource> createCitizenResources = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.newCitizenTarget);
+		for (int i = 0; i < createCitizenResources.Count; i++) {
+			lblCreateCitizenCost.text += createCitizenResources[i].resourceQuantity + " " + createCitizenResources[i].resourceType.ToString() + "\n";
 		}
 
 
