@@ -387,8 +387,8 @@ public class GameManager : MonoBehaviour {
 						continue;
 					}
 
-					lord1.AdjustLikeness (lord2, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].eventType);
-					lord2.AdjustLikeness (lord1, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].eventType);
+					lord1.AdjustLikeness (lord2, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].eventType, false);
+					lord2.AdjustLikeness (lord1, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].eventType, false);
 
 
 					this.pendingCooperateEvents.RemoveAt (i);
