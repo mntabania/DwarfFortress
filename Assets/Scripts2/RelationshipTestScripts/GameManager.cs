@@ -286,7 +286,7 @@ public class GameManager : MonoBehaviour {
 			this.kingdoms [i].kingdom.lord.NegativeInternalPersonalityEvents ();
 		}
 	}
-	internal void TriggerCooperateEvents(){
+	internal void TriggerCooperateEvents(int currentDay){
 		int chance = UnityEngine.Random.Range (0, 100);
 		if(chance < 15){
 			int randomEvent = UnityEngine.Random.Range (0, 2);
@@ -376,7 +376,7 @@ public class GameManager : MonoBehaviour {
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (2)");
 		}
 	}
-	internal void CheckCooperateEvents(){
+	internal void CheckCooperateEvents(int currentDay){
 		if(this.pendingCooperateEvents.Count > 0){
 			for(int i = 0; i < this.pendingCooperateEvents.Count; i++){
 				if(currentDay == this.pendingCooperateEvents[i].daysLeft){
