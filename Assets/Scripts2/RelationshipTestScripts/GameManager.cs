@@ -165,31 +165,31 @@ public class GameManager : MonoBehaviour {
 //		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 //		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 //		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom3.transform.parent = this.transform;
-//		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
-//		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
-//
-//
-//		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom4.transform.parent = this.transform;
-//		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom5 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom5.transform.parent = this.transform;
-//		goKingdom5.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom5.name = goKingdom5.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom5.GetComponent<KingdomTileTest>());
-//
-//		GameObject goKingdom6 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-//		goKingdom6.transform.parent = this.transform;
-//		goKingdom6.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
-//		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-//		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom3.transform.parent = this.transform;
+		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
+		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
+
+
+		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom4.transform.parent = this.transform;
+		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom5 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom5.transform.parent = this.transform;
+		goKingdom5.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom5.name = goKingdom5.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom5.GetComponent<KingdomTileTest>());
+
+		GameObject goKingdom6 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom6.transform.parent = this.transform;
+		goKingdom6.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
 	}
 
 	public KingdomTileTest CreateNewKingdom(RACE race, List<CityTileTest> initialCities){
@@ -270,7 +270,15 @@ public class GameManager : MonoBehaviour {
 			return;
 		}
 		turnEnded(this.currentDay);
+		if((this.currentDay % 500) == 0){
+			Debug.Log ("-----------------500 DAYS!------------------");
+			Debug.Log ("TRADE COUNT: " + Utilities.tradeCount);
+			Debug.Log ("HELP COUNT: " + Utilities.helpCount);
+			Debug.Log ("GIFT COUNT: " + Utilities.giftCount);
+			Debug.Log ("COOPERATE 1 COUNT: " + Utilities.cooperate1Count);
+			Debug.Log ("COOPERATE 2 COUNT: " + Utilities.cooperate2Count);
 
+		}
 //		for (int i = 0; i < this.kingdoms.Count; i++) {
 //			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
 //				if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
@@ -337,7 +345,7 @@ public class GameManager : MonoBehaviour {
 
 
 		if(kingdoms.Count > 1){
-			kingdoms = Utilities.Shuffle (kingdoms);
+//			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
@@ -345,8 +353,13 @@ public class GameManager : MonoBehaviour {
 			If both attempt to do this, the monster stays and the treasure remains guarded.
 			*/
 
-			Lord lord1 = kingdoms [0].kingdom.lord;
-			Lord lord2 = kingdoms [1].kingdom.lord;
+			int randomLord1 = UnityEngine.Random.Range (0, kingdoms.Count);
+			Lord lord1 = kingdoms [randomLord1].kingdom.lord;
+			kingdoms.RemoveAt (randomLord1);
+
+			int randomLord2 = UnityEngine.Random.Range (0, kingdoms.Count);
+			Lord lord2 = kingdoms [randomLord2].kingdom.lord;
+			kingdoms.RemoveAt (randomLord2);
 
 			DECISION lord1Decision = lord1.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE1, lord2);
 			DECISION lord2Decision = lord2.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE1, lord1);
@@ -365,6 +378,9 @@ public class GameManager : MonoBehaviour {
 
 			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE1, (currentDay + 5)));
 
+			Utilities.cooperate1Count++;
+
+
 		}else{
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (1)");
 		}
@@ -376,7 +392,7 @@ public class GameManager : MonoBehaviour {
 
 
 		if(kingdoms.Count > 1){
-			kingdoms = Utilities.Shuffle (kingdoms);
+//			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
@@ -384,8 +400,13 @@ public class GameManager : MonoBehaviour {
 			If both attempt to do this, the monster stays and the treasure remains guarded.
 			*/
 
-			Lord lord1 = kingdoms [0].kingdom.lord;
-			Lord lord2 = kingdoms [1].kingdom.lord;
+			int randomLord1 = UnityEngine.Random.Range (0, kingdoms.Count);
+			Lord lord1 = kingdoms [randomLord1].kingdom.lord;
+			kingdoms.RemoveAt (randomLord1);
+
+			int randomLord2 = UnityEngine.Random.Range (0, kingdoms.Count);
+			Lord lord2 = kingdoms [randomLord2].kingdom.lord;
+			kingdoms.RemoveAt (randomLord2);
 
 			DECISION lord1Decision = lord1.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE2, lord2);
 			DECISION lord2Decision = lord2.ComputeDecisionBasedOnPersonality (LORD_EVENTS.COOPERATE2, lord1);
@@ -405,6 +426,7 @@ public class GameManager : MonoBehaviour {
 			
 			pendingCooperateEvents.Add(new CooperateEvents(lord1.id, lord1Decision, lord2.id, lord2Decision, LORD_EVENTS.COOPERATE2, (currentDay + 5)));
 
+			Utilities.cooperate2Count++;
 
 		}else{
 			Debug.Log ("THERE IS NOT ENOUGH KINGDOMS! CAN'T COOPERATE (2)");
@@ -422,8 +444,8 @@ public class GameManager : MonoBehaviour {
 						continue;
 					}
 
-					lord1.AdjustLikeness (lord2, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].eventType);
-					lord2.AdjustLikeness (lord1, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].eventType);
+					lord1.AdjustLikeness (lord2, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].eventType, false);
+					lord2.AdjustLikeness (lord1, this.pendingCooperateEvents [i].lord2Decision, this.pendingCooperateEvents [i].lord1Decision, this.pendingCooperateEvents [i].eventType, false);
 
 
 					this.pendingCooperateEvents.RemoveAt (i);

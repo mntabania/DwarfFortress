@@ -7,13 +7,15 @@ public class Relationship {
 	public string name;
 	public DECISION previousDecision;
 	public int like;
+	public LORD_RELATIONSHIP lordRelationship;
 	public bool isFirstEncounter;
 
-	public Relationship(int id, string name, DECISION previousDecision, int like, bool isFirstEncounter = true){
+	public Relationship(int id, string name, DECISION previousDecision, int like){
 		this.id = id;
 		this.name = name;
 		this.previousDecision = previousDecision;
 		this.like = like;
-		this.isFirstEncounter = isFirstEncounter;
+		this.isFirstEncounter = true;
+		this.lordRelationship = LORD_RELATIONSHIP.NEUTRAL;
 	}
 }

@@ -13,6 +13,12 @@ public static class Utilities {
 	public static int lastKingId = 0;
 	public static int lastCityId = 0;
 
+	public static int tradeCount = 0;
+	public static int helpCount = 0;
+	public static int giftCount = 0;
+	public static int cooperate1Count = 0;
+	public static int cooperate2Count = 0;
+
 
 	private static System.Random rng = new System.Random();  
 
