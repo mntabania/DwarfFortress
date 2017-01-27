@@ -296,6 +296,59 @@ public class Lord {
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
 				+ targetLord.name + " by " + results + ".\n\n";
 			break;
+
+		case LORD_PERSONALITY.HATER:
+			if(eventType == LORD_EVENTS.COOPERATE1 || eventType == LORD_EVENTS.COOPERATE2){
+				multiplier = 10;
+				if(sourceDecision == DECISION.RUDE){
+					multiplier = multiplier / 2;
+				}
+				results = eventEffect * multiplier;
+				relationship.like += results;
+
+			}else if(eventType == LORD_EVENTS.TRADE){
+				int addedLike = 0;
+
+				if(isSender){
+					addedLike = 2;
+					if(targetDecision == DECISION.RUDE){
+						addedLike = -1;
+					}
+				}
+				results = addedLike;
+				relationship.like += results;
+
+			}else if(eventType == LORD_EVENTS.HELP){
+				int addedLike = 0;
+
+				if(isSender){
+					addedLike = 10;
+					if(targetDecision == DECISION.RUDE){
+						addedLike = -5;
+					}
+				}else{
+					if(sourceDecision == DECISION.NICE){
+						addedLike = -2;
+					}
+				}
+				results = addedLike;
+				relationship.like += results;
+			}else if(eventType == LORD_EVENTS.GIFT){
+				int addedLike = 0;
+				if (isSender) {
+					addedLike = 10;
+					if (targetDecision == DECISION.RUDE) {
+						addedLike = -5;
+					}
+				}
+				results = addedLike;
+				relationship.like += results;
+			}
+
+
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + eventType.ToString() + " EVENT RESULTS: " + this.name + " has increased/decreased his likeness towards "
+				+ targetLord.name + " by " + results + ".\n\n";
+			break;
 		}
 		if(relationship.like > 100){
 			relationship.like = 100;
@@ -334,30 +387,50 @@ public class Lord {
 			relationshipFromOtherLord.previousDecision = decision;
 			return decision;
 //			return Naive (relationshipWithOtherLord);
+		case LORD_PERSONALITY.HATER:
+			decision = Hater (relationshipWithOtherLord, targetLord);
+			relationshipFromOtherLord.previousDecision = decision;
+			return decision;
+//			return Hateful (relationshipWithOtherLord);
 		}
 		return DECISION.NEUTRAL;
 	}
 	private DECISION TitForTat(Relationship relationshipWithOtherLord, Lord targetLord){
 		if(relationshipWithOtherLord.isFirstEncounter){
-//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
-			int chance = UnityEngine.Random.Range (0, 100);
-			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
 
-				if(chance < 90){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
-			}else{
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 50% chance to choose NICE on first encounter of different race.\n\n";
-
-				if(chance < 50){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
+			if (this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace) {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+				+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of same race.\n\n";
+			} else {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+				+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of diff race.\n\n";
 			}
+
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, true);
+			int randomChance = UnityEngine.Random.Range (0, 100);
+			if(randomChance < niceChance){
+				return DECISION.NICE;
+			}
+			return DECISION.RUDE;
+//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
+//			int chance = UnityEngine.Random.Range (0, 100);
+//			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
+//
+//				if(chance < 90){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}else{
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 50% chance to choose NICE on first encounter of different race.\n\n";
+//
+//				if(chance < 50){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}
 
 		}else{
 			int chance = UnityEngine.Random.Range (0, 100);
@@ -373,7 +446,7 @@ public class Lord {
 				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 					+ this.name + " has 20% chance to choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 
-				int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
+				int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, false);
 				int randomChance = UnityEngine.Random.Range (0, 100);
 				if(randomChance < niceChance){
 					return DECISION.NICE;
@@ -385,28 +458,42 @@ public class Lord {
 	}
 	private DECISION Emotional(Relationship relationshipWithOtherLord, Lord targetLord){
 		if(relationshipWithOtherLord.isFirstEncounter){
-//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
-			int chance = UnityEngine.Random.Range (0, 100);
-			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
-				if(chance < 90){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
-			}else{
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 50% chance to choose NICE on first encounter of different race.\n\n";
-				if(chance < 50){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
+			if (this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace) {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of same race.\n\n";
+			} else {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of diff race.\n\n";
 			}
+
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, true);
+			int randomChance = UnityEngine.Random.Range (0, 100);
+			if(randomChance < niceChance){
+				return DECISION.NICE;
+			}
+			return DECISION.RUDE;
+//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
+//			int chance = UnityEngine.Random.Range (0, 100);
+//			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
+//				if(chance < 90){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}else{
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 50% chance to choose NICE on first encounter of different race.\n\n";
+//				if(chance < 50){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}
 		}else{
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 				+ this.name + " will choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 			
-			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, false);
 			int randomChance = UnityEngine.Random.Range (0, 100);
 			if(randomChance < niceChance){
 				return DECISION.NICE;
@@ -528,28 +615,42 @@ public class Lord {
 	}
 	private DECISION Naive(Relationship relationshipWithOtherLord, Lord targetLord){
 		if(relationshipWithOtherLord.isFirstEncounter){
-			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
-			int chance = UnityEngine.Random.Range (0, 100);
-			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
-				if(chance < 90){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
-			}else{
-				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
-					+ this.name + " has 70% chance to choose NICE on first encounter of different race.\n\n";
-				if(chance < 70){
-					return DECISION.NICE;
-				}
-				return DECISION.RUDE;
+			if (this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace) {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of same race.\n\n";
+			} else {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of diff race.\n\n";
 			}
+
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, true);
+			int randomChance = UnityEngine.Random.Range (0, 100);
+			if(randomChance < niceChance){
+				return DECISION.NICE;
+			}
+			return DECISION.RUDE;
+//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
+//			int chance = UnityEngine.Random.Range (0, 100);
+//			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
+//				if(chance < 90){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}else{
+//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+//					+ this.name + " has 70% chance to choose NICE on first encounter of different race.\n\n";
+//				if(chance < 70){
+//					return DECISION.NICE;
+//				}
+//				return DECISION.RUDE;
+//			}
 		}else{
 			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
 				+ this.name + " will choose NICE/RUDE based on how much he likes " + relationshipWithOtherLord.name + ".\n\n";
 			
-			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord);
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, false);
 			int randomChance = UnityEngine.Random.Range (0, 100);
 			if(randomChance < niceChance){
 				return DECISION.NICE;
@@ -575,6 +676,69 @@ public class Lord {
 
 		}
 	}
+	private DECISION Hater(Relationship relationshipWithOtherLord, Lord targetLord){
+		if(relationshipWithOtherLord.isFirstEncounter){
+			if (this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace) {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of same race.\n\n";
+			} else {
+				UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": "
+					+ this.name + " has chance to choose NICE during their first encounter based on how much he likes " + relationshipWithOtherLord.name + " of diff race.\n\n";
+			}
+
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, true);
+			int randomChance = UnityEngine.Random.Range (0, 100);
+			if(randomChance < niceChance){
+				return DECISION.NICE;
+			}
+			return DECISION.RUDE;
+			//			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE on first encounter.\n\n";
+			//			int chance = UnityEngine.Random.Range (0, 100);
+			//			if(this.kingdom.kingdomRace == targetLord.kingdom.kingdomRace){
+			//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+			//					+ this.name + " has 90% chance to choose NICE on first encounter of same race.\n\n";
+			//				if(chance < 90){
+			//					return DECISION.NICE;
+			//				}
+			//				return DECISION.RUDE;
+			//			}else{
+			//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+			//					+ this.name + " has 70% chance to choose NICE on first encounter of different race.\n\n";
+			//				if(chance < 70){
+			//					return DECISION.NICE;
+			//				}
+			//				return DECISION.RUDE;
+			//			}
+		}else{
+			UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " 
+				+ this.name + " has 60% chance to choose NICE because he likes " + relationshipWithOtherLord.name + ".\n\n";
+
+			int niceChance = NiceChanceBasedOnLordRelationship (relationshipWithOtherLord.lordRelationship, targetLord, false);
+			int randomChance = UnityEngine.Random.Range (0, 100);
+			if(randomChance < niceChance){
+				return DECISION.NICE;
+			}
+			return DECISION.RUDE;
+			//			if(relationshipWithOtherLord.like >= 0){
+			//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 90% chance to choose NICE because he likes " + relationshipWithOtherLord.name + ".\n\n";
+			//
+			//				int chance = UnityEngine.Random.Range (0, 100);
+			//				if(chance < 90){
+			//					return DECISION.NICE;
+			//				}
+			//				return DECISION.RUDE;
+			//			}else{
+			//				UserInterfaceManager.Instance.externalAffairsLogList[UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": " + this.name + " has 50% chance to choose NICE because he dislikes " + relationshipWithOtherLord.name + ".\n\n";
+			//
+			//				int chance = UnityEngine.Random.Range (0, 100);
+			//				if(chance < 50){
+			//					return DECISION.NICE;
+			//				}
+			//				return DECISION.RUDE;
+			//			}
+
+		}
+	}
 	internal Relationship SearchRelationship(Lord targetLord){
 		for(int i = 0; i < this.relationshipLords.Count; i++){
 			if(this.relationshipLords[i].id == targetLord.id){
@@ -583,45 +747,146 @@ public class Lord {
 		}
 		return null;
 	}
-	private int NiceChanceBasedOnLordRelationship(LORD_RELATIONSHIP lordRelationship, Lord targetLord){
+	private int NiceChanceBasedOnLordRelationship(LORD_RELATIONSHIP lordRelationship, Lord targetLord, bool isFirstEncounter){
 		if(this.personality == LORD_PERSONALITY.TIT_FOR_TAT){
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 5;
 			case LORD_RELATIONSHIP.ENEMY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 15;
 			case LORD_RELATIONSHIP.COLD:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 25;
 			case LORD_RELATIONSHIP.NEUTRAL:
-				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
-					return 60;
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 50;
+					}
+				}else{
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 60;
+					}
 				}
 				return 40;
 			case LORD_RELATIONSHIP.WARM:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 80;
+					}
+				}
 				return 70;
 			case LORD_RELATIONSHIP.FRIEND:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 80;
+					}
+				}
 				return 85;
 			case LORD_RELATIONSHIP.ALLY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 80;
+					}
+				}
 				return 95;
 			}
 		}else if(this.personality == LORD_PERSONALITY.EMOTIONAL){
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 5;
 			case LORD_RELATIONSHIP.ENEMY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 15;
 			case LORD_RELATIONSHIP.COLD:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
 				return 25;
 			case LORD_RELATIONSHIP.NEUTRAL:
-				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
-					return 60;
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 50;
+					}
+				}else{
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 60;
+					}
 				}
+
 				return 40;
 			case LORD_RELATIONSHIP.WARM:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 80;
+					}
+				}
 				return 70;
 			case LORD_RELATIONSHIP.FRIEND:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 80;
+					}
+				}
 				return 85;
 			case LORD_RELATIONSHIP.ALLY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 80;
+					}
+				}
 				return 95;
 			}
 		}
@@ -646,21 +911,143 @@ public class Lord {
 		else if(this.personality == LORD_PERSONALITY.NAIVE){
 			switch(lordRelationship){
 			case LORD_RELATIONSHIP.RIVAL:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 30;
+					}else{
+						return 30;
+					}
+				}
 				return 5;
 			case LORD_RELATIONSHIP.ENEMY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 30;
+					}else{
+						return 30;
+					}
+				}
 				return 25;
 			case LORD_RELATIONSHIP.COLD:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 30;
+					}else{
+						return 30;
+					}
+				}
 				return 25;
 			case LORD_RELATIONSHIP.NEUTRAL:
-				if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
-					return 95;
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 70;
+					}
+				}else{
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}
 				}
+
 				return 60;
 			case LORD_RELATIONSHIP.WARM:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 90;
+					}else{
+						return 90;
+					}
+				}
 				return 95;
 			case LORD_RELATIONSHIP.FRIEND:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 95;
+					}
+				}
 				return 95;
 			case LORD_RELATIONSHIP.ALLY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}else{
+						return 95;
+					}
+				}
+				return 95;
+			}
+		}else if(this.personality == LORD_PERSONALITY.HATER){
+			switch(lordRelationship){
+			case LORD_RELATIONSHIP.RIVAL:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
+				return 5;
+			case LORD_RELATIONSHIP.ENEMY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
+				return 5;
+			case LORD_RELATIONSHIP.COLD:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 10;
+					}else{
+						return 10;
+					}
+				}
+				return 5;
+			case LORD_RELATIONSHIP.NEUTRAL:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 50;
+					}else{
+						return 20;
+					}
+				}else{
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 95;
+					}
+				}
+
+				return 35;
+			case LORD_RELATIONSHIP.WARM:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 80;
+					}else{
+						return 50;
+					}
+				}
+				return 60;
+			case LORD_RELATIONSHIP.FRIEND:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 80;
+					}else{
+						return 50;
+					}
+				}
+				return 70;
+			case LORD_RELATIONSHIP.ALLY:
+				if(isFirstEncounter){
+					if (targetLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+						return 80;
+					}else{
+						return 95;
+					}
+				}
 				return 95;
 			}
 		}

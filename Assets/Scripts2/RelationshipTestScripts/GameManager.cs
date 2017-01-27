@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour {
 
 
 		if(kingdoms.Count > 1){
-//			kingdoms = Utilities.Shuffle (kingdoms);
+			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour {
 
 
 		if(kingdoms.Count > 1){
-//			kingdoms = Utilities.Shuffle (kingdoms);
+			kingdoms = Utilities.Shuffle (kingdoms);
 			/*
 			A huge monster guarding some treasure is discovered. 
 			The Lords must cooperate to defeat it. If they cooperate, the monster is defeated and they are able to split the treasure. 
