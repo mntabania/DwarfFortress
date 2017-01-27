@@ -23,6 +23,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblCitySummary;
 	public UILabel lblExternalAffairs;
 	public UILabel lblMetalCount;
+	public UILabel lblUnrest;
 
 	public UILabel lblFarmerCount;
 	public UILabel lblHunterCount;
@@ -36,6 +37,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblBrawlerCount;
 
 	public GameObject goCitizenInfo;
+	public UILabel lblCitizenCap;
 	public UILabel lblCitizenInfo;
 
 	public UILabel lblPause;
@@ -56,22 +58,20 @@ public class UserInterfaceManager : MonoBehaviour {
 		currentDisplayingCityTile = cityTile;
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
 		lblCityLevel.text = "Lvl: " + cityTile.cityAttributes.cityLevel.ToString();
-//		if (cityTile.cityAttributes.neededRole != null) {
-			lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
-		
-//			for (int i = 0; i < cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource.Count; i++) {
-//				Resource currentResource = cityTile.cityAttributes.upgradeCitizenTarget.GetUpgradeRequirements ().resource [i];
-//				lblUpgradeCitizenCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString ();
-//			}
-//		} else {
-//			lblUpgradeCitizenTarget.text = "Upgrade: NONE";
-//		}
+
+		lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
+		List<Resource> neededRoleCost = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.neededRole);
+		for (int i = 0; i < neededRoleCost.Count; i++) {
+			lblUpgradeCitizenCost.text += neededRoleCost[i].resourceType.ToString () + ": " + neededRoleCost[i].resourceQuantity.ToString () + "\n";
+		}
+
 
 		if (cityTile.cityAttributes.newCitizenTarget != JOB_TYPE.NONE) {
 			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
-		} else {
-			lblCreateCitizenTarget.text = "Create: NONE";
 		}
+//		else {
+//			lblCreateCitizenTarget.text = "Create: NONE";
+//		}
 
 		List<Resource> createCitizenResources = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.newCitizenTarget);
 		for (int i = 0; i < createCitizenResources.Count; i++) {
@@ -96,6 +96,7 @@ public class UserInterfaceManager : MonoBehaviour {
 			lblKingdomName.text = "Kingdom: None";
 		}
 			
+		lblCitizenCap.text = cityTile.cityAttributes.citizens.Count.ToString () + "/" + cityTile.cityAttributes.citizenLimit.ToString();
 		lblFarmerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.FARMER).ToString();
 		lblHunterCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.HUNTER).ToString();
 		lblWoodsmanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.WOODSMAN).ToString();
@@ -107,6 +108,7 @@ public class UserInterfaceManager : MonoBehaviour {
 		lblQuarrymanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.QUARRYMAN).ToString();
 		lblBrawlerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.BRAWLER).ToString();
 
+		lblUnrest.text = "Unrest: " + cityTile.cityAttributes.unrest.ToString();
 		lblCitySummary.text = cityTile.cityAttributes.cityLogs;
 	}
 
