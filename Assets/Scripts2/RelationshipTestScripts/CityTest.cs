@@ -118,6 +118,7 @@ public class CityTest{
 
 	internal void OccupyCity(){
 		this.hexTile.isOccupied = true;
+		GenerateInitialFood();
 		UpdateCityUpgradeRequirements ();
 		AssignInitialCitizens ();
 		SelectCitizenToUpgrade ();
@@ -365,7 +366,12 @@ public class CityTest{
 			}
 		} else{ //WARRIOR
 			if (GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR) >= this.cityLevel) {
-				this.newCitizenTarget = JOB_TYPE.NONE;
+				if (this.unoccupiedOwnedTiles.Count > 0) {
+					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
+					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
+				} else {
+					this.newCitizenTarget = JOB_TYPE.NONE;
+				}
 			} else {
 				this.newCitizenTarget = JOB_TYPE.WARRIOR;
 			}
@@ -431,7 +437,8 @@ public class CityTest{
 		int averageDailyProd = GetAveDailyProduction (RESOURCE.FOOD);
 		int daysUntilResourcesFinish = 0;
 		if (averageDailyProd > 0) {
-			daysUntilResourcesFinish = (int) ((GetNeededFoodForNumberOfDays(33) - this.foodStockpileCount) / averageDailyProd);
+			int neededFood = (GetNeededFoodForNumberOfDays(33));
+			daysUntilResourcesFinish = (int) ( neededFood - this.foodStockpileCount) / averageDailyProd;
 		}
 		if(daysUntilResourcesFinish > GameManager.Instance.daysUntilNextHarvest || daysUntilResourcesFinish <= 0){
 			if(this.neededRole == JOB_TYPE.NONE){
@@ -450,10 +457,11 @@ public class CityTest{
 					}
 				}
 			}
+		} else {
+			if (this.neededRole != JOB_TYPE.PIONEER) {
+				this.neededRole = JOB_TYPE.NONE;
+			}
 		}
-//		else{
-//			this.neededRole = JOB_TYPE.NONE;
-//		}
 
 		/* -------------DO NOT DELETE THIS-------------- */
 
@@ -758,6 +766,7 @@ public class CityTest{
 		if(!IsCitizenCapReached() && HasEnoughResourcesForAction(citizenCreationCost) && HasTileForNewCitizen(citizenToCreateJobType)){
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.newCitizenChance) {
+				
 				this.cityActionChances.newCitizenChance = this.cityActionChances.defaultNewCitizenChance;
 				Citizen newCitizen = new Citizen (citizenToCreateJobType, this);
 				AssignCitizenToTile (newCitizen);
@@ -766,11 +775,13 @@ public class CityTest{
 				for (int i = 0; i < citizenCreationCost.Count; i++) {
 					cityLogs += citizenCreationCost[i].resourceQuantity + " " + citizenCreationCost[i].resourceType.ToString() + "\n";
 				}
-				cityLogs += ".\n\n";
+				cityLogs += "\n";
 
 				if(this.neededRole == citizenToCreateJobType){
 					this.neededRole = JOB_TYPE.NONE;
-				}else{
+				}
+
+				if(this.newCitizenTarget == citizenToCreateJobType){
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation();
 				}
@@ -833,42 +844,57 @@ public class CityTest{
 		List<Resource> citizenCreationCost = GetCitizenCreationCostPerType (citizenToCreateJobType);
 
 		if(this.unneededRoles.Count > 0 && HasEnoughResourcesForAction(citizenCreationCost)){
-			JOB_TYPE randomJob = GetRandomUnneededRole();
-			if (randomJob == JOB_TYPE.NONE) {
+			JOB_TYPE randomUnneededJob = GetRandomUnneededRole();
+			if (randomUnneededJob == citizenToCreateJobType) {
 				return;
 			}
 			int chance = UnityEngine.Random.Range(0,100);
 			if (chance < this.cityActionChances.changeCitizenChance) {
-				Citizen citizen = GetCitizenForChange (randomJob);
-				if (this.neededRole != JOB_TYPE.NONE) {
-					citizen.ChangeJob (this.neededRole);
-					this.neededRole = JOB_TYPE.NONE;
-				} else if (this.newCitizenTarget != JOB_TYPE.NONE) {
-					citizen.ChangeJob (this.newCitizenTarget);
-					this.newCitizenTarget = JOB_TYPE.NONE;
-					SelectCitizenForCreation();
-				} else if(this.newCitizenTarget == JOB_TYPE.NONE){
-					if (citizen.job.jobType == citizenToCreateJobType) {
-						return;
-					} else {
-						citizen.ChangeJob (citizenToCreateJobType);
-					}
-				} else {
+				Citizen citizen = GetCitizenForChange (randomUnneededJob);
+				if (citizen == null) {
 					return;
 				}
+
+
+				citizen.ChangeJob(citizenToCreateJobType);
+				if (this.neededRole == citizenToCreateJobType) {
+					this.neededRole = JOB_TYPE.NONE;
+				}
+
+				if (this.newCitizenTarget == citizenToCreateJobType) {
+					this.newCitizenTarget = JOB_TYPE.NONE;
+					SelectCitizenForCreation();
+				}
+
+//				if (this.neededRole != JOB_TYPE.NONE) {
+//					citizen.ChangeJob (this.neededRole);
+//					this.neededRole = JOB_TYPE.NONE;
+//				} else if (this.newCitizenTarget != JOB_TYPE.NONE) {
+//					citizen.ChangeJob (this.newCitizenTarget);
+//					this.newCitizenTarget = JOB_TYPE.NONE;
+//					SelectCitizenForCreation();
+//				} else if(this.newCitizenTarget == JOB_TYPE.NONE){
+//					if (citizen.job.jobType == citizenToCreateJobType) {
+//						return;
+//					} else {
+//						citizen.ChangeJob (citizenToCreateJobType);
+//					}
+//				} else {
+//					return;
+//				}
 				this.cityActionChances.changeCitizenChance = this.cityActionChances.defaultChangeCitizenChance;
 				citizen.ResetLevel();
 				AssignCitizenToTile(citizen);
 				ReduceResources(citizenCreationCost);
-				RemoveUnneededResources (randomJob);
-				this.unneededRoles.Remove(randomJob);
-				cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + randomJob.ToString() + "[-] clan is now [FF0000]" + citizen.job.jobType.ToString() + "[-] in exchange for "; 
+				RemoveUnneededResources (randomUnneededJob);
+				this.unneededRoles.Remove(randomUnneededJob);
+				cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]" + randomUnneededJob.ToString() + "[-] clan is now [FF0000]" + citizen.job.jobType.ToString() + "[-] in exchange for "; 
 				for (int i = 0; i < citizenCreationCost.Count; i++) {
 					cityLogs += citizenCreationCost [i].resourceQuantity + " " + citizenCreationCost [i].resourceType.ToString () + "\n";
 				}
 				cityLogs += "\n";
 
-				if (citizenToCreateJobType == JOB_TYPE.PIONEER) {
+				if (citizen.job.jobType == JOB_TYPE.PIONEER) {
 					//TODO: Change Distance Value To Pathfinding instead of Vector2.Distance
 					pioneerCityTarget = kingdomTile.kingdom.NearestUnoccupiedCity();
 					dayPioneerReachesCity = GameManager.Instance.currentDay + (int)Vector2.Distance(kingdomTile.kingdom.cities[0].transform.position, 
@@ -963,17 +989,17 @@ public class CityTest{
 	} 
 
 	internal JOB_TYPE GetRandomUnneededRole(){
-		List<JOB_TYPE> jobTypes = new List<JOB_TYPE> ();
-		jobTypes.AddRange(this.unneededRoles);
-		if (this.neededRole != JOB_TYPE.NONE) {
-			jobTypes.Remove (this.neededRole);
-		} else {
-			jobTypes.Remove (this.newCitizenTarget);
-		}
+//		List<JOB_TYPE> jobTypes = new List<JOB_TYPE> ();
+//		jobTypes.AddRange(this.unneededRoles);
+//		if (this.neededRole != JOB_TYPE.NONE) {
+//			jobTypes.Remove (this.neededRole);
+//		} else {
+//			jobTypes.Remove (this.newCitizenTarget);
+//		}
 
-		if (jobTypes.Count > 0) {
+		if (this.unneededRoles.Count > 0) {
 			
-			return jobTypes [UnityEngine.Random.Range (0, jobTypes.Count)];
+			return this.unneededRoles[UnityEngine.Random.Range (0, this.unneededRoles.Count)];
 		}
 		return JOB_TYPE.NONE;
 	}
@@ -998,8 +1024,10 @@ public class CityTest{
 				unneededCitizens.Add (this.citizens [i]);
 			}
 		}
-
-		return unneededCitizens [UnityEngine.Random.Range (0, unneededCitizens.Count)];
+		if (unneededCitizens.Count > 0) {
+			return unneededCitizens [UnityEngine.Random.Range (0, unneededCitizens.Count)];
+		}
+		return null;
 	}
 
 	bool HasEnoughResourcesForAction(List<Resource> expenses){
@@ -1673,7 +1701,7 @@ public class CityTest{
 			break;
 		case JOB_TYPE.PIONEER:
 			citizenCreationCosts = new List<Resource> () {
-				new Resource (RESOURCE.GOLD, 2000)
+				new Resource (RESOURCE.GOLD, 1000)
 			};
 
 			return citizenCreationCosts;
@@ -1702,5 +1730,5 @@ public class CityTest{
 
 		return citizenCreationCosts;
 	}
-
+		
 }

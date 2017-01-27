@@ -21,6 +21,10 @@ public class KingdomTest{
 	protected int expansionChance;
 	protected const int defaultExpansionChance = 2;
 
+	protected List<CityTileTest> citiesOrderedByUnrest{
+		get{ return cities.OrderByDescending(x => x.cityAttributes.unrest).ToList(); }
+	}
+
 	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
@@ -81,6 +85,86 @@ public class KingdomTest{
 		}
 	}
 
+	internal void CheckForRevolution(){
+		Debug.Log ("Check For Revolution!");
+		for (int i = 0; i < cities.Count; i++) {
+			cities [i].cityAttributes.unrest = 10;
+			int chanceToRevolt = (int)Mathf.Abs((float)cities[i].cityAttributes.unrest / 4f);
+			int choice = Random.Range (0,1000);
+			if (choice < chanceToRevolt) {
+				//A city has revolted!
+				Debug.LogError("City has revolted!: " + cities[i].name);
+				if (this.cities.Count == 1) {
+					//Replace Lord
+					Debug.LogError("Killed and replaced lord because city is only 1");
+					GameManager.Instance.RemoveRelationshipToOtherLords(this.lord);
+					this.lord = new Lord(this);
+					this.lord.CreateInitialRelationshipsToLords();
+					GameManager.Instance.AddRelationshipToOtherLords(this.lord);
+					return;
+				} else if(this.cities.Count >= 2) {
+					int numOfCitiesToJoinRevolt = 0;
+					int averageUnrest = (TotalUnrestInKingdom() / 8) / this.cities.Count;
+					int x = this.cities.Count - 1;
+					while (x > 0) {
+						int chance = averageUnrest * x;
+						choice = Random.Range(0,100);
+						if (choice < chance) {
+							numOfCitiesToJoinRevolt++;
+						}
+						x--;
+					}
+
+					List<CityTileTest> citiesForNewKingdom = new List<CityTileTest>();
+					citiesForNewKingdom.Add(cities[i]);
+
+					Debug.Log ("Number of cities to join revolt: " + numOfCitiesToJoinRevolt.ToString () + "/" + this.cities.Count.ToString());
+					if (numOfCitiesToJoinRevolt == (this.cities.Count - 1)) {
+						Debug.LogError("Killed and replaced lord because all cities joined revolution");
+						GameManager.Instance.RemoveRelationshipToOtherLords(this.lord);
+						this.lord = new Lord (this);
+						this.lord.CreateInitialRelationshipsToLords();
+						GameManager.Instance.AddRelationshipToOtherLords(this.lord);
+						return;
+					} else if (numOfCitiesToJoinRevolt > 0) {
+						for (int j = 0; j < citiesOrderedByUnrest.Count; j++) {
+							if (citiesOrderedByUnrest [j] == cities [i]) {
+								//SKIP CITY THAT TRIGGERED REVOLT!
+							} else {
+								citiesForNewKingdom.Add(citiesOrderedByUnrest[j]);
+							}
+
+							if ((citiesForNewKingdom.Count-1) == numOfCitiesToJoinRevolt) {
+								break;
+							}
+						}
+					}
+
+					this.RemoveCitiesFromKingdom (citiesForNewKingdom);
+					KingdomTileTest newKingdom = GameManager.Instance.CreateNewKingdom(this.kingdomRace, citiesForNewKingdom);
+					Debug.LogError("Create new kingdom for revolution cities");
+					break;
+				}
+			}
+		}
+	}
+
+	public void RemoveCitiesFromKingdom(List<CityTileTest> cities){
+		for (int i = 0; i < cities.Count; i++) {
+			this.cities.Remove (cities[i]);
+		}
+//		Debug.Log ("Remove City From Kingdom!: " + this.kingdomName + "/" + city.name);
+//		this.cities.Remove(city);
+	}
+
+	int TotalUnrestInKingdom(){
+		int totalUnrest = 0;
+		for (int i = 0; i < cities.Count; i++) {
+			totalUnrest += cities[i].cityAttributes.unrest;
+		}
+		return totalUnrest;
+	}
+
 	internal CityTileTest NearestUnoccupiedCity(){
 		List<CityTileTest> unoccupiedCities = new List<CityTileTest>();
 		for (int i = 0; i < cities.Count; i++) {
@@ -89,8 +173,6 @@ public class KingdomTest{
 		unoccupiedCities = unoccupiedCities.OrderBy(x => Vector2.Distance (this.cities[0].transform.position, x.transform.position)).ToList();
 		return unoccupiedCities [0];
 	}
-  
-	
 
 	void DetermineCityUpgradeResourceType(){
 		switch (this.kingdomRace) {
@@ -112,6 +194,7 @@ public class KingdomTest{
 			break;
 		}
 	}
+
 
 
 }

@@ -48,6 +48,9 @@ public class KingdomTileTest : MonoBehaviour {
 
 	void TurnActions(int currentDay){
 		kingdom.CheckForExpansion();
+		if (currentDay % 5 == 0) {
+			kingdom.CheckForRevolution();
+		}
 	}
 
 

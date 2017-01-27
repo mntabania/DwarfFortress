@@ -153,17 +153,18 @@ public class GameManager : MonoBehaviour {
 	void GenerateInitialKingdoms(){
 		List<GameObject> tempCities = new List<GameObject> ();
 		tempCities.AddRange (cities);
+
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
 		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 
-		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
-		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
+//		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+//		goKingdom2.transform.parent = this.transform;
+//		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+//		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+//		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 //
 //		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 //		goKingdom3.transform.parent = this.transform;
@@ -190,6 +191,37 @@ public class GameManager : MonoBehaviour {
 //		goKingdom6.name = goKingdom6.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 //		kingdoms.Add (goKingdom6.GetComponent<KingdomTileTest>());
 	}
+
+	public KingdomTileTest CreateNewKingdom(RACE race, List<CityTileTest> initialCities){
+		GameObject goKingdom = (GameObject)GameObject.Instantiate(kingdomTilePrefab);
+		goKingdom.transform.parent = this.transform;
+		goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, race, initialCities, Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
+		goKingdom.name = goKingdom.GetComponent<KingdomTileTest>().kingdom.kingdomName;
+		this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
+		goKingdom.GetComponent<KingdomTileTest>().kingdom.lord.CreateInitialRelationshipsToLords();
+		AddRelationshipToOtherLords (goKingdom.GetComponent<KingdomTileTest> ().kingdom.lord);
+		return goKingdom.GetComponent<KingdomTileTest>();
+	}
+
+	public void AddRelationshipToOtherLords(Lord newLord){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			if (this.kingdoms[i].kingdom.id != newLord.kingdom.id) {
+				this.kingdoms[i].kingdom.lord.relationshipLords.Add (new Relationship(newLord.id, newLord.name, DECISION.NEUTRAL, 0));
+			}
+		}
+	}
+
+	public void RemoveRelationshipToOtherLords(Lord lordToRemove){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			for (int j = 0; j < this.kingdoms[i].kingdom.lord.relationshipLords.Count; j++) {
+//				Relationship currRelationship = this.kingdoms[i].kingdom.lord.relationshipLords[j];
+				if (this.kingdoms[i].kingdom.lord.relationshipLords[j].id == lordToRemove.id) {
+					this.kingdoms[i].kingdom.lord.relationshipLords.Remove(this.kingdoms[i].kingdom.lord.relationshipLords[j]);
+				}
+			}
+		}
+	}
+
 	internal void CreateInitialRelationshipsToLords(){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
 			this.kingdoms [i].kingdom.lord.CreateInitialRelationshipsToLords ();
@@ -269,8 +301,10 @@ public class GameManager : MonoBehaviour {
 	void WaitForHarvest(int currentDay){
 		if (daysUntilNextHarvest <= 1) {
 			//TODO: Put Harvest Code Execution here
-			for (int i = 0; i < this.cities.Count; i++) {
-				this.cities [i].GetComponent<CityTileTest>().cityAttributes.TriggerFoodHarvest();
+			for (int i = 0; i < this.kingdoms.Count; i++) {
+				for (int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++) {
+					this.kingdoms[i].kingdom.cities[j].cityAttributes.TriggerFoodHarvest();
+				}
 			}
 			daysUntilNextHarvest = 30;
 			harvestTime = true;
