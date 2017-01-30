@@ -136,7 +136,7 @@ public class CityTest{
 		citizens.Add(new Citizen (JOB_TYPE.FARMER, this));
 		citizens.Add(new Citizen (JOB_TYPE.QUARRYMAN, this));
 		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, this));
-//		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, this));
+		citizens.Add(new Citizen (JOB_TYPE.DEFENSE_GENERAL, this));
 //		this.defenseGenerals.Add(new General(GENERAL_CLASSIFICATION.DEFENSE));
 
 		return citizens;
@@ -380,7 +380,7 @@ public class CityTest{
 //					this.newCitizenTarget = JOB_TYPE.NONE;
 //				}
 //			} else {
-				this.newCitizenTarget = JOB_TYPE.WARRIOR;
+				this.newCitizenTarget = JOB_TYPE.OFFENSE_GENERAL;
 //			}
 //			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 		}
@@ -555,7 +555,10 @@ public class CityTest{
 			}
 
 			if (isAllUnneeded) {
-				unneededJobs.Add (Lookup.GetJobInfo(i).jobType);	
+				if(Lookup.GetJobInfo(i).jobType != JOB_TYPE.DEFENSE_GENERAL || Lookup.GetJobInfo(i).jobType != JOB_TYPE.OFFENSE_GENERAL){
+					unneededJobs.Add (Lookup.GetJobInfo(i).jobType);	
+				}
+
 			}
 		}
 
@@ -575,9 +578,9 @@ public class CityTest{
 			}
 		}
 
-		if ( Mathf.Abs(1 + (this.cityLevel/3)) < GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR)) {
-			unneededJobs.Add(JOB_TYPE.WARRIOR);
-		}
+//		if ( Mathf.Abs(1 + (this.cityLevel/3)) < GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR)) {
+//			unneededJobs.Add(JOB_TYPE.WARRIOR);
+//		}
 
 		return unneededJobs.Distinct ().ToList();
 	}
@@ -1072,7 +1075,7 @@ public class CityTest{
 	}
 
 	bool HasTileForNewCitizen(JOB_TYPE jobType){
-		if (jobType != JOB_TYPE.WARRIOR && jobType != JOB_TYPE.MAGE && jobType != JOB_TYPE.ARCHER && jobType != JOB_TYPE.PIONEER) {
+		if (jobType != JOB_TYPE.DEFENSE_GENERAL && jobType != JOB_TYPE.OFFENSE_GENERAL && jobType != JOB_TYPE.PIONEER) {
 			if (this.unoccupiedOwnedTiles.Count <= 0) {
 				return false;
 			} else {
@@ -1087,7 +1090,7 @@ public class CityTest{
 	}
 
 	bool IsCitizenCapReached(){
-		if (this.citizens.Count + this.offenseGenerals.Count + this.defenseGenerals.Count < citizenLimit) {
+		if (this.citizens.Count < citizenLimit) {
 			return false;
 		} else {
 			return true;
@@ -1720,22 +1723,26 @@ public class CityTest{
 			primaryCreationResource = RESOURCE.STONE;
 			secondaryCreationResource = RESOURCE.METAL;
 			break;
-		case JOB_TYPE.BRAWLER:
-			primaryCreationResource = RESOURCE.STONE;
-			secondaryCreationResource = RESOURCE.MANA;
-			break;
-		case JOB_TYPE.ARCHER:
-			primaryCreationResource = RESOURCE.LUMBER;
-			secondaryCreationResource = RESOURCE.METAL;
-			break;
-		case JOB_TYPE.WARRIOR:
-			primaryCreationResource = RESOURCE.STONE;
-			secondaryCreationResource = RESOURCE.METAL;
-			break;
-		case JOB_TYPE.MAGE:
-			primaryCreationResource = RESOURCE.LUMBER;
-			secondaryCreationResource = RESOURCE.MANA;
-			break;
+		case JOB_TYPE.OFFENSE_GENERAL:
+			citizenCreationCosts = new List<Resource> () {
+				new Resource (RESOURCE.GOLD, 2000)
+			};
+
+			return citizenCreationCosts;
+		case JOB_TYPE.DEFENSE_GENERAL:
+			citizenCreationCosts = new List<Resource> () {
+				new Resource (RESOURCE.GOLD, 2000)
+			};
+
+			return citizenCreationCosts;
+//		case JOB_TYPE.WARRIOR:
+//			primaryCreationResource = RESOURCE.STONE;
+//			secondaryCreationResource = RESOURCE.METAL;
+//			break;
+//		case JOB_TYPE.MAGE:
+//			primaryCreationResource = RESOURCE.LUMBER;
+//			secondaryCreationResource = RESOURCE.MANA;
+//			break;
 		case JOB_TYPE.PIONEER:
 			citizenCreationCosts = new List<Resource> () {
 				new Resource (RESOURCE.GOLD, 1000)

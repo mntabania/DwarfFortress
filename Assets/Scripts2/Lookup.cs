@@ -9,10 +9,11 @@ public class Lookup {
 		new Woodsman(),
 		new Quarryman(),
 		new Alchemist(),
-		new Warrior(),
-		new Brawler(),
-		new Archer(),
-		new Mage(),
+		new DefenseGeneral(),
+		new OffenseGeneral (),
+//		new Brawler(),
+//		new Archer(),
+//		new Mage(),
 	};
 	public static Job GetJobInfo(int jobId){
 		Job job = JOB_REF [jobId];

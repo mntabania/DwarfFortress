@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Archer: Job {
+public class OffenseGeneral: Job {
 
-	public Archer(){
+	public OffenseGeneral(){
 		CitizenUpgradeRequirements req = new CitizenUpgradeRequirements();
 		//		req.resource.Add (new Resource(RESOURCE.LUMBER, 100));
-		req.resource.Add (new Resource(RESOURCE.LUMBER, 200));
+		req.resource.Add (new Resource(RESOURCE.GOLD, 2000));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
-//		this._jobType = JOB_TYPE.ARCHER;
+		this._jobType = JOB_TYPE.OFFENSE_GENERAL;
 		this._residence = RESIDENCE.INSIDE;
+		this._army = new Army (GENERAL_CLASSIFICATION.OFFENSE);
 
 	}
 

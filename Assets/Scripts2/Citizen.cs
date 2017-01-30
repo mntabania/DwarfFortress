@@ -61,22 +61,23 @@ public class Citizen {
 		switch(jobType){
 		case JOB_TYPE.ALCHEMIST:
 			return new Alchemist ();
-		case JOB_TYPE.ARCHER:
-			return new Archer ();
-		case JOB_TYPE.BRAWLER:
-			return new Brawler ();
+//		case JOB_TYPE.ARCHER:
+//			return new Archer ();
+//		case JOB_TYPE.BRAWLER:
+//			return new Brawler ();
 		case JOB_TYPE.FARMER:
 			return new Farmer ();
 		case JOB_TYPE.HUNTER:
 			return new Hunter ();
-		case JOB_TYPE.MAGE:
-			return new Mage ();
+
 		case JOB_TYPE.MINER:
 			return new Miner ();
 		case JOB_TYPE.QUARRYMAN:
 			return new Quarryman ();
-		case JOB_TYPE.WARRIOR:
-			return new Warrior ();
+		case JOB_TYPE.DEFENSE_GENERAL:
+			return new DefenseGeneral ();
+		case JOB_TYPE.OFFENSE_GENERAL:
+			return new OffenseGeneral ();
 		case JOB_TYPE.WOODSMAN:
 			return new Woodsman ();
 		case JOB_TYPE.PIONEER:
