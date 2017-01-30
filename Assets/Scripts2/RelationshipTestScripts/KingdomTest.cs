@@ -19,7 +19,7 @@ public class KingdomTest{
 	public RESOURCE secondaryRaceResource;
 
 	protected int expansionChance;
-	protected const int defaultExpansionChance = 2;
+	protected const int defaultExpansionChance = 3;
 
 	protected List<CityTileTest> citiesOrderedByUnrest{
 		get{ return cities.OrderByDescending(x => x.cityAttributes.unrest).ToList(); }
@@ -80,9 +80,10 @@ public class KingdomTest{
 				citiesWithoutNeededRole [Random.Range (0, citiesWithoutNeededRole.Count)].cityAttributes.neededRole = JOB_TYPE.PIONEER;
 				this.expansionChance = defaultExpansionChance;
 			}
-		} else {
-			this.expansionChance += 1;
-		}
+		} 
+//		else {
+//			this.expansionChance += 1;
+//		}
 	}
 
 	internal void CheckForRevolution(){
@@ -142,6 +143,12 @@ public class KingdomTest{
 
 					this.RemoveCitiesFromKingdom (citiesForNewKingdom);
 					KingdomTileTest newKingdom = GameManager.Instance.CreateNewKingdom(this.kingdomRace, citiesForNewKingdom);
+					//Set this kingdom's lord to dislike the new lord of the new kingdom
+					for (int j = 0; j < this.lord.relationshipLords.Count; j++) {
+						if (this.lord.relationshipLords [j].id == newKingdom.kingdom.lord.id) {
+							this.lord.relationshipLords [j].like = -50;
+						}
+					}
 					Debug.LogError("Create new kingdom for revolution cities");
 					break;
 				}

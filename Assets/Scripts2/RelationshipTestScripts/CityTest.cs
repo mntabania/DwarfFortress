@@ -64,6 +64,7 @@ public class CityTest{
 
 	protected int dayPioneerReachesCity = 0;
 	protected CityTileTest pioneerCityTarget = null;
+	public HexTile targetHexTileToPurchase;
 
 	public CityTest(HexTile hexTile, KingdomTileTest kingdom){
 		this.id = GetID()+1;
@@ -122,6 +123,7 @@ public class CityTest{
 
 	internal void OccupyCity(){
 		this.hexTile.isOccupied = true;
+		SelectHexTileToPurchase();
 		GenerateInitialFood();
 		UpdateCityUpgradeRequirements ();
 		AssignInitialCitizens ();
@@ -259,7 +261,7 @@ public class CityTest{
 				if (tilesToChooseFrom [0].GetRelevantResourceValueByJobType (citizen.job.jobType) == 0) {
 					Debug.Log("Resource Value of target tile is 0");
 				}
-				if (citizen.assignedTile == null) {
+				if (citizen.assignedTile == null || citizen.assignedTile.isCity) {
 					citizen.SetCitizenTile (tilesToChooseFrom [0]);
 				} else {
 					int currentAssignedTileValue = citizen.assignedTile.GetRelevantResourceValueByJobType (citizen.job.jobType);
@@ -370,16 +372,16 @@ public class CityTest{
 				}
 			}
 		} else{ //WARRIOR
-			if (GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR) >= this.cityLevel) {
-				if (this.unoccupiedOwnedTiles.Count > 0) {
-					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
-					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
-				} else {
-					this.newCitizenTarget = JOB_TYPE.NONE;
-				}
-			} else {
+//			if (GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR) >= this.cityLevel) {
+//				if (this.unoccupiedOwnedTiles.Count > 0) {
+//					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
+//					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
+//				} else {
+//					this.newCitizenTarget = JOB_TYPE.NONE;
+//				}
+//			} else {
 				this.newCitizenTarget = JOB_TYPE.WARRIOR;
-			}
+//			}
 //			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 		}
 	}
@@ -572,6 +574,11 @@ public class CityTest{
 				}
 			}
 		}
+
+		if ( Mathf.Abs(1 + (this.cityLevel/3)) < GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR)) {
+			unneededJobs.Add(JOB_TYPE.WARRIOR);
+		}
+
 		return unneededJobs.Distinct ().ToList();
 	}
 //	internal List<JobNeeds> GetJobsWithExcessResources(int[] neededResources){
@@ -643,6 +650,33 @@ public class CityTest{
 //				break;
 //			}
 //		}
+
+		//BASED ON HEX TILE TO PURCHASE
+		if (this.targetHexTileToPurchase != null) {
+			List<Resource> resourceReqs = GetHexTileCost (this.targetHexTileToPurchase);
+			for (int i = 0; i < resourceReqs.Count; i++) {
+				switch (resourceReqs[i].resourceType) {
+				case RESOURCE.GOLD:
+					neededResources[0] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.FOOD:
+					neededResources[1] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.LUMBER:
+					neededResources[2] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.STONE:
+					neededResources[3] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.MANA:
+					neededResources[4] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.METAL:
+					neededResources[5] += resourceReqs[i].resourceQuantity;
+					break;
+				}
+			}
+		}
 
 		//BASED ON NEEDED ROLE
 		if (this.neededRole != JOB_TYPE.NONE) {
@@ -729,7 +763,7 @@ public class CityTest{
 				for (int i = 0; i < this.cityUpgradeRequirements.resource.Count; i++) {
 					cityLogs += this.cityUpgradeRequirements.resource [i].resourceQuantity + " " + this.cityUpgradeRequirements.resource [i].resourceType + "\n";
 				}
-				cityLogs += "\n\n";
+				cityLogs += "\n";
 				ReduceResources(this.cityUpgradeRequirements.resource);
 				UpdateCityUpgradeRequirements();
 				UpdateResourcesStatus();
@@ -848,7 +882,7 @@ public class CityTest{
 		}
 		List<Resource> citizenCreationCost = GetCitizenCreationCostPerType (citizenToCreateJobType);
 
-		if(this.unneededRoles.Count > 0 && HasEnoughResourcesForAction(citizenCreationCost)){
+		if(this.unneededRoles.Count > 0 && HasEnoughResourcesForAction(citizenCreationCost) && HasTileForNewCitizen(citizenToCreateJobType)){
 			JOB_TYPE randomUnneededJob = GetRandomUnneededRole();
 			if (randomUnneededJob == citizenToCreateJobType) {
 				return;
@@ -860,7 +894,6 @@ public class CityTest{
 					return;
 				}
 
-
 				citizen.ChangeJob(citizenToCreateJobType);
 				if (this.neededRole == citizenToCreateJobType) {
 					this.neededRole = JOB_TYPE.NONE;
@@ -870,23 +903,7 @@ public class CityTest{
 					this.newCitizenTarget = JOB_TYPE.NONE;
 					SelectCitizenForCreation();
 				}
-
-//				if (this.neededRole != JOB_TYPE.NONE) {
-//					citizen.ChangeJob (this.neededRole);
-//					this.neededRole = JOB_TYPE.NONE;
-//				} else if (this.newCitizenTarget != JOB_TYPE.NONE) {
-//					citizen.ChangeJob (this.newCitizenTarget);
-//					this.newCitizenTarget = JOB_TYPE.NONE;
-//					SelectCitizenForCreation();
-//				} else if(this.newCitizenTarget == JOB_TYPE.NONE){
-//					if (citizen.job.jobType == citizenToCreateJobType) {
-//						return;
-//					} else {
-//						citizen.ChangeJob (citizenToCreateJobType);
-//					}
-//				} else {
-//					return;
-//				}
+					
 				this.cityActionChances.changeCitizenChance = this.cityActionChances.defaultChangeCitizenChance;
 				citizen.ResetLevel();
 				AssignCitizenToTile(citizen);
@@ -914,38 +931,44 @@ public class CityTest{
 		}
 	}
 
-	internal void AttemptToPurchaseTile(){
-		HexTile chosenHexTile = SelectHexTileToPurchase();
-
-		int ownedTilesThreshold = 10;
-
+	List<Resource> GetHexTileCost(HexTile hexTileToPurchase){
 		Resource[] tilePurchaseCost;
+		int ownedTilesThreshold = 10;
 		if (this.ownedBiomeTiles.Count > ownedTilesThreshold) {
 			tilePurchaseCost = new Resource[] {
 				new Resource (RESOURCE.GOLD, (300 * this.ownedBiomeTiles.Count)),
-				new Resource (chosenHexTile.primaryResourceToPurchaseTile, 100 + (50 * this.ownedBiomeTiles.Count)),
-				new Resource (chosenHexTile.secondaryResourceToPurchaseTile, 80 + (40 * (this.ownedBiomeTiles.Count - ownedTilesThreshold)))
+				new Resource (hexTileToPurchase.primaryResourceToPurchaseTile, 100 + (50 * this.ownedBiomeTiles.Count)),
+				new Resource (hexTileToPurchase.secondaryResourceToPurchaseTile, 80 + (40 * (this.ownedBiomeTiles.Count - ownedTilesThreshold)))
 			};
 		} else {
 			tilePurchaseCost = new Resource[] {
 				new Resource (RESOURCE.GOLD, (300 * this.ownedBiomeTiles.Count)),
-				new Resource (chosenHexTile.primaryResourceToPurchaseTile, 100 + (50 * this.ownedBiomeTiles.Count)),
+				new Resource (hexTileToPurchase.primaryResourceToPurchaseTile, 100 + (50 * this.ownedBiomeTiles.Count)),
 			};
 		}
 
+		return tilePurchaseCost.ToList();
+	}
+
+	internal void AttemptToPurchaseTile(){
+		if (this.targetHexTileToPurchase == null) {
+			return;
+		}
+		List<Resource> tilePurchaseCost = GetHexTileCost(this.targetHexTileToPurchase);
 		if (HasEnoughResourcesForAction(tilePurchaseCost.ToList())) {
 			int chance = UnityEngine.Random.Range (0, 100);
 			if (chance < this.cityActionChances.purchaseTileChance) {
-					//Buy the tile
-					this.cityActionChances.purchaseTileChance = this.cityActionChances.defaultPurchaseTileChance;
-					this.ownedBiomeTiles.Add(chosenHexTile);
-					chosenHexTile.SetTileColor(Color.red);
-					ReduceResources(tilePurchaseCost.ToList());
-					cityLogs += GameManager.Instance.currentDay.ToString () + ": Purchased Tile [FF0000]" + chosenHexTile.name + "[-] for [FF0000] ";
-					for (int i = 0; i < tilePurchaseCost.Length; i++) {
-						cityLogs += tilePurchaseCost [i].resourceQuantity + " " + tilePurchaseCost [i].resourceType + "\n";
-					}
-					cityLogs +="[-]\n";
+				//Buy the tile
+				this.cityActionChances.purchaseTileChance = this.cityActionChances.defaultPurchaseTileChance;
+				this.ownedBiomeTiles.Add(this.targetHexTileToPurchase);
+				this.targetHexTileToPurchase.SetTileColor(Color.red);
+				ReduceResources(tilePurchaseCost.ToList());
+				cityLogs += GameManager.Instance.currentDay.ToString () + ": Purchased Tile [FF0000]" + this.targetHexTileToPurchase.name + "[-] for [FF0000] ";
+				for (int i = 0; i < tilePurchaseCost.Count; i++) {
+					cityLogs += tilePurchaseCost [i].resourceQuantity + " " + tilePurchaseCost [i].resourceType + "\n";
+				}
+				cityLogs +="[-]\n";
+				this.targetHexTileToPurchase = null;
 			}
 //			else {
 //				this.cityActionChances.purchaseTileChance += 1;
@@ -954,7 +977,7 @@ public class CityTest{
 
 	}
 
-	HexTile SelectHexTileToPurchase(){
+	internal void SelectHexTileToPurchase(){
 		RESOURCE scarceResource = GetRandomResourceTypeByStatus(RESOURCE_STATUS.SCARCE);
 //		cityLogs += GameManager.Instance.currentDay.ToString () + ": Looking for tile with rich [FF0000]" + scarceResource.ToString() + "[-].\n\n";
 		List<HexTile> neighbours = new List<HexTile>();
@@ -990,7 +1013,9 @@ public class CityTest{
 			neighbours = neighbours.OrderByDescending (x => (x.stoneValue)).ToList();
 		}
 
-		return neighbours[0];
+		this.targetHexTileToPurchase = neighbours [0];
+
+//		return neighbours[0];
 	} 
 
 	internal JOB_TYPE GetRandomUnneededRole(){
