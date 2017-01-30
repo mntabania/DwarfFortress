@@ -24,6 +24,8 @@ public class CityTest{
 	public int goldValue;
 	public int mayorLikeRating;
 	public int citizenLimit;
+	public int offenseGeneralsLimit;
+	public int defenseGeneralsLimit;
 	public int unrest;
 	public float farmerMultiplier;
 	public float hunterMultiplier;
@@ -80,6 +82,8 @@ public class CityTest{
 		this.goldValue = GetGoldValue ();
 		this.mayorLikeRating = 0;
 		this.citizenLimit = 4;
+		this.offenseGeneralsLimit = 1;
+		this.defenseGeneralsLimit = 1;
 		this.unrest = 0;
 		this.farmerMultiplier = 2f;
 		this.hunterMultiplier = 2f;
@@ -130,7 +134,8 @@ public class CityTest{
 		citizens.Add(new Citizen (JOB_TYPE.FARMER, this));
 		citizens.Add(new Citizen (JOB_TYPE.QUARRYMAN, this));
 		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, this));
-		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, this));
+//		citizens.Add(new Citizen (JOB_TYPE.WARRIOR, this));
+//		this.defenseGenerals.Add(new General(GENERAL_CLASSIFICATION.DEFENSE));
 
 		return citizens;
 	}
@@ -1057,7 +1062,7 @@ public class CityTest{
 	}
 
 	bool IsCitizenCapReached(){
-		if (this.citizens.Count < citizenLimit) {
+		if (this.citizens.Count + this.offenseGenerals.Count + this.defenseGenerals.Count < citizenLimit) {
 			return false;
 		} else {
 			return true;
