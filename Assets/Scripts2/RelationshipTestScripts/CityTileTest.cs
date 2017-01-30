@@ -44,6 +44,7 @@ public class CityTileTest : MonoBehaviour {
 
 		if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
 			cityAttributes.SelectCitizenForCreation();
+			cityAttributes.SelectHexTileToPurchase();
 		}
 
 		cityAttributes.AttemptToUpgradeCity ();
