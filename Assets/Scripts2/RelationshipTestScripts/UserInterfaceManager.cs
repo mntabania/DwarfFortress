@@ -61,8 +61,10 @@ public class UserInterfaceManager : MonoBehaviour {
 
 		lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
 		List<Resource> neededRoleCost = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.neededRole);
-		for (int i = 0; i < neededRoleCost.Count; i++) {
-			lblUpgradeCitizenCost.text += neededRoleCost[i].resourceType.ToString () + ": " + neededRoleCost[i].resourceQuantity.ToString () + "\n";
+		if (neededRoleCost != null) {
+			for (int i = 0; i < neededRoleCost.Count; i++) {
+				lblUpgradeCitizenCost.text += neededRoleCost [i].resourceType.ToString () + ": " + neededRoleCost [i].resourceQuantity.ToString () + "\n";
+			}
 		}
 
 

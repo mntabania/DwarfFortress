@@ -10,6 +10,7 @@ public class CityActionChances{
 	internal int defaultChangeCitizenChance = 5;
 	internal int defaultTradeMissionChance = 2;
 	internal int defaultPurchaseTileChance = 3;
+	internal int defaultIncreaseArmyCountChance = 2;
 
 	public int oversupplyChance;
 	public int increaseHousingChance;
@@ -18,6 +19,7 @@ public class CityActionChances{
 	public int changeCitizenChance;
 	public int tradeMissionChance;
 	public int purchaseTileChance;
+	public int increaseArmyCountChance;
 
 	public CityActionChances(){
 		this.oversupplyChance = this.defaultOversupplyChance;
@@ -27,5 +29,6 @@ public class CityActionChances{
 		this.changeCitizenChance = this.defaultChangeCitizenChance;
 		this.tradeMissionChance = this.defaultTradeMissionChance;
 		this.purchaseTileChance = this.defaultPurchaseTileChance;
+		this.increaseArmyCountChance = this.defaultIncreaseArmyCountChance;
 	}
 }
