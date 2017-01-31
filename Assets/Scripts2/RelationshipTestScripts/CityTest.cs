@@ -132,11 +132,12 @@ public class CityTest{
 	}
 
 	internal List<Citizen> InitialCitizens(){
+		CityTest city = this;
 		List<Citizen> citizens = new List<Citizen> ();
-		citizens.Add(new Citizen (JOB_TYPE.FARMER, this));
-		citizens.Add(new Citizen (JOB_TYPE.QUARRYMAN, this));
-		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, this));
-		citizens.Add(new Citizen (JOB_TYPE.DEFENSE_GENERAL, this));
+		citizens.Add(new Citizen (JOB_TYPE.FARMER, city));
+		citizens.Add(new Citizen (JOB_TYPE.QUARRYMAN, city));
+		citizens.Add(new Citizen (JOB_TYPE.WOODSMAN, city));
+		citizens.Add(new Citizen (JOB_TYPE.DEFENSE_GENERAL, city));
 //		this.defenseGenerals.Add(new General(GENERAL_CLASSIFICATION.DEFENSE));
 
 		return citizens;
@@ -372,16 +373,16 @@ public class CityTest{
 				}
 			}
 		} else{ //WARRIOR
-//			if (GetNumberOfCitizensPerType (JOB_TYPE.WARRIOR) >= this.cityLevel) {
-//				if (this.unoccupiedOwnedTiles.Count > 0) {
-//					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
-//					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
-//				} else {
-//					this.newCitizenTarget = JOB_TYPE.NONE;
-//				}
-//			} else {
+			if (GetNumberOfCitizensPerType (JOB_TYPE.OFFENSE_GENERAL) >= this.offenseGeneralsLimit) {
+				if (this.unoccupiedOwnedTiles.Count > 0) {
+					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
+					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
+				} else {
+					this.newCitizenTarget = JOB_TYPE.NONE;
+				}
+			} else {
 				this.newCitizenTarget = JOB_TYPE.OFFENSE_GENERAL;
-//			}
+			}
 //			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 		}
 	}
@@ -762,6 +763,9 @@ public class CityTest{
 				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
 				this.citizenLimit += 1;
 				this.cityLevel += 1;
+				if((this.cityLevel % 4) == 0){
+					this.offenseGeneralsLimit += 1;
+				}
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-] in exchange for ";
 				for (int i = 0; i < this.cityUpgradeRequirements.resource.Count; i++) {
 					cityLogs += this.cityUpgradeRequirements.resource [i].resourceQuantity + " " + this.cityUpgradeRequirements.resource [i].resourceType + "\n";
@@ -804,6 +808,9 @@ public class CityTest{
 		}
 
 		List<Resource> citizenCreationCost = GetCitizenCreationCostPerType (citizenToCreateJobType);
+		if (citizenCreationCost.Count <= 0) {
+			return;
+		}
 
 		if(!IsCitizenCapReached() && HasEnoughResourcesForAction(citizenCreationCost) && HasTileForNewCitizen(citizenToCreateJobType)){
 			int chance = UnityEngine.Random.Range(0,100);
@@ -1686,6 +1693,9 @@ public class CityTest{
 	}
 		
 	public List<Resource> GetCitizenCreationCostPerType(JOB_TYPE jobType){
+		if(jobType == JOB_TYPE.NONE){
+			return null;
+		}
 		int numOfCitizensThreshold = 3;
 
 		int numOfCitizensOfSameType = 0;
