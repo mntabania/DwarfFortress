@@ -40,6 +40,7 @@ public class CityTileTest : MonoBehaviour {
 //		cityAttributes.SelectCitizenToUpgrade ();
 		cityAttributes.AssignNeededRole ();
 		cityAttributes.AssignUnneededRoles ();
+		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 
 		if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
@@ -51,6 +52,7 @@ public class CityTileTest : MonoBehaviour {
 //		cityAttributes.AttemptToUpgradeCitizen ();
 		cityAttributes.AttemptToCreateNewCitizen ();
 		cityAttributes.AttemptToChangeCitizenRole ();
+		cityAttributes.AttemptToIncreaseArmyCount ();
 		cityAttributes.LaunchTradeMission();
 		cityAttributes.UpdateResourcesStatus();
 	}

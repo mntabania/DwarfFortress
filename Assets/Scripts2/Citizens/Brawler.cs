@@ -11,7 +11,7 @@ public class Brawler: Job {
 		req.resource.Add (new Resource(RESOURCE.STONE, 200));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
-		this._jobType = JOB_TYPE.BRAWLER;
+//		this._jobType = JOB_TYPE.BRAWLER;
 		this._residence = RESIDENCE.INSIDE;
 
 	}

@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Generic;
-
 
 public static class Utilities {
 
@@ -12,6 +10,7 @@ public static class Utilities {
 	public static int lastLordId = 0;
 	public static int lastKingId = 0;
 	public static int lastCityId = 0;
+	public static int lastGeneralId = 0;
 
 	public static int tradeCount = 0;
 	public static int helpCount = 0;

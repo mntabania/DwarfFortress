@@ -40,7 +40,7 @@ public class KingdomTileTest : MonoBehaviour {
 	}
 
 	public void AddCityToKingdom(CityTileTest city){
-		kingdom.AddCityToKingdom (city);
+		this.kingdom.AddCityToKingdom (city);
 //		city.cityAttributes = new CityTest (city.GetComponent<HexTile>(), this);
 		city.cityAttributes.kingdomTile = this;
 		city.GetComponent<HexTile> ().SetTileColor (kingdom.tileColor);

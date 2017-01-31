@@ -18,6 +18,15 @@ public class KingdomTest{
 	public RESOURCE primaryRaceResource;
 	public RESOURCE secondaryRaceResource;
 
+
+	public int armyBaseUnits;
+	public int armyIncreaseUnits;
+
+	public ArmyStats armyBaseStats;
+	public ArmyStats armyIncreaseStats;
+
+	public List<Resource> armyIncreaseUnitResource;
+
 	protected int expansionChance;
 	protected const int defaultExpansionChance = 3;
 
@@ -35,6 +44,12 @@ public class KingdomTest{
 		this.tileColor = tileColor;
 		this.relationshipKingdoms = new List<Relationship>();
 		this.expansionChance = defaultExpansionChance;
+		this.armyBaseUnits = GetArmyBaseUnits ();
+		this.armyIncreaseUnits = GetArmyIncreaseUnits ();
+		this.armyBaseStats = GetArmyBaseStats ();
+		this.armyIncreaseStats = GetArmyIncreaseStats ();
+		this.armyIncreaseUnitResource = GetArmyIncreaseUnitResource ();
+
 		SetLastID (this.id);
 		DetermineCityUpgradeResourceType();
 	}
@@ -201,7 +216,70 @@ public class KingdomTest{
 			break;
 		}
 	}
+	internal ArmyStats GetArmyBaseStats(){
+		switch(this.kingdomRace){
+		case RACE.HUMANS:
+			return new ArmyStats (250, 6);
+		case RACE.ELVES:
+			return new ArmyStats (200, 8);
+		case RACE.MINGONS:
+			return new ArmyStats (150, 6);
+		case RACE.CROMADS:
+			return new ArmyStats (400, 12);
+		}
+		return null;
+	}
+	internal ArmyStats GetArmyIncreaseStats(){
+		switch(this.kingdomRace){
+		case RACE.HUMANS:
+			return new ArmyStats (5, 1);
+		case RACE.ELVES:
+			return new ArmyStats (3, 2);
+		case RACE.MINGONS:
+			return new ArmyStats (2, 1);
+		case RACE.CROMADS:
+			return new ArmyStats (20, 3);
+		}
+		return null;
+	}
+	internal int GetArmyBaseUnits(){
+		switch(this.kingdomRace){
+		case RACE.HUMANS:
+			return 80;
+		case RACE.ELVES:
+			return 60;
+		case RACE.MINGONS:
+			return 100;
+		case RACE.CROMADS:
+			return 40;
+		}
+		return 0;
+	}
+	internal int GetArmyIncreaseUnits(){
+		switch(this.kingdomRace){
+		case RACE.HUMANS:
+			return 20;
+		case RACE.ELVES:
+			return 15;
+		case RACE.MINGONS:
+			return 25;
+		case RACE.CROMADS:
+			return 10;
+		}
+		return 0;
+	}
 
-
-
-}
+	internal List<Resource> GetArmyIncreaseUnitResource(){
+		switch(this.kingdomRace){
+		case RACE.HUMANS:
+			return new List<Resource>(){new Resource(RESOURCE.GOLD, 500), new Resource(RESOURCE.STONE, 50)};
+		case RACE.ELVES:
+			return new List<Resource>(){new Resource(RESOURCE.GOLD, 200), new Resource(RESOURCE.LUMBER, 80)};
+		case RACE.MINGONS:
+			return new List<Resource>(){new Resource(RESOURCE.GOLD, 400), new Resource(RESOURCE.LUMBER, 150)};
+		case RACE.CROMADS:
+			return new List<Resource>(){new Resource(RESOURCE.GOLD, 300), new Resource(RESOURCE.STONE, 30)};
+		}
+		return null;
+	}
+ }
