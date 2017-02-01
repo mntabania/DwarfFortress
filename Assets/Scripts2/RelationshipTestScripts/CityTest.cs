@@ -1863,8 +1863,8 @@ public class CityTest{
 			general2HPmultiplier = 1.25f;
 		}
 
-		int general1TotalHP = general1.job.army.armyCount * (general1.job.army.armyStats.hp * general1HPmultiplier);
-		int general2TotalHP = general2.job.army.armyCount * (general2.job.army.armyStats.hp * general2HPmultiplier);
+		int general1TotalHP = (int)(general1.job.army.armyCount * (general1.job.army.armyStats.hp * general1HPmultiplier));
+		int general2TotalHP = (int)(general2.job.army.armyCount * (general2.job.army.armyStats.hp * general2HPmultiplier));
 
 		int general1TotalAttack = general1.job.army.armyCount * general1.job.army.armyStats.attack;
 		int general2TotalAttack = general1.job.army.armyCount * general1.job.army.armyStats.attack;
@@ -1873,8 +1873,8 @@ public class CityTest{
 			general2TotalHP -= general1TotalAttack;
 			general1TotalHP -= general2TotalAttack;
 
-			general1.job.army.armyCount = Math.Ceiling(general1TotalHP / general1.job.army.armyStats.hp);
-			general2.job.army.armyCount = Math.Ceiling(general2TotalHP / general2.job.army.armyStats.hp);
+			general1.job.army.armyCount = (int)Math.Ceiling((double)(general1TotalHP / general1.job.army.armyStats.hp));
+			general2.job.army.armyCount = (int)Math.Ceiling((double)(general2TotalHP / general2.job.army.armyStats.hp));
 		}
 
 		if(general1.job.army.armyCount == 0){

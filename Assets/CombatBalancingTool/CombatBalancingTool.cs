@@ -189,13 +189,13 @@ public class CombatBalancingTool : MonoBehaviour {
 	int GetAttackValue(RACE race, int armyLvl){
 		switch (race) {
 		case RACE.HUMANS:
-			return 30 + (5 * armyLvl);
+			return 30 + (4 * armyLvl);
 		case RACE.ELVES:
 			return 50 + (10 * armyLvl);
 		case RACE.MINGONS:
-			return 20 + (5 * armyLvl);
+			return 20 + (8 * armyLvl);
 		case RACE.CROMADS:
-			return 60 + (15 * armyLvl);
+			return 40 + (15 * armyLvl);
 		}
 		return 0;
 	}
@@ -203,11 +203,11 @@ public class CombatBalancingTool : MonoBehaviour {
 	int GetHPValue(RACE race, int armyLvl){
 		switch (race) {
 		case RACE.HUMANS:
-			return 250 + (40 * armyLvl);
+			return 200 + (40 * armyLvl);
 		case RACE.ELVES:
 			return 200 + (30 * armyLvl);
 		case RACE.MINGONS:
-			return 150 + (20 * armyLvl);
+			return 150 + (25 * armyLvl);
 		case RACE.CROMADS:
 			return 400 + (60 * armyLvl);
 		}
@@ -240,13 +240,13 @@ public class CombatBalancingTool : MonoBehaviour {
 	int GetUnitCount(RACE race, int armyCount){
 		switch (race) {
 		case RACE.HUMANS:
-			return 80 + (20 * armyCount);
+			return 100 + (20 * armyCount);
 		case RACE.ELVES:
-			return 65 + (15 * armyCount);
+			return 100 + (20 * armyCount);
 		case RACE.MINGONS:
-			return 100 + (25 * armyCount);
+			return 100 + (20 * armyCount);
 		case RACE.CROMADS:
-			return 40 + (10 * armyCount);
+			return 100 + (20 * armyCount);
 		}
 		return 0;
 	}
