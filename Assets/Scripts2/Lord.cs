@@ -26,7 +26,9 @@ public class Lord {
 	public List<PUBLIC_IMAGE> publicImages;
 	public List<Relationship> relationshipKings;
 	public List<Relationship> relationshipLords;
-
+	public List<REASONS> lordReasons;
+	public MIGHT_TRAIT lordMightTrait;
+	public RELATIONSHIP_TRAIT lordRelationshipTrait;
 
 	public Lord(KingdomTest kingdom){
 		this.id = 1 + GetID ();
@@ -48,6 +50,7 @@ public class Lord {
 		this.publicImages = new List<PUBLIC_IMAGE> ();
 		this.relationshipKings = new List<Relationship> ();
 		this.relationshipLords = new List<Relationship> ();
+		this.lordReasons = GenerateReasons();
 
 		SetLastID (this.id);
 	}
@@ -65,6 +68,35 @@ public class Lord {
 				this.relationshipLords.Add (new Relationship (otherKingdom.lord.id, otherKingdom.lord.name, DECISION.NEUTRAL, 0));
 			}
 		}
+	}
+
+	List<REASONS> GenerateReasons(){
+		int totalChances = 0;
+		Dictionary<REASONS, int> traitsDict = new Dictionary<REASONS, int>(Utilities.lordReasons[this.personality]); 
+		List<REASONS> generatedReasons = new List<REASONS>();
+		while(generatedReasons.Count != 2){
+			for (int i = 0; i < traitsDict.Keys.Count; i++) {
+				totalChances += traitsDict[traitsDict.Keys.ElementAt(i)];
+			}
+
+			int chance = Random.Range (0, totalChances);
+			int upperBound = 0;
+			int lowerBound = 0;
+
+			for (int i = 0; i < traitsDict.Keys.Count; i++) {
+				REASONS currentReason = traitsDict.Keys.ElementAt(i);
+				int currentTraitChance = traitsDict[currentReason];
+
+				upperBound += currentTraitChance;
+				if (chance >= lowerBound && chance < upperBound) {
+					generatedReasons.Add(currentReason);
+					traitsDict.Remove(currentReason);
+					break;
+				}
+				lowerBound = upperBound;
+			}
+		}
+		return generatedReasons;
 	}
 
 	#region DECISION-MAKING

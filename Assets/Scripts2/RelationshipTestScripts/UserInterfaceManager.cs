@@ -76,8 +76,10 @@ public class UserInterfaceManager : MonoBehaviour {
 //		}
 
 		List<Resource> createCitizenResources = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.newCitizenTarget);
-		for (int i = 0; i < createCitizenResources.Count; i++) {
-			lblCreateCitizenCost.text += createCitizenResources[i].resourceQuantity + " " + createCitizenResources[i].resourceType.ToString() + "\n";
+		if(createCitizenResources != null){
+			for (int i = 0; i < createCitizenResources.Count; i++) {
+				lblCreateCitizenCost.text += createCitizenResources[i].resourceQuantity + " " + createCitizenResources[i].resourceType.ToString() + "\n";
+			}
 		}
 
 
