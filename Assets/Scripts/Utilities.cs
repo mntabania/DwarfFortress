@@ -103,7 +103,7 @@ public static class Utilities {
 	};
 
 
-	public static Dictionary<LORD_PERSONALITY, Dictionary<REASONS, int>> lordReasons = new Dictionary<LORD_PERSONALITY, Dictionary<REASONS, int>>(){
+	public static Dictionary<LORD_PERSONALITY, Dictionary<REASONS, int>> lordWarReasons = new Dictionary<LORD_PERSONALITY, Dictionary<REASONS, int>>(){
 		{LORD_PERSONALITY.TIT_FOR_TAT, new Dictionary<REASONS, int>(){
 				{REASONS.DEFENDER, 200},
 				{REASONS.RACIST, 100},
@@ -163,4 +163,77 @@ public static class Utilities {
 		},
 	};
 
+	public static Dictionary<LORD_PERSONALITY, Dictionary<MIGHT_TRAIT, int>> lordMightChecks = new Dictionary<LORD_PERSONALITY, Dictionary<MIGHT_TRAIT, int>> () {
+		{LORD_PERSONALITY.TIT_FOR_TAT, new Dictionary<MIGHT_TRAIT, int>(){
+				{MIGHT_TRAIT.BULLY, 35},
+				{MIGHT_TRAIT.NORMAL, 30},
+				{MIGHT_TRAIT.UNDERDOG, 35},
+			}
+		},
+
+		{LORD_PERSONALITY.EMOTIONAL, new Dictionary<MIGHT_TRAIT, int>(){
+				{MIGHT_TRAIT.BULLY, 35},
+				{MIGHT_TRAIT.NORMAL, 30},
+				{MIGHT_TRAIT.UNDERDOG, 35},
+			}
+		},
+
+		{LORD_PERSONALITY.RATIONAL, new Dictionary<MIGHT_TRAIT, int>(){
+				{MIGHT_TRAIT.BULLY, 40},
+				{MIGHT_TRAIT.NORMAL, 60},
+				{MIGHT_TRAIT.UNDERDOG, 0},
+			}
+		},
+
+		{LORD_PERSONALITY.NAIVE, new Dictionary<MIGHT_TRAIT, int>(){
+				{MIGHT_TRAIT.BULLY, 0},
+				{MIGHT_TRAIT.NORMAL, 60},
+				{MIGHT_TRAIT.UNDERDOG, 40},
+			}
+		},
+
+		{LORD_PERSONALITY.HATER, new Dictionary<MIGHT_TRAIT, int>(){
+				{MIGHT_TRAIT.BULLY, 50},
+				{MIGHT_TRAIT.NORMAL, 40},
+				{MIGHT_TRAIT.UNDERDOG, 10},
+			}
+		},
+	};
+
+	public static Dictionary<LORD_PERSONALITY, Dictionary<RELATIONSHIP_TRAIT, int>> lordRelationshipChecks = new Dictionary<LORD_PERSONALITY, Dictionary<RELATIONSHIP_TRAIT, int>> () {
+		{LORD_PERSONALITY.TIT_FOR_TAT, new Dictionary<RELATIONSHIP_TRAIT, int>(){
+				{RELATIONSHIP_TRAIT.NORMAL, 65},
+				{RELATIONSHIP_TRAIT.PEACEFUL, 35},
+				{RELATIONSHIP_TRAIT.WARMONGER, 0},
+			}
+		},
+
+		{LORD_PERSONALITY.EMOTIONAL, new Dictionary<RELATIONSHIP_TRAIT, int>(){
+				{RELATIONSHIP_TRAIT.NORMAL, 60},
+				{RELATIONSHIP_TRAIT.PEACEFUL, 20},
+				{RELATIONSHIP_TRAIT.WARMONGER, 20},
+			}
+		},
+
+		{LORD_PERSONALITY.RATIONAL, new Dictionary<RELATIONSHIP_TRAIT, int>(){
+				{RELATIONSHIP_TRAIT.NORMAL, 50},
+				{RELATIONSHIP_TRAIT.PEACEFUL, 50},
+				{RELATIONSHIP_TRAIT.WARMONGER, 0},
+			}
+		},
+
+		{LORD_PERSONALITY.NAIVE, new Dictionary<RELATIONSHIP_TRAIT, int>(){
+				{RELATIONSHIP_TRAIT.NORMAL, 30},
+				{RELATIONSHIP_TRAIT.PEACEFUL, 60},
+				{RELATIONSHIP_TRAIT.WARMONGER, 10},
+			}
+		},
+
+		{LORD_PERSONALITY.HATER, new Dictionary<RELATIONSHIP_TRAIT, int>(){
+				{RELATIONSHIP_TRAIT.NORMAL, 40},
+				{RELATIONSHIP_TRAIT.PEACEFUL, 20},
+				{RELATIONSHIP_TRAIT.WARMONGER, 40},
+			}
+		},
+	};
 }

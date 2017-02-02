@@ -50,7 +50,9 @@ public class Lord {
 		this.publicImages = new List<PUBLIC_IMAGE> ();
 		this.relationshipKings = new List<Relationship> ();
 		this.relationshipLords = new List<Relationship> ();
-		this.lordReasons = GenerateReasons();
+		this.lordReasons = GenerateWarReasons();
+		this.lordMightTrait = GenerateMightTrait();
+		this.lordRelationshipTrait = GenerateRelationshipTrait();
 
 		SetLastID (this.id);
 	}
@@ -70,9 +72,9 @@ public class Lord {
 		}
 	}
 
-	List<REASONS> GenerateReasons(){
+	List<REASONS> GenerateWarReasons(){
 		int totalChances = 0;
-		Dictionary<REASONS, int> traitsDict = new Dictionary<REASONS, int>(Utilities.lordReasons[this.personality]); 
+		Dictionary<REASONS, int> traitsDict = new Dictionary<REASONS, int>(Utilities.lordWarReasons[this.personality]); 
 		List<REASONS> generatedReasons = new List<REASONS>();
 		while(generatedReasons.Count != 2){
 			for (int i = 0; i < traitsDict.Keys.Count; i++) {
@@ -98,6 +100,46 @@ public class Lord {
 		}
 		return generatedReasons;
 	}
+
+	MIGHT_TRAIT GenerateMightTrait(){
+		Dictionary<MIGHT_TRAIT, int> mightDict = new Dictionary<MIGHT_TRAIT, int>(Utilities.lordMightChecks[this.personality]); 
+		int chance = Random.Range (0, 100);
+		int upperBound = 0;
+		int lowerBound = 0;
+
+		for (int i = 0; i < mightDict.Keys.Count; i++) {
+			MIGHT_TRAIT currentMight = mightDict.Keys.ElementAt(i);
+			int currentTraitChance = mightDict[currentMight];
+
+			upperBound += currentTraitChance;
+			if (chance >= lowerBound && chance < upperBound) {
+				return currentMight;
+			}
+			lowerBound = upperBound;
+		}
+		return MIGHT_TRAIT.NORMAL;
+	}
+
+	RELATIONSHIP_TRAIT GenerateRelationshipTrait(){
+		Dictionary<RELATIONSHIP_TRAIT, int> relationshipDict = new Dictionary<RELATIONSHIP_TRAIT, int>(Utilities.lordRelationshipChecks[this.personality]); 
+		int chance = Random.Range (0, 100);
+		int upperBound = 0;
+		int lowerBound = 0;
+
+		for (int i = 0; i < relationshipDict.Keys.Count; i++) {
+			RELATIONSHIP_TRAIT currentRelationshipTrait = relationshipDict.Keys.ElementAt(i);
+			int currentTraitChance = relationshipDict[currentRelationshipTrait];
+
+			upperBound += currentTraitChance;
+			if (chance >= lowerBound && chance < upperBound) {
+				return currentRelationshipTrait;
+			}
+			lowerBound = upperBound;
+		}
+		return RELATIONSHIP_TRAIT.NORMAL;
+	}
+
+
 
 	#region DECISION-MAKING
 	internal void AdjustLikeness(Lord targetLord, DECISION sourceDecision, DECISION targetDecision, LORD_EVENTS eventType, bool isSender){
