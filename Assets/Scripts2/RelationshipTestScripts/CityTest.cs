@@ -125,12 +125,14 @@ public class CityTest{
 
 	internal void OccupyCity(){
 		this.hexTile.isOccupied = true;
+		this.citizens = InitialCitizens();
 		SelectHexTileToPurchase();
 		GenerateInitialFood();
 		UpdateCityUpgradeRequirements ();
 		AssignInitialCitizens ();
 		SelectCitizenToUpgrade ();
 		SelectCitizenForCreation ();
+		this.kingdomTile.kingdom.lord.UpdateAdjacentLords();
 	}
 
 	internal List<Citizen> InitialCitizens(){
@@ -808,11 +810,13 @@ public class CityTest{
 		int chance = UnityEngine.Random.Range (0, 100);
 		if(chance < this.cityActionChances.increaseArmyCountChance){
 			if(HasEnoughResourcesForAction(this.kingdomTile.kingdom.armyIncreaseUnitResource)){
-				this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
 				List<Citizen> citizenGenerals = this.citizens.Where(x => x.job.jobType == JOB_TYPE.DEFENSE_GENERAL || x.job.jobType == JOB_TYPE.OFFENSE_GENERAL).ToList();
-				Citizen chosenGeneral = citizenGenerals [UnityEngine.Random.Range (0, citizenGenerals.Count)];
-				chosenGeneral.job.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
-				ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
+				if (citizenGenerals.Count > 0) {
+					this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
+					Citizen chosenGeneral = citizenGenerals [UnityEngine.Random.Range (0, citizenGenerals.Count)];
+					chosenGeneral.job.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
+					ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
+				}
 			}else{
 				Debug.Log ("DON'T HAVE ENOUGH RESOURCES FOR INCREASE ARMY COUNT!");
 			}
@@ -873,7 +877,7 @@ public class CityTest{
 		}
 
 		List<Resource> citizenCreationCost = GetCitizenCreationCostPerType (citizenToCreateJobType);
-		if (citizenCreationCost.Count <= 0) {
+		if (citizenCreationCost == null || citizenCreationCost.Count <= 0) {
 			return;
 		}
 
@@ -906,6 +910,14 @@ public class CityTest{
 				if (citizenToCreateJobType == JOB_TYPE.PIONEER) {
 					//TODO: Change Distance Value To Pathfinding instead of Vector2.Distance
 					pioneerCityTarget = kingdomTile.kingdom.NearestUnoccupiedCity();
+					if (pioneerCityTarget == null) {
+						for (int i = 0; i < citizens.Count; i++) {
+							if (citizens[i].job.jobType == JOB_TYPE.PIONEER) {
+								citizens.Remove(citizens[i]);
+							}
+						}
+						return;
+					}
 					dayPioneerReachesCity = GameManager.Instance.currentDay + (int)Vector2.Distance(kingdomTile.kingdom.cities[0].transform.position, 
 						pioneerCityTarget.hexTile.transform.position);
 					GameManager.Instance.turnEnded += SendPioneer;
@@ -926,6 +938,7 @@ public class CityTest{
 				this.kingdomTile.AddCityToKingdom (pioneerCityTarget);
 				pioneerCityTarget.cityAttributes.OccupyCity();
 				pioneerCityTarget.hexTile.GetComponent<CityTileTest>().SetCityAsActiveAndSetProduction ();
+				GameManager.Instance.UpdateLordAdjacency();
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": PIONEER was [FF0000]successful[-] in expansion\n\n";
 			} else {
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": PIONEER [FF0000]failed[-] in expansion\n\n";
@@ -994,6 +1007,14 @@ public class CityTest{
 				if (citizen.job.jobType == JOB_TYPE.PIONEER) {
 					//TODO: Change Distance Value To Pathfinding instead of Vector2.Distance
 					pioneerCityTarget = kingdomTile.kingdom.NearestUnoccupiedCity();
+					if (pioneerCityTarget == null) {
+						for (int i = 0; i < citizens.Count; i++) {
+							if (citizens[i].job.jobType == JOB_TYPE.PIONEER) {
+								citizens.Remove(citizens[i]);
+							}
+						}
+						return;
+					}
 					dayPioneerReachesCity = GameManager.Instance.currentDay + (int)Vector2.Distance(kingdomTile.kingdom.cities[0].transform.position, 
 						pioneerCityTarget.hexTile.transform.position);
 					GameManager.Instance.turnEnded += SendPioneer;
@@ -1326,8 +1347,8 @@ public class CityTest{
 	internal void TradeMission(){
 		if (IsResourceStatus (RESOURCE_STATUS.ABUNDANT, RESOURCE.GOLD)) {
 			/*
-					* You are the buyer 
-					 * */
+			 * You are the buyer 
+			 * */
 			ResourceStatus scarceResource = GetResourceByStatus (RESOURCE_STATUS.SCARCE);
 			if (scarceResource != null) {
 				int neededGold = scarceResource.amount * GetCostPerResourceUnit(scarceResource.resource);

@@ -18,7 +18,6 @@ public class KingdomTest{
 	public RESOURCE primaryRaceResource;
 	public RESOURCE secondaryRaceResource;
 
-
 	public int armyBaseUnits;
 	public int armyIncreaseUnits;
 
@@ -102,17 +101,14 @@ public class KingdomTest{
 	}
 
 	internal void CheckForRevolution(){
-		Debug.Log ("Check For Revolution!");
 		for (int i = 0; i < cities.Count; i++) {
-			cities [i].cityAttributes.unrest = 10;
+			cities [i].cityAttributes.unrest = 50;
 			int chanceToRevolt = (int)Mathf.Abs((float)cities[i].cityAttributes.unrest / 4f);
 			int choice = Random.Range (0,1000);
 			if (choice < chanceToRevolt) {
 				//A city has revolted!
-				Debug.LogError("City has revolted!: " + cities[i].name);
 				if (this.cities.Count == 1) {
 					//Replace Lord
-					Debug.LogError("Killed and replaced lord because city is only 1");
 					GameManager.Instance.RemoveRelationshipToOtherLords(this.lord);
 					this.lord = new Lord(this);
 					this.lord.CreateInitialRelationshipsToLords();
@@ -134,9 +130,8 @@ public class KingdomTest{
 					List<CityTileTest> citiesForNewKingdom = new List<CityTileTest>();
 					citiesForNewKingdom.Add(cities[i]);
 
-					Debug.Log ("Number of cities to join revolt: " + numOfCitiesToJoinRevolt.ToString () + "/" + this.cities.Count.ToString());
+//					Debug.Log("Number of cities to join revolt: " + numOfCitiesToJoinRevolt.ToString () + "/" + this.cities.Count.ToString());
 					if (numOfCitiesToJoinRevolt == (this.cities.Count - 1)) {
-						Debug.LogError("Killed and replaced lord because all cities joined revolution");
 						GameManager.Instance.RemoveRelationshipToOtherLords(this.lord);
 						this.lord = new Lord (this);
 						this.lord.CreateInitialRelationshipsToLords();
@@ -145,11 +140,10 @@ public class KingdomTest{
 					} else if (numOfCitiesToJoinRevolt > 0) {
 						for (int j = 0; j < citiesOrderedByUnrest.Count; j++) {
 							if (citiesOrderedByUnrest [j] == cities [i]) {
-								//SKIP CITY THAT TRIGGERED REVOLT!
-							} else {
-								citiesForNewKingdom.Add(citiesOrderedByUnrest[j]);
+								continue;
 							}
 
+							citiesForNewKingdom.Add(citiesOrderedByUnrest[j]);
 							if ((citiesForNewKingdom.Count-1) == numOfCitiesToJoinRevolt) {
 								break;
 							}
@@ -160,11 +154,11 @@ public class KingdomTest{
 					KingdomTileTest newKingdom = GameManager.Instance.CreateNewKingdom(this.kingdomRace, citiesForNewKingdom);
 					//Set this kingdom's lord to dislike the new lord of the new kingdom
 					for (int j = 0; j < this.lord.relationshipLords.Count; j++) {
-						if (this.lord.relationshipLords [j].id == newKingdom.kingdom.lord.id) {
-							this.lord.relationshipLords [j].like = -50;
+						if (this.lord.relationshipLords[j].id == newKingdom.kingdom.lord.id) {
+							this.lord.relationshipLords[j].like = -50;
+							this.lord.relationshipLords[j].lordRelationship = this.lord.GetLordRelationship(this.lord.relationshipLords[j].like);
 						}
 					}
-					Debug.LogError("Create new kingdom for revolution cities");
 					break;
 				}
 			}
@@ -192,8 +186,11 @@ public class KingdomTest{
 		for (int i = 0; i < cities.Count; i++) {
 			unoccupiedCities.AddRange (cities [i].cityAttributes.unoccupiedConnectedCities);
 		}
-		unoccupiedCities = unoccupiedCities.OrderBy(x => Vector2.Distance (this.cities[0].transform.position, x.transform.position)).ToList();
-		return unoccupiedCities [0];
+		if (unoccupiedCities.Count > 0) {
+			unoccupiedCities = unoccupiedCities.OrderBy (x => Vector2.Distance (this.cities [0].transform.position, x.transform.position)).ToList ();
+			return unoccupiedCities [0];
+		}
+		return null;
 	}
 
 	void DetermineCityUpgradeResourceType(){
@@ -282,4 +279,26 @@ public class KingdomTest{
 		}
 		return null;
 	}
+
+	internal int ComputeMilitaryStrength(){
+		int totalStrength = 0;
+		for (int i = 0; i < this.cities.Count; i++) {
+			for (int j = 0; j < this.cities[i].cityAttributes.citizens.Count; j++) {
+				if (this.cities [i].cityAttributes.citizens [j].job.jobType == JOB_TYPE.OFFENSE_GENERAL ||
+					this.cities [i].cityAttributes.citizens [j].job.jobType == JOB_TYPE.DEFENSE_GENERAL) {
+					totalStrength += (this.cities [i].cityAttributes.citizens [j].job.army.armyCount * this.cities [i].cityAttributes.citizens [j].job.army.armyStats.hp);
+				}
+			}
+		}
+		return totalStrength;
+	}
+
+	internal int ComputeTotalCitizenCount(){
+		int totalCitizenCount = 0;
+		for (int i = 0; i < this.cities.Count; i++) {
+			totalCitizenCount += this.cities[i].cityAttributes.citizens.Count;
+		}
+		return totalCitizenCount;
+	}
+
  }

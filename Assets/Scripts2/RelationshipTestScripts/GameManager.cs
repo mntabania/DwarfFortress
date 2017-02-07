@@ -42,9 +42,10 @@ public class GameManager : MonoBehaviour {
 		GenerateCities();
 		GenerateBiomes ();
 		GenerateInitialKingdoms();
-		CreateInitialRelationshipsToLords ();
+		CreateInitialRelationshipsToLords();
 //		AssignCitiesToKingdoms();
-		GenerateCityConnections ();
+		GenerateCityConnections();
+		UpdateLordAdjacency();
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (this.cities [0].GetComponent<CityTileTest> ());
@@ -168,14 +169,14 @@ public class GameManager : MonoBehaviour {
 
 //		GameObject goKingdom3 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 //		goKingdom3.transform.parent = this.transform;
-//		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
+//		goKingdom3.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.MINGONS, new List<CityTileTest>(){this.cities[2].GetComponent<CityTileTest>()}, new Color(0f/255f, 234f/255f, 255f/255f));
 //		goKingdom3.name = goKingdom3.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 //		kingdoms.Add (goKingdom3.GetComponent<KingdomTileTest>());
 //
 //
 //		GameObject goKingdom4 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 //		goKingdom4.transform.parent = this.transform;
-//		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
+//		goKingdom4.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.CROMADS, new List<CityTileTest>(){this.cities[3].GetComponent<CityTileTest>()}, new Color(157f/255f, 0f/255f, 255f/255f));
 //		goKingdom4.name = goKingdom4.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 //		kingdoms.Add (goKingdom4.GetComponent<KingdomTileTest>());
 //
@@ -200,6 +201,8 @@ public class GameManager : MonoBehaviour {
 		this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
 		goKingdom.GetComponent<KingdomTileTest>().kingdom.lord.CreateInitialRelationshipsToLords();
 		AddRelationshipToOtherLords (goKingdom.GetComponent<KingdomTileTest> ().kingdom.lord);
+		GenerateCityConnections();
+		UpdateLordAdjacency();
 		return goKingdom.GetComponent<KingdomTileTest>();
 	}
 
@@ -219,6 +222,12 @@ public class GameManager : MonoBehaviour {
 					this.kingdoms[i].kingdom.lord.relationshipLords.Remove(this.kingdoms[i].kingdom.lord.relationshipLords[j]);
 				}
 			}
+		}
+	}
+
+	public void UpdateLordAdjacency(){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			this.kingdoms[i].kingdom.lord.UpdateAdjacentLords();
 		}
 	}
 
@@ -308,7 +317,6 @@ public class GameManager : MonoBehaviour {
 	}
 	void WaitForHarvest(int currentDay){
 		if (daysUntilNextHarvest <= 1) {
-			//TODO: Put Harvest Code Execution here
 			for (int i = 0; i < this.kingdoms.Count; i++) {
 				for (int j = 0; j < this.kingdoms[i].kingdom.cities.Count; j++) {
 					this.kingdoms[i].kingdom.cities[j].cityAttributes.TriggerFoodHarvest();

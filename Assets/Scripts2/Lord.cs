@@ -26,9 +26,20 @@ public class Lord {
 	public List<PUBLIC_IMAGE> publicImages;
 	public List<Relationship> relationshipKings;
 	public List<Relationship> relationshipLords;
-	public List<REASONS> lordReasons;
+	public List<WAR_REASONS> lordWarReasons;
+	public List<PEACE_REASONS> lordPeaceReasons;
 	public MIGHT_TRAIT lordMightTrait;
 	public RELATIONSHIP_TRAIT lordRelationshipTrait;
+
+
+	protected List<Lord> candidatesForWar;
+	protected List<Relationship> targetableLords{
+		get { return relationshipLords.Where (x => x.isAdjacent && !x.isAtWar).ToList();}
+	}
+
+	protected List<Relationship> currentWars{
+		get { return relationshipLords.Where (x => x.isAtWar).ToList();}
+	}
 
 	public Lord(KingdomTest kingdom){
 		this.id = 1 + GetID ();
@@ -40,7 +51,8 @@ public class Lord {
 		this.skill = UnityEngine.Random.Range (0, 10);
 		this.racism = UnityEngine.Random.Range (0, 10);
 		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
-		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
+//		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
+		this.personality = LORD_PERSONALITY.TIT_FOR_TAT;
 		this.internalPersonality = new LordInternalPersonality ("");
 		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
@@ -50,17 +62,52 @@ public class Lord {
 		this.publicImages = new List<PUBLIC_IMAGE> ();
 		this.relationshipKings = new List<Relationship> ();
 		this.relationshipLords = new List<Relationship> ();
-		this.lordReasons = GenerateWarReasons();
-		this.lordMightTrait = GenerateMightTrait();
-		this.lordRelationshipTrait = GenerateRelationshipTrait();
-
+//		this.lordWarReasons = GenerateWarReasons();
+//		this.lordMightTrait = GenerateMightTrait();
+//		this.lordRelationshipTrait = GenerateRelationshipTrait();
+		this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.MONEY_GRUBBER};
+		this.lordMightTrait = MIGHT_TRAIT.NORMAL;
+		this.lordRelationshipTrait = RELATIONSHIP_TRAIT.WARMONGER;
+		this.lordPeaceReasons = GeneratePeaceReasons();
 		SetLastID (this.id);
 	}
+
+	internal void UpdateAdjacentLords(){
+		List<int> adjacentLordIDs = new List<int>();
+		for (int i = 0; i < this.kingdom.cities.Count; i++) {
+			for (int j = 0; j < this.kingdom.cities[i].cityAttributes.connectedCities.Count; j++) {
+				if (this.kingdom.cities [i].cityAttributes.connectedCities [j].cityAttributes.kingdomTile) {
+					if (this.kingdom.cities [i].cityAttributes.connectedCities [j].cityAttributes.kingdomTile.kingdom.id != this.kingdom.id) {
+						if (!adjacentLordIDs.Contains (this.kingdom.cities [i].cityAttributes.connectedCities [j].cityAttributes.kingdomTile.kingdom.lord.id)) {
+							adjacentLordIDs.Add (this.kingdom.cities [i].cityAttributes.connectedCities [j].cityAttributes.kingdomTile.kingdom.lord.id);
+						}
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < this.relationshipLords.Count; i++) {
+			if (adjacentLordIDs.Contains (this.relationshipLords [i].id)) {
+				this.relationshipLords [i].isAdjacent = true;
+			} else {
+				this.relationshipLords [i].isAdjacent = false;
+			}
+		}
+	}
+
 	private int GetID(){
 		return Utilities.lastLordId;
 	}
 	private void SetLastID(int id){
 		Utilities.lastLordId = id;
+	}
+
+	internal void SetLordToWar(int id){
+		for (int i = 0; i < this.relationshipLords.Count; i++) {
+			if (this.relationshipLords[i].id == id) {
+				this.relationshipLords [i].isAtWar = true;
+			}
+		}
 	}
 
 	internal void CreateInitialRelationshipsToLords(){
@@ -72,10 +119,10 @@ public class Lord {
 		}
 	}
 
-	List<REASONS> GenerateWarReasons(){
+	List<WAR_REASONS> GenerateWarReasons(){
 		int totalChances = 0;
-		Dictionary<REASONS, int> traitsDict = new Dictionary<REASONS, int>(Utilities.lordWarReasons[this.personality]); 
-		List<REASONS> generatedReasons = new List<REASONS>();
+		Dictionary<WAR_REASONS, int> traitsDict = new Dictionary<WAR_REASONS, int>(Utilities.lordWarReasons[this.personality]); 
+		List<WAR_REASONS> generatedReasons = new List<WAR_REASONS>();
 		while(generatedReasons.Count != 2){
 			for (int i = 0; i < traitsDict.Keys.Count; i++) {
 				totalChances += traitsDict[traitsDict.Keys.ElementAt(i)];
@@ -86,7 +133,7 @@ public class Lord {
 			int lowerBound = 0;
 
 			for (int i = 0; i < traitsDict.Keys.Count; i++) {
-				REASONS currentReason = traitsDict.Keys.ElementAt(i);
+				WAR_REASONS currentReason = traitsDict.Keys.ElementAt(i);
 				int currentTraitChance = traitsDict[currentReason];
 
 				upperBound += currentTraitChance;
@@ -99,6 +146,28 @@ public class Lord {
 			}
 		}
 		return generatedReasons;
+	}
+
+	List<PEACE_REASONS> GeneratePeaceReasons(){
+		List<PEACE_REASONS> peaceReasons = new List<PEACE_REASONS>();
+		peaceReasons.Add(PEACE_REASONS.DEFEATED);
+		if (this.lordWarReasons.Contains(WAR_REASONS.COVETOUS) || this.lordWarReasons.Contains(WAR_REASONS.IMPOTENT) || 
+			this.lordWarReasons.Contains(WAR_REASONS.PARANOID) || this.lordWarReasons.Contains(WAR_REASONS.COMPETITIVE)) {
+			peaceReasons.Add(PEACE_REASONS.GOAL_REACHED);
+		}
+
+		int chance = Random.Range(0, 100);
+
+		PEACE_REASONS[] randomPeaceReasons = new PEACE_REASONS[] {
+			PEACE_REASONS.MANY_WARS,
+			PEACE_REASONS.OFFER_ALLIANCE,
+			PEACE_REASONS.ENEMY_OF_ENEMY
+		};
+
+		if (chance < 2) {
+			peaceReasons.Add (randomPeaceReasons[Random.Range(0, randomPeaceReasons.Length)]);
+		}
+		return peaceReasons;
 	}
 
 	MIGHT_TRAIT GenerateMightTrait(){
@@ -144,6 +213,7 @@ public class Lord {
 	#region DECISION-MAKING
 	internal void AdjustLikeness(Lord targetLord, DECISION sourceDecision, DECISION targetDecision, LORD_EVENTS eventType, bool isSender){
 		Relationship relationship = SearchRelationship (targetLord);
+		relationship.previousInteraction = eventType;
 		int eventEffect = EventEffect (eventType, sourceDecision, targetDecision);
 		this.accumulatedScore += eventEffect;
 		this.dealings++;
@@ -1569,4 +1639,451 @@ public class Lord {
 	}
 
 	#endregion
+
+	internal void CheckForWars(){
+		if (IsReasonForWarSatisfied()) {
+			if(IsMightCheckSatisfied() && IsRelationshipCheckSatisfied()) {
+				for (int i = 0; i < this.candidatesForWar.Count; i++) {
+					Debug.LogError (this.id + "-" + this.name + " DECLARES WAR ON : " + this.candidatesForWar[i].id + "-" + this.candidatesForWar[i].name);
+					this.SetLordToWar(this.candidatesForWar[i].id);
+					this.candidatesForWar[i].SetLordToWar(this.id);
+					GameManager.Instance.turnEnded += this.GetRelationshipByLordID (this.candidatesForWar [i].id).IncreaseWartime;
+//					GameManager.Instance.turnEnded += 
+				}
+			}
+		}
+	}
+
+
+	internal void CheckForPeace(){
+		if (currentWars.Count > 0) {
+			if (IsReasonForPeaceSatisfied()) {
+
+			}
+		}
+	}
+
+
+	internal Lord SearchLordByID(int id){
+		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
+			if (id == GameManager.Instance.kingdoms [i].kingdom.lord.id) {
+				return GameManager.Instance.kingdoms [i].kingdom.lord;
+			}
+		}
+		return null;
+	}
+
+	bool IsReasonForPeaceSatisfied(){
+		bool result = false;
+		for (int i = 0; i < this.lordPeaceReasons.Count; i++) {
+			switch (this.lordPeaceReasons[i]) {
+			case PEACE_REASONS.DEFEATED:
+				result = IsDefeatedSatisfied();
+				break;
+			case PEACE_REASONS.MANY_WARS:
+				result = IsTooManyWarsSatisfied();
+				break;
+			}
+			if (result) {
+				return result;
+			}
+		}
+		return result;
+
+	}
+
+	bool IsReasonForWarSatisfied(){
+		bool result = false;
+		candidatesForWar = new List<Lord>();
+		for (int i = 0; i < this.lordWarReasons.Count; i++) {
+			switch(this.lordWarReasons[i]){
+			case WAR_REASONS.COMPETITIVE:
+				result = IsCompetetiveSatisfied ();
+				break;
+			case WAR_REASONS.COVETOUS:
+				result = IsCovetousSatisfied();
+				break;
+			case WAR_REASONS.DEFENDER:
+				result = IsDefenderSatisfied();
+				break;
+			case WAR_REASONS.IMPOTENT:
+				result = IsImpotentSatisfied();
+				break;
+			case WAR_REASONS.MONEY_GRUBBER:
+				result = IsMoneyGrubberSatisfied();
+				break;
+			case WAR_REASONS.ONE_TRUE_KING:
+				result = IsOneTrueKingSatisfied();
+				break;
+			case WAR_REASONS.OPPORTUNIST:
+				result = IsOpportunistSatisfied();
+				break;
+			case WAR_REASONS.PARANOID:
+				result = IsParanoidSatisfied();
+				break;
+			case WAR_REASONS.RACIST:
+				result = IsRacistSatisfied();
+				break;
+			case WAR_REASONS.SCAVENGER:
+				result = IsScavengerSatisfied();
+				break;
+			case WAR_REASONS.SNEAKY:
+				result = IsSneakySatisfied();
+				break;
+			case WAR_REASONS.SUSPICIOUS:
+				result = IsSuspiciousSatisfied();
+				break;
+			case WAR_REASONS.TRADER:
+				result = IsTraderSatisfied();
+				break;
+			case WAR_REASONS.TRAITOR:
+				result = IsTraitorSatisfied();
+				break;
+			}
+		}
+		candidatesForWar = candidatesForWar.Distinct().ToList();
+		return result;
+	}
+
+	bool IsMightCheckSatisfied(){
+		if (this.kingdom.ComputeMilitaryStrength () <= 0 || candidatesForWar.Count <= 0) {
+			return false;
+		}
+		switch (this.lordMightTrait) {
+		case MIGHT_TRAIT.BULLY:
+			return IsBullySatisfied();
+		case MIGHT_TRAIT.NORMAL:
+			return IsNormalMightSatisfied();
+		case MIGHT_TRAIT.UNDERDOG:
+			return IsUnderdogSatisfied();
+		}
+		return false;
+	}
+
+	bool IsRelationshipCheckSatisfied(){
+		if ( candidatesForWar.Count <= 0) {
+			return false;
+		}
+		switch (this.lordRelationshipTrait) {
+		case RELATIONSHIP_TRAIT.NORMAL:
+			return IsNormalRelationshipSatisfied();
+		case RELATIONSHIP_TRAIT.PEACEFUL:
+			return IsPeacefulSatisfied();
+		case RELATIONSHIP_TRAIT.WARMONGER:
+			return IsWarmongerSatisfied();
+		}
+		return false;
+	}
+
+
+
+	#region peace reason booleans
+	bool IsDefeatedSatisfied(){
+		if (this.kingdom.ComputeMilitaryStrength () <= 0) {
+			return true;
+		}
+		return false;
+	}
+
+	bool IsTooManyWarsSatisfied(){
+		if (this.currentWars.Count > 1) {
+			return true;
+		}
+		return false;
+	}
+	#endregion
+
+	#region war reason booleans
+	bool IsCompetetiveSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.relationshipLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.relationshipLords[j].id);
+			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
+				result = true;
+			}
+		}
+
+		if (result) {
+			this.targetableLords.ForEach(x => this.candidatesForWar.Add(SearchLordByID(x.id)));
+		}
+
+		return result;
+	}
+
+	bool IsCovetousSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
+				candidatesForWar.Add (otherLord);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsDefenderSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			if (this.targetableLords[j].lordRelationship == LORD_RELATIONSHIP.WARM || this.targetableLords[j].lordRelationship == LORD_RELATIONSHIP.FRIEND || 
+				this.targetableLords[j].lordRelationship == LORD_RELATIONSHIP.ALLY) {
+				continue;
+			}
+
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+
+			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
+				if (otherLord.relationshipLords[k].isAtWar) {
+					for (int l = 0; l < this.relationshipLords.Count; l++) {
+						if (otherLord.relationshipLords [k].id == this.relationshipLords [l].id) {
+							if (this.relationshipLords [l].lordRelationship == LORD_RELATIONSHIP.FRIEND || 
+								this.relationshipLords [l].lordRelationship == LORD_RELATIONSHIP.ALLY) {
+								//Check if combined military strength is greater than or equal otherLord
+								Lord friendLord = SearchLordByID(this.relationshipLords[l].id);
+								if((friendLord.kingdom.ComputeMilitaryStrength() + this.kingdom.ComputeMilitaryStrength()) >= otherLord.kingdom.ComputeMilitaryStrength()){
+									candidatesForWar.Add(otherLord);
+									result = true;
+								}
+								break;
+							}
+							break;
+						}
+					}
+					
+				}
+			}
+		}
+		return result;
+	}
+
+	bool IsImpotentSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			if (otherLord.kingdom.ComputeTotalCitizenCount() > this.kingdom.ComputeTotalCitizenCount()) {
+				candidatesForWar.Add(otherLord);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsMoneyGrubberSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID (this.targetableLords [j].id);
+			KingdomTest adjacentKingdom = otherLord.kingdom;
+			for (int k = 0; k < adjacentKingdom.cities.Count; k++) {
+				CityTileTest currentCity = adjacentKingdom.cities[k];
+				if (currentCity.cityAttributes.goldCount >= 2000) {
+					candidatesForWar.Add(otherLord);
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	bool IsOneTrueKingSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			if (otherLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
+				candidatesForWar.Add(otherLord);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsOpportunistSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			for(int k = 0; k < otherLord.relationshipLords.Count; k++){
+				if(otherLord.relationshipLords[k].isAtWar){
+					Lord allyLord = SearchLordByID(otherLord.relationshipLords[k].id);
+					if ((allyLord.kingdom.ComputeMilitaryStrength() + this.kingdom.ComputeMilitaryStrength()) >= otherLord.kingdom.ComputeMilitaryStrength()) {
+						candidatesForWar.Add(otherLord);
+						result = true;
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	bool IsParanoidSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			if (otherLord.kingdom.ComputeMilitaryStrength() >= this.kingdom.ComputeMilitaryStrength()) {
+				candidatesForWar.Add(otherLord);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsRacistSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			if (otherLord.kingdom.kingdomRace != this.kingdom.kingdomRace) {
+				candidatesForWar.Add(otherLord);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsScavengerSatisfied(){
+		return false;
+	}
+
+	bool IsSneakySatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
+				if (otherLord.relationshipLords[k].isAtWar) {
+					Lord lordWithWar = SearchLordByID(otherLord.relationshipLords[k].id);
+					if (otherLord.kingdom.ComputeMilitaryStrength () > lordWithWar.kingdom.ComputeMilitaryStrength ()) {
+						candidatesForWar.Add(otherLord);
+						result = true;
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	bool IsSuspiciousSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
+				if (otherLord.relationshipLords[k].id == this.id) {
+					if (otherLord.relationshipLords [k].lordRelationship == LORD_RELATIONSHIP.ENEMY ||
+					   otherLord.relationshipLords [k].lordRelationship == LORD_RELATIONSHIP.RIVAL) {
+						candidatesForWar.Add(otherLord);
+						result = true;
+					}
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	bool IsTraderSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			if (this.targetableLords[j].previousInteraction == LORD_EVENTS.TRADE && 
+				this.targetableLords[j].previousDecision == DECISION.RUDE) {
+				candidatesForWar.Add(SearchLordByID(this.targetableLords[j].id));
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	bool IsTraitorSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.targetableLords.Count; j++) {
+			if (this.targetableLords[j].previousInteraction == LORD_EVENTS.GIFT ||
+				this.targetableLords[j].previousInteraction == LORD_EVENTS.HELP) {
+				if (this.targetableLords[j].previousDecision == DECISION.NICE) {
+					candidatesForWar.Add(SearchLordByID(this.targetableLords[j].id));
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+	#endregion
+
+	#region might check booleans
+	bool IsBullySatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.candidatesForWar.Count; j++) {
+			if ((this.kingdom.ComputeMilitaryStrength()/2) > this.candidatesForWar[j].kingdom.ComputeMilitaryStrength()) {
+				result = true;
+			} else {
+				this.candidatesForWar.Remove(this.candidatesForWar[j]);
+			}
+		}
+		return result;
+	}
+
+	bool IsNormalMightSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.candidatesForWar.Count; j++) {
+			if (this.kingdom.ComputeMilitaryStrength() >= (this.candidatesForWar[j].kingdom.ComputeMilitaryStrength() + 500)) {
+				result = true;
+			} else {
+				this.candidatesForWar.Remove(this.candidatesForWar[j]);
+			}
+		}
+		return result;
+	}
+
+	bool IsUnderdogSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.candidatesForWar.Count; j++) {
+			Lord otherLord = SearchLordByID(this.candidatesForWar[j].id);
+			if (this.kingdom.ComputeMilitaryStrength () < this.candidatesForWar[j].kingdom.ComputeMilitaryStrength()) {
+				result = true;
+			} else {
+				this.candidatesForWar.Remove(this.candidatesForWar[j]);
+			}
+		}
+		return result;
+	}
+	#endregion
+
+	#region relationship check booleans
+	bool IsNormalRelationshipSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.candidatesForWar.Count; j++) {
+			Relationship relationshipWithLord = GetRelationshipByLordID(this.candidatesForWar[j].id);
+			if (relationshipWithLord.lordRelationship == LORD_RELATIONSHIP.ENEMY ||
+			    relationshipWithLord.lordRelationship == LORD_RELATIONSHIP.RIVAL) {
+				result = true;
+			} else {
+				this.candidatesForWar.Remove(this.candidatesForWar[j]);
+			}
+		}
+		return result;
+	}
+
+	bool IsPeacefulSatisfied(){
+		bool result = false;
+		for (int j = 0; j < this.candidatesForWar.Count; j++) {
+			Relationship relationshipWithLord = GetRelationshipByLordID(this.candidatesForWar[j].id);
+			if (relationshipWithLord.lordRelationship == LORD_RELATIONSHIP.RIVAL) {
+				result = true;
+			} else {
+				this.candidatesForWar.Remove(this.candidatesForWar[j]);
+			}
+		}
+		return false;
+	}
+
+	bool IsWarmongerSatisfied(){
+		if (this.candidatesForWar.Count > 0) {
+			return true;
+		}
+		return false;
+	}
+	#endregion
+
+	Relationship GetRelationshipByLordID(int id){
+		for (int i = 0; i < this.relationshipLords.Count; i++) {
+			if (this.relationshipLords[i].id == id) {
+				return this.relationshipLords[i];
+			}
+		}
+		return null;
+	}
 }

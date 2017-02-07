@@ -39,6 +39,11 @@ public class KingdomTileTest : MonoBehaviour {
 		//		this.kingdomName = kingdom.kingdomName;
 	}
 
+	[ContextMenu("Compute Military Strength")]
+	public void ComputeMilitaryStrength(){
+		Debug.Log(this.kingdom.ComputeMilitaryStrength().ToString());
+	}
+
 	public void AddCityToKingdom(CityTileTest city){
 		this.kingdom.AddCityToKingdom (city);
 //		city.cityAttributes = new CityTest (city.GetComponent<HexTile>(), this);
@@ -51,6 +56,7 @@ public class KingdomTileTest : MonoBehaviour {
 		if (currentDay % 5 == 0) {
 			kingdom.CheckForRevolution();
 		}
+		kingdom.lord.CheckForWars();
 	}
 
 
