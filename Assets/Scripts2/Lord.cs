@@ -87,7 +87,7 @@ public class Lord {
 		}
 
 		for (int i = 0; i < this.relationshipLords.Count; i++) {
-			if (adjacentLordIDs.Contains (this.relationshipLords [i].id)) {
+			if (adjacentLordIDs.Contains (this.relationshipLords[i].id)) {
 				this.relationshipLords [i].isAdjacent = true;
 			} else {
 				this.relationshipLords [i].isAdjacent = false;
@@ -1645,22 +1645,33 @@ public class Lord {
 			if(IsMightCheckSatisfied() && IsRelationshipCheckSatisfied()) {
 				for (int i = 0; i < this.candidatesForWar.Count; i++) {
 					Debug.LogError (this.id + "-" + this.name + " DECLARES WAR ON : " + this.candidatesForWar[i].id + "-" + this.candidatesForWar[i].name);
-					this.SetLordToWar(this.candidatesForWar[i].id);
-					this.candidatesForWar[i].SetLordToWar(this.id);
-					GameManager.Instance.turnEnded += this.GetRelationshipByLordID (this.candidatesForWar [i].id).IncreaseWartime;
-//					GameManager.Instance.turnEnded += 
+					GoToWarWith(this.candidatesForWar[i]);
+					this.candidatesForWar [i].GoToWarWith(this);
+//					this.SetLordToWar(this.candidatesForWar[i].id);
+//					this.candidatesForWar[i].SetLordToWar(this.id);
+//					Relationship relOfThisLord = this.GetRelationshipByLordID (this.candidatesForWar [i].id);
+//					Relationship relOfOtherLord = this.candidatesForWar [i].GetRelationshipByLordID (this.id);
+//					relOfThisLord.like = -50;
+//					relOfOtherLord.like = -50;
+//					relOfThisLord.lordRelationship = GetLordRelationship(relOfThisLord.like);
+//					relOfOtherLord.lordRelationship = GetLordRelationship(relOfOtherLord.like);
+//					GameManager.Instance.turnEnded += relOfThisLord.IncreaseWartime;
+//					GameManager.Instance.turnEnded += relOfOtherLord.IncreaseWartime;
 				}
 			}
 		}
 	}
 
-
-	internal void CheckForPeace(){
-		if (currentWars.Count > 0) {
-			if (IsReasonForPeaceSatisfied()) {
-
+	internal void GoToWarWith(Lord lord){
+		for (int i = 0; i < this.relationshipLords.Count; i++) {
+			if (this.relationshipLords[i].id == id) {
+				this.relationshipLords [i].isAtWar = true;
 			}
 		}
+		Relationship relOfThisLord = this.GetRelationshipByLordID (lord.id);
+		relOfThisLord.like = -50;
+		relOfThisLord.lordRelationship = GetLordRelationship(relOfThisLord.like);
+		GameManager.Instance.turnEnded += relOfThisLord.IncreaseWartime;
 	}
 
 

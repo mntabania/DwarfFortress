@@ -113,6 +113,7 @@ public class KingdomTest{
 					this.lord = new Lord(this);
 					this.lord.CreateInitialRelationshipsToLords();
 					GameManager.Instance.AddRelationshipToOtherLords(this.lord);
+					GameManager.Instance.UpdateLordAdjacency();
 					return;
 				} else if(this.cities.Count >= 2) {
 					int numOfCitiesToJoinRevolt = 0;
@@ -136,6 +137,7 @@ public class KingdomTest{
 						this.lord = new Lord (this);
 						this.lord.CreateInitialRelationshipsToLords();
 						GameManager.Instance.AddRelationshipToOtherLords(this.lord);
+						GameManager.Instance.UpdateLordAdjacency();
 						return;
 					} else if (numOfCitiesToJoinRevolt > 0) {
 						for (int j = 0; j < citiesOrderedByUnrest.Count; j++) {
