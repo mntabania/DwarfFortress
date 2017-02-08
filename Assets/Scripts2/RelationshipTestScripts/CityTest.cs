@@ -377,16 +377,20 @@ public class CityTest{
 				}
 			}
 		} else{ //WARRIOR
-			if (GetNumberOfCitizensPerType (JOB_TYPE.OFFENSE_GENERAL) >= this.offenseGeneralsLimit) {
-				if (this.unoccupiedOwnedTiles.Count > 0) {
-					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
-					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
-				} else {
-					this.newCitizenTarget = JOB_TYPE.NONE;
-				}
-			} else {
-				this.newCitizenTarget = JOB_TYPE.OFFENSE_GENERAL;
+			if(GetNumberOfCitizensPerType (JOB_TYPE.DEFENSE_GENERAL) == 0){
+				this.newCitizenTarget = JOB_TYPE.DEFENSE_GENERAL;
 			}
+			this.newCitizenTarget = JOB_TYPE.OFFENSE_GENERAL;
+//			if (GetNumberOfCitizensPerType (JOB_TYPE.OFFENSE_GENERAL) >= this.offenseGeneralsLimit) {
+//				if (this.unoccupiedOwnedTiles.Count > 0) {
+//					List<HexTile> tilesByHighestResource = unoccupiedOwnedTiles.OrderByDescending (x => x.GetHighestResourceValue ()).ToList ();
+//					this.newCitizenTarget = tilesByHighestResource [0].GetBestJobForTile ();
+//				} else {
+//					this.newCitizenTarget = JOB_TYPE.NONE;
+//				}
+//			} else {
+//				this.newCitizenTarget = JOB_TYPE.OFFENSE_GENERAL;
+//			}
 //			cityLogs += GameManager.Instance.currentDay.ToString() + ": Selected job to be created: [FF0000]" + this.newCitizenTarget.ToString() + "[-]\n\n"; 
 		}
 	}
@@ -828,9 +832,9 @@ public class CityTest{
 				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
 				this.citizenLimit += 1;
 				this.cityLevel += 1;
-				if((this.cityLevel % 4) == 0){
-					this.offenseGeneralsLimit += 1;
-				}
+//				if((this.cityLevel % 4) == 0){
+//					this.offenseGeneralsLimit += 1;
+//				}
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": The City level has increased: [FF0000]" + this.cityName.ToString() + "[-] in exchange for ";
 				for (int i = 0; i < this.cityUpgradeRequirements.resource.Count; i++) {
 					cityLogs += this.cityUpgradeRequirements.resource [i].resourceQuantity + " " + this.cityUpgradeRequirements.resource [i].resourceType + "\n";
