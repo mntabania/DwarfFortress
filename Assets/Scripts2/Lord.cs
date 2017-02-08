@@ -33,11 +33,12 @@ public class Lord {
 
 
 	protected List<Lord> candidatesForWar;
+
 	protected List<Relationship> targetableLords{
 		get { return relationshipLords.Where (x => x.isAdjacent && !x.isAtWar).ToList();}
 	}
 
-	protected List<Relationship> currentWars{
+	internal List<Relationship> currentWars{
 		get { return relationshipLords.Where (x => x.isAtWar).ToList();}
 	}
 
@@ -65,7 +66,11 @@ public class Lord {
 //		this.lordWarReasons = GenerateWarReasons();
 //		this.lordMightTrait = GenerateMightTrait();
 //		this.lordRelationshipTrait = GenerateRelationshipTrait();
-		this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.MONEY_GRUBBER};
+		if (id == 3) {
+			this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.OPPORTUNIST};
+		} else {
+			this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.MONEY_GRUBBER};
+		}
 		this.lordMightTrait = MIGHT_TRAIT.NORMAL;
 		this.lordRelationshipTrait = RELATIONSHIP_TRAIT.WARMONGER;
 		this.lordPeaceReasons = GeneratePeaceReasons();
@@ -1644,7 +1649,6 @@ public class Lord {
 		if (IsReasonForWarSatisfied()) {
 			if(IsMightCheckSatisfied() && IsRelationshipCheckSatisfied()) {
 				for (int i = 0; i < this.candidatesForWar.Count; i++) {
-					Debug.LogError (this.id + "-" + this.name + " DECLARES WAR ON : " + this.candidatesForWar[i].id + "-" + this.candidatesForWar[i].name);
 					GoToWarWith(this.candidatesForWar[i]);
 					this.candidatesForWar [i].GoToWarWith(this);
 //					this.SetLordToWar(this.candidatesForWar[i].id);
@@ -1663,26 +1667,22 @@ public class Lord {
 	}
 
 	internal void GoToWarWith(Lord lord){
+		Debug.LogError (this.id + "-" + this.name + "-" + this.kingdom.ComputeMilitaryStrength() + " DECLARES WAR ON : " + lord.id + "-" + lord.name + "-" + lord.kingdom.ComputeMilitaryStrength());
+
 		for (int i = 0; i < this.relationshipLords.Count; i++) {
-			if (this.relationshipLords[i].id == id) {
+			if (this.relationshipLords[i].id == lord.id) {
 				this.relationshipLords [i].isAtWar = true;
 			}
 		}
 		Relationship relOfThisLord = this.GetRelationshipByLordID (lord.id);
-		relOfThisLord.like = -50;
-		relOfThisLord.lordRelationship = GetLordRelationship(relOfThisLord.like);
+		if (relOfThisLord.like > -50) {
+			relOfThisLord.like = -50;
+			relOfThisLord.lordRelationship = GetLordRelationship (relOfThisLord.like);
+		}
 		GameManager.Instance.turnEnded += relOfThisLord.IncreaseWartime;
 	}
 
 
-	internal Lord SearchLordByID(int id){
-		for (int i = 0; i < GameManager.Instance.kingdoms.Count; i++) {
-			if (id == GameManager.Instance.kingdoms [i].kingdom.lord.id) {
-				return GameManager.Instance.kingdoms [i].kingdom.lord;
-			}
-		}
-		return null;
-	}
 
 	bool IsReasonForPeaceSatisfied(){
 		bool result = false;
@@ -1808,14 +1808,14 @@ public class Lord {
 	bool IsCompetetiveSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.relationshipLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.relationshipLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.relationshipLords[j].id);
 			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
 				result = true;
 			}
 		}
 
 		if (result) {
-			this.targetableLords.ForEach(x => this.candidatesForWar.Add(SearchLordByID(x.id)));
+			this.targetableLords.ForEach(x => this.candidatesForWar.Add(GameManager.Instance.SearchLordById(x.id)));
 		}
 
 		return result;
@@ -1824,7 +1824,7 @@ public class Lord {
 	bool IsCovetousSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
 				candidatesForWar.Add (otherLord);
 				result = true;
@@ -1841,7 +1841,7 @@ public class Lord {
 				continue;
 			}
 
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 
 			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
 				if (otherLord.relationshipLords[k].isAtWar) {
@@ -1850,7 +1850,7 @@ public class Lord {
 							if (this.relationshipLords [l].lordRelationship == LORD_RELATIONSHIP.FRIEND || 
 								this.relationshipLords [l].lordRelationship == LORD_RELATIONSHIP.ALLY) {
 								//Check if combined military strength is greater than or equal otherLord
-								Lord friendLord = SearchLordByID(this.relationshipLords[l].id);
+								Lord friendLord = GameManager.Instance.SearchLordById(this.relationshipLords[l].id);
 								if((friendLord.kingdom.ComputeMilitaryStrength() + this.kingdom.ComputeMilitaryStrength()) >= otherLord.kingdom.ComputeMilitaryStrength()){
 									candidatesForWar.Add(otherLord);
 									result = true;
@@ -1870,7 +1870,7 @@ public class Lord {
 	bool IsImpotentSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 			if (otherLord.kingdom.ComputeTotalCitizenCount() > this.kingdom.ComputeTotalCitizenCount()) {
 				candidatesForWar.Add(otherLord);
 				result = true;
@@ -1882,7 +1882,7 @@ public class Lord {
 	bool IsMoneyGrubberSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID (this.targetableLords [j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById (this.targetableLords [j].id);
 			KingdomTest adjacentKingdom = otherLord.kingdom;
 			for (int k = 0; k < adjacentKingdom.cities.Count; k++) {
 				CityTileTest currentCity = adjacentKingdom.cities[k];
@@ -1898,7 +1898,7 @@ public class Lord {
 	bool IsOneTrueKingSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 			if (otherLord.kingdom.kingdomRace == this.kingdom.kingdomRace) {
 				candidatesForWar.Add(otherLord);
 				result = true;
@@ -1910,11 +1910,11 @@ public class Lord {
 	bool IsOpportunistSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 			for(int k = 0; k < otherLord.relationshipLords.Count; k++){
 				if(otherLord.relationshipLords[k].isAtWar){
-					Lord allyLord = SearchLordByID(otherLord.relationshipLords[k].id);
-					if ((allyLord.kingdom.ComputeMilitaryStrength() + this.kingdom.ComputeMilitaryStrength()) >= otherLord.kingdom.ComputeMilitaryStrength()) {
+					Lord allyLord = GameManager.Instance.SearchLordById(otherLord.relationshipLords[k].id);
+					if ((allyLord.kingdom.ComputeMilitaryStrength() + this.kingdom.ComputeMilitaryStrength()) >= (otherLord.kingdom.ComputeMilitaryStrength()*1.1f)) {
 						candidatesForWar.Add(otherLord);
 						result = true;
 					}
@@ -1927,7 +1927,7 @@ public class Lord {
 	bool IsParanoidSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID(this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById(this.targetableLords[j].id);
 			if (otherLord.kingdom.ComputeMilitaryStrength() >= this.kingdom.ComputeMilitaryStrength()) {
 				candidatesForWar.Add(otherLord);
 				result = true;
@@ -1939,7 +1939,7 @@ public class Lord {
 	bool IsRacistSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById (this.targetableLords[j].id);
 			if (otherLord.kingdom.kingdomRace != this.kingdom.kingdomRace) {
 				candidatesForWar.Add(otherLord);
 				result = true;
@@ -1955,10 +1955,10 @@ public class Lord {
 	bool IsSneakySatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById (this.targetableLords[j].id);
 			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
 				if (otherLord.relationshipLords[k].isAtWar) {
-					Lord lordWithWar = SearchLordByID(otherLord.relationshipLords[k].id);
+					Lord lordWithWar = GameManager.Instance.SearchLordById(otherLord.relationshipLords[k].id);
 					if (otherLord.kingdom.ComputeMilitaryStrength () > lordWithWar.kingdom.ComputeMilitaryStrength ()) {
 						candidatesForWar.Add(otherLord);
 						result = true;
@@ -1972,7 +1972,7 @@ public class Lord {
 	bool IsSuspiciousSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.targetableLords.Count; j++) {
-			Lord otherLord = SearchLordByID (this.targetableLords[j].id);
+			Lord otherLord = GameManager.Instance.SearchLordById (this.targetableLords[j].id);
 			for (int k = 0; k < otherLord.relationshipLords.Count; k++) {
 				if (otherLord.relationshipLords[k].id == this.id) {
 					if (otherLord.relationshipLords [k].lordRelationship == LORD_RELATIONSHIP.ENEMY ||
@@ -1992,7 +1992,7 @@ public class Lord {
 		for (int j = 0; j < this.targetableLords.Count; j++) {
 			if (this.targetableLords[j].previousInteraction == LORD_EVENTS.TRADE && 
 				this.targetableLords[j].previousDecision == DECISION.RUDE) {
-				candidatesForWar.Add(SearchLordByID(this.targetableLords[j].id));
+				candidatesForWar.Add(GameManager.Instance.SearchLordById(this.targetableLords[j].id));
 				result = true;
 			}
 		}
@@ -2005,7 +2005,7 @@ public class Lord {
 			if (this.targetableLords[j].previousInteraction == LORD_EVENTS.GIFT ||
 				this.targetableLords[j].previousInteraction == LORD_EVENTS.HELP) {
 				if (this.targetableLords[j].previousDecision == DECISION.NICE) {
-					candidatesForWar.Add(SearchLordByID(this.targetableLords[j].id));
+					candidatesForWar.Add(GameManager.Instance.SearchLordById(this.targetableLords[j].id));
 					result = true;
 				}
 			}
@@ -2030,7 +2030,8 @@ public class Lord {
 	bool IsNormalMightSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.candidatesForWar.Count; j++) {
-			if (this.kingdom.ComputeMilitaryStrength() >= (this.candidatesForWar[j].kingdom.ComputeMilitaryStrength() + 500)) {
+			if ((this.kingdom.ComputeMilitaryStrength()*0.9f) >= this.candidatesForWar[j].kingdom.ComputeMilitaryStrength() || 
+				this.kingdom.ComputeMilitaryStrength() >= (this.candidatesForWar[j].kingdom.ComputeMilitaryStrength()*0.9f)) {
 				result = true;
 			} else {
 				this.candidatesForWar.Remove(this.candidatesForWar[j]);
@@ -2042,8 +2043,8 @@ public class Lord {
 	bool IsUnderdogSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.candidatesForWar.Count; j++) {
-			Lord otherLord = SearchLordByID(this.candidatesForWar[j].id);
-			if (this.kingdom.ComputeMilitaryStrength () < this.candidatesForWar[j].kingdom.ComputeMilitaryStrength()) {
+			Lord otherLord = GameManager.Instance.SearchLordById(this.candidatesForWar[j].id);
+			if ((this.kingdom.ComputeMilitaryStrength()*1.3f) < this.candidatesForWar[j].kingdom.ComputeMilitaryStrength()) {
 				result = true;
 			} else {
 				this.candidatesForWar.Remove(this.candidatesForWar[j]);
@@ -2078,7 +2079,7 @@ public class Lord {
 				this.candidatesForWar.Remove(this.candidatesForWar[j]);
 			}
 		}
-		return false;
+		return result;
 	}
 
 	bool IsWarmongerSatisfied(){

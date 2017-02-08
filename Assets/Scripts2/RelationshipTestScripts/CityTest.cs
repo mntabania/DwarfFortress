@@ -792,10 +792,10 @@ public class CityTest{
 			for(int i = 0; i < this.citizens.Count; i++){
 				if(this.citizens[i].job.jobType == JOB_TYPE.DEFENSE_GENERAL || this.citizens[i].job.jobType == JOB_TYPE.OFFENSE_GENERAL){
 					if (this.goldCount >= this.armyMaintenanceAmount) {
-						Debug.Log (this.citizens[i].name + " ARMY IS MAINTAINED!");
+//						Debug.Log (this.citizens[i].name + " ARMY IS MAINTAINED!");
 						AdjustResourceCount (RESOURCE.GOLD, -this.armyMaintenanceAmount);
 					}else{
-						Debug.Log ("CAN'T MAINTAIN ARMY. COUNT WILL BE REDUCED!");
+//						Debug.Log ("CAN'T MAINTAIN ARMY. COUNT WILL BE REDUCED!");
 						this.citizens [i].job.army.armyCount -= this.kingdomTile.kingdom.armyIncreaseUnits;
 						if(this.citizens[i].job.army.armyCount <= 0){
 							this.citizens.RemoveAt (i);
@@ -818,7 +818,7 @@ public class CityTest{
 					ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
 				}
 			}else{
-				Debug.Log ("DON'T HAVE ENOUGH RESOURCES FOR INCREASE ARMY COUNT!");
+//				Debug.Log ("DON'T HAVE ENOUGH RESOURCES FOR INCREASE ARMY COUNT!");
 			}
 		}else{
 			this.cityActionChances.increaseArmyCountChance += 1;
@@ -1358,7 +1358,6 @@ public class CityTest{
 //						" before purchase is " + GetNumberOfResourcesPerType(scarceResource.resource).ToString() + "\n\n";
 					int caravanGold = neededGold;
 					AdjustResourceCount(RESOURCE.GOLD, (caravanGold*-1));
-					Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
 					List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
 					int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
 					Buy (cities [0], RESOURCE.GOLD, scarceResource, caravanGold);
@@ -1385,11 +1384,7 @@ public class CityTest{
 					List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
 					int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
 					Sell (cities [0], abundantResource, caravanResources);
-				} else {
-					Debug.Log (abundantResource.resource.ToString() +  " Defficiency");
 				}
-			} else {
-				Debug.Log (this.cityName + " Cannot find someone to sell to or have nothing to sell");
 			}
 		} else {
 			//GOLD IS NORMAL
@@ -1431,7 +1426,6 @@ public class CityTest{
 					AdjustResourceCount (RESOURCE.GOLD, caravanGold);
 				}
 				//TODO: Insert add like to both lords
-				Debug.Log ("SOMEONE BOUGHT: " + this.cityName);
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Bought " + affordResource.ToString () + " " + resourceToBuy.resource.ToString () + " from " + tradeCity.cityName +
 				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n\n";
 
@@ -1529,7 +1523,6 @@ public class CityTest{
 			" before help is " + GetNumberOfResourcesPerType (scarceResource.resource).ToString () + "\n\n";
 //			int caravanAmount = neededAmount;
 //			AdjustResourceCount (RESOURCE.GOLD, (caravanGold * -1));
-			Debug.Log (this.cityName + " scarce resource: " + scarceResource.resource.ToString ());
 			List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.ABUNDANT, scarceResource.resource);
 			int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
 			Help (cities [0], scarceResource);
@@ -1587,7 +1580,6 @@ public class CityTest{
 				" before gift is " + GetNumberOfResourcesPerType (abundantResource.resource).ToString () + "\n\n";
 			//			int caravanAmount = neededAmount;
 			//			AdjustResourceCount (RESOURCE.GOLD, (caravanGold * -1));
-			Debug.Log (this.cityName + " abundant resource: " + abundantResource.resource.ToString ());
 			List<CityTest> cities = GetCitiesByStatus (RESOURCE_STATUS.SCARCE, abundantResource.resource);
 			int distance = 6; //TODO: MAKE LIPAT THIS WHEN THE TIME IS RIGHT
 			Gift (cities [0], abundantResource);

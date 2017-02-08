@@ -100,9 +100,25 @@ public class KingdomTest{
 //		}
 	}
 
+	void PassOnWarsToOtherLord(List<Relationship> warsOfPreviousLord, Lord newLord){
+		if (warsOfPreviousLord.Count <= 0) {
+			return;
+		}
+		for (int i = 0; i < newLord.relationshipLords.Count; i++) {
+			for (int j = 0; j < warsOfPreviousLord.Count; j++) {
+				if (newLord.relationshipLords[i].id == warsOfPreviousLord[j].id) {
+					newLord.GoToWarWith (GameManager.Instance.SearchLordById (newLord.relationshipLords [i].id));
+					GameManager.Instance.SearchLordById(newLord.relationshipLords [i].id).GoToWarWith(newLord);
+				}
+			}
+		}
+		Debug.LogError("Passed on wars to: " + newLord.id.ToString() + " - " + newLord.name);
+	}
+
 	internal void CheckForRevolution(){
 		for (int i = 0; i < cities.Count; i++) {
-			cities [i].cityAttributes.unrest = 50;
+			cities [i].cityAttributes.unrest = 0;
+			List<Relationship> previousLordsWars = this.lord.currentWars;
 			int chanceToRevolt = (int)Mathf.Abs((float)cities[i].cityAttributes.unrest / 4f);
 			int choice = Random.Range (0,1000);
 			if (choice < chanceToRevolt) {
@@ -114,6 +130,7 @@ public class KingdomTest{
 					this.lord.CreateInitialRelationshipsToLords();
 					GameManager.Instance.AddRelationshipToOtherLords(this.lord);
 					GameManager.Instance.UpdateLordAdjacency();
+					PassOnWarsToOtherLord(previousLordsWars, this.lord);
 					return;
 				} else if(this.cities.Count >= 2) {
 					int numOfCitiesToJoinRevolt = 0;
@@ -138,6 +155,7 @@ public class KingdomTest{
 						this.lord.CreateInitialRelationshipsToLords();
 						GameManager.Instance.AddRelationshipToOtherLords(this.lord);
 						GameManager.Instance.UpdateLordAdjacency();
+						PassOnWarsToOtherLord(previousLordsWars, this.lord);
 						return;
 					} else if (numOfCitiesToJoinRevolt > 0) {
 						for (int j = 0; j < citiesOrderedByUnrest.Count; j++) {
@@ -159,6 +177,12 @@ public class KingdomTest{
 						if (this.lord.relationshipLords[j].id == newKingdom.kingdom.lord.id) {
 							this.lord.relationshipLords[j].like = -50;
 							this.lord.relationshipLords[j].lordRelationship = this.lord.GetLordRelationship(this.lord.relationshipLords[j].like);
+							//Set both new lord and this kingdom's lord to war
+							this.lord.GoToWarWith(newKingdom.kingdom.lord);
+							newKingdom.kingdom.lord.GoToWarWith(this.lord);
+							Debug.Log ("Lord that rebelled: " + newKingdom.kingdom.lord.id.ToString() + " - " + newKingdom.kingdom.lord.name + "is now at war with: "
+								+ this.lord.id.ToString() + " - " + this.lord.name);
+							break;
 						}
 					}
 					break;
