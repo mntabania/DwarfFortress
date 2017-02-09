@@ -94,8 +94,8 @@ public class CombatBalancingTool : MonoBehaviour {
 		army1Race = (RACE) Enum.Parse(typeof(RACE), lblArmy1Race.text); 
 		army2Race = (RACE) Enum.Parse(typeof(RACE), lblArmy2Race.text);
 
-		List<Resource> army1Cost = GetArmyCost(army1Race, army1Count);
-		List<Resource> army2Cost = GetArmyCost(army2Race, army2Count);
+		List<Resource> army1Cost = GetArmyCost(army1Race, army1Count, army1Lvl);
+		List<Resource> army2Cost = GetArmyCost(army2Race, army2Count, army2Lvl);
 
 		army1Units = GetUnitCount (army1Race, army1Count);
 		army2Units = GetUnitCount (army2Race, army2Count);
@@ -189,13 +189,13 @@ public class CombatBalancingTool : MonoBehaviour {
 	int GetAttackValue(RACE race, int armyLvl){
 		switch (race) {
 		case RACE.HUMANS:
-			return 30 + (4 * armyLvl);
+			return 30 + (4 * (armyLvl - 1));
 		case RACE.ELVES:
-			return 50 + (10 * armyLvl);
+			return 50 + (10 * (armyLvl - 1));
 		case RACE.MINGONS:
-			return 20 + (8 * armyLvl);
+			return 20 + (8 * (armyLvl - 1));
 		case RACE.CROMADS:
-			return 40 + (15 * armyLvl);
+			return 40 + (15 * (armyLvl - 1));
 		}
 		return 0;
 	}
@@ -203,35 +203,52 @@ public class CombatBalancingTool : MonoBehaviour {
 	int GetHPValue(RACE race, int armyLvl){
 		switch (race) {
 		case RACE.HUMANS:
-			return 200 + (40 * armyLvl);
+			return 200 + (40 * (armyLvl - 1));
 		case RACE.ELVES:
-			return 200 + (30 * armyLvl);
+			return 200 + (20 * (armyLvl - 1));
 		case RACE.MINGONS:
-			return 150 + (25 * armyLvl);
+			return 160 + (20 * (armyLvl - 1));
 		case RACE.CROMADS:
-			return 400 + (60 * armyLvl);
+			return 400 + (60 * (armyLvl - 1));
 		}
 		return 0;
 	}
 
-	List<Resource> GetArmyCost(RACE race, int armyCount){
+	List<Resource> GetArmyCost(RACE race, int armyCount, int armyLvl){
 		List<Resource> upgradeCost = new List<Resource>();
+		int i, premiumResource = 0;
 		switch (race) {
 		case RACE.HUMANS:
-			upgradeCost.Add (new Resource (RESOURCE.GOLD, 500 * armyCount));
-			upgradeCost.Add (new Resource (RESOURCE.STONE, 50 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.GOLD, 2000 + 200 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.STONE, 200 + 50 * armyCount));
+			for (i = 1; i <= armyLvl; i++) {
+				premiumResource += 100 * (i - 1);
+			}
+			upgradeCost.Add (new Resource (RESOURCE.METAL, premiumResource));
 			return upgradeCost;
 		case RACE.ELVES:
-			upgradeCost.Add (new Resource (RESOURCE.GOLD, 200 * armyCount));
-			upgradeCost.Add (new Resource (RESOURCE.LUMBER, 80 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.GOLD, 2000 + 400 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.LUMBER, 200 + 50 * armyCount));
+			for (i = 1; i <= armyLvl; i++) {
+				premiumResource += 200 * (i - 1);
+			}
+			upgradeCost.Add (new Resource (RESOURCE.MANA, premiumResource));
 			return upgradeCost;
 		case RACE.MINGONS:
-			upgradeCost.Add (new Resource (RESOURCE.GOLD, 400 * armyCount));
-			upgradeCost.Add (new Resource (RESOURCE.LUMBER, 150 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.GOLD, 2000 + 200 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.LUMBER, 200 + 25 * armyCount));
+			for (i = 1; i <= armyLvl; i++) {
+				premiumResource += 100 * (i - 1);
+			}
+			upgradeCost.Add (new Resource (RESOURCE.METAL, premiumResource));
 			return upgradeCost;
 		case RACE.CROMADS:
-			upgradeCost.Add (new Resource (RESOURCE.GOLD, 300 * armyCount));
-			upgradeCost.Add (new Resource (RESOURCE.STONE, 30 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.GOLD, 2000 + 400 * armyCount));
+			upgradeCost.Add (new Resource (RESOURCE.STONE, 200 + 150 * armyCount));
+			for (i = 1; i <= armyLvl; i++) {
+				premiumResource += 200 * (i - 1);
+			}
+			upgradeCost.Add (new Resource (RESOURCE.MANA, premiumResource));
 			return upgradeCost;
 		}
 		return upgradeCost;
