@@ -8,7 +8,7 @@ public class Relationship {
 	public DECISION previousDecision;
 	public int like;
 	public LORD_RELATIONSHIP lordRelationship;
-	public LORD_EVENTS previousInteraction;
+	public LORD_EVENTS previousInteraction = LORD_EVENTS.NONE;
 	public bool isFirstEncounter;
 	public bool isAdjacent;
 	public bool isAtWar;
