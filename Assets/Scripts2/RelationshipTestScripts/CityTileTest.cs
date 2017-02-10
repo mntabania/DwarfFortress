@@ -36,14 +36,14 @@ public class CityTileTest : MonoBehaviour {
 
 	public void TurnActions(int currentDay){
 		cityAttributes.ProduceResources();
-		cityAttributes.ConsumeFood(cityAttributes.ComputeFoodConsumption());
+		cityAttributes.ConsumeFood(cityAttributes.GetDailyFoodConsumption());
 //		cityAttributes.SelectCitizenToUpgrade ();
 		cityAttributes.AssignNeededRole ();
 		cityAttributes.AssignUnneededRoles ();
 		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 
-		if (currentDay % 7 == 0) { //Select a new Citizen to create(Only occurs every 7 days)
+		if (currentDay % 7 == 0) { 
 			cityAttributes.SelectCitizenForCreation();
 			cityAttributes.SelectHexTileToPurchase();
 		}

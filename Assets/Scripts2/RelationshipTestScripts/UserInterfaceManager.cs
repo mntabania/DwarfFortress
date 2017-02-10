@@ -17,6 +17,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblNumOfDays;
 	public UILabel lblGoldCount;
 	public UILabel lblFoodCount;
+	public UILabel lblFoodStockPileCount;
 	public UILabel lblLumberCount;
 	public UILabel lblStoneCount;
 	public UILabel lblManaStoneCount;
@@ -90,6 +91,7 @@ public class UserInterfaceManager : MonoBehaviour {
 
 		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
 		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
+		lblFoodStockPileCount.text = "Stock: " + cityTile.cityAttributes.foodStockpileCount.ToString();
 		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();
 		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString();
 		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString();

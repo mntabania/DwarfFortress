@@ -27,7 +27,7 @@ public class KingdomTest{
 	public List<Resource> armyIncreaseUnitResource;
 
 	protected int expansionChance;
-	protected const int defaultExpansionChance = 3;
+	protected const int defaultExpansionChance = 4;
 
 	protected List<CityTileTest> citiesOrderedByUnrest{
 		get{ return cities.OrderByDescending(x => x.cityAttributes.unrest).ToList(); }
@@ -117,7 +117,7 @@ public class KingdomTest{
 
 	internal void CheckForRevolution(){
 		for (int i = 0; i < cities.Count; i++) {
-			cities [i].cityAttributes.unrest = 0;
+//			cities [i].cityAttributes.unrest = 0;
 			List<Relationship> previousLordsWars = this.lord.currentWars;
 			int chanceToRevolt = (int)Mathf.Abs((float)cities[i].cityAttributes.unrest / 4f);
 			int choice = Random.Range (0,1000);

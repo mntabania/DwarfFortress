@@ -45,6 +45,8 @@ public class Lord {
 		get { return relationshipLords.Where (x => x.isAtWar).ToList();}
 	}
 
+	int defaultWarChance = 5;
+	int currentWarChance = 0;
 	public Lord(KingdomTest kingdom){
 		this.id = 1 + GetID ();
 		this.name = RandomNameGenerator.GenerateRandomName();
@@ -55,8 +57,7 @@ public class Lord {
 		this.skill = UnityEngine.Random.Range (0, 10);
 		this.racism = UnityEngine.Random.Range (0, 10);
 		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
-//		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
-		this.personality = LORD_PERSONALITY.TIT_FOR_TAT;
+		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
 		this.internalPersonality = new LordInternalPersonality ("");
 		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
@@ -66,17 +67,11 @@ public class Lord {
 		this.publicImages = new List<PUBLIC_IMAGE> ();
 		this.relationshipKings = new List<Relationship> ();
 		this.relationshipLords = new List<Relationship> ();
-//		this.lordWarReasons = GenerateWarReasons();
-//		this.lordMightTrait = GenerateMightTrait();
-//		this.lordRelationshipTrait = GenerateRelationshipTrait();
-		if (id == 1) {
-			this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.SCAVENGER};
-		} else {
-			this.lordWarReasons = new List<WAR_REASONS>(){WAR_REASONS.MONEY_GRUBBER};
-		}
-		this.lordMightTrait = MIGHT_TRAIT.NORMAL;
-		this.lordRelationshipTrait = RELATIONSHIP_TRAIT.WARMONGER;
+		this.lordWarReasons = GenerateWarReasons();
+		this.lordMightTrait = GenerateMightTrait();
+		this.lordRelationshipTrait = GenerateRelationshipTrait();
 		this.lordPeaceReasons = GeneratePeaceReasons();
+		this.currentWarChance = this.defaultWarChance;
 		SetLastID (this.id);
 	}
 
@@ -225,6 +220,7 @@ public class Lord {
 		this.dealings++;
 		int multiplier = 0;
 		int results = 0;
+		relationship.previousDecision = targetDecision;
 		switch (this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
 			if(eventType == LORD_EVENTS.COOPERATE1 || eventType == LORD_EVENTS.COOPERATE2){
@@ -511,39 +507,39 @@ public class Lord {
 
 	}
 	internal DECISION ComputeDecisionBasedOnPersonality(LORD_EVENTS eventType, Lord targetLord){
-
 		Relationship relationshipWithOtherLord = this.SearchRelationship (targetLord);
 		Relationship relationshipFromOtherLord = targetLord.SearchRelationship (this);
 		DECISION decision = DECISION.NEUTRAL;
-		relationshipFromOtherLord.isFirstEncounter = false;
 		switch(this.personality){
 		case LORD_PERSONALITY.TIT_FOR_TAT:
 			decision = TitForTat (relationshipWithOtherLord, targetLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+			break;
 //			return TitForTat (relationshipWithOtherLord);
 		case LORD_PERSONALITY.EMOTIONAL:
 			decision = Emotional (relationshipWithOtherLord, targetLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+			break;
 //			return Emotional (relationshipWithOtherLord);
 		case LORD_PERSONALITY.RATIONAL:
 			decision = Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+			break;
 //			return Rational (eventType, relationshipWithOtherLord, relationshipFromOtherLord);
 		case LORD_PERSONALITY.NAIVE:
 			decision = Naive (relationshipWithOtherLord, targetLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+			break;
 //			return Naive (relationshipWithOtherLord);
 		case LORD_PERSONALITY.HATER:
 			decision = Hater (relationshipWithOtherLord, targetLord);
-			relationshipFromOtherLord.previousDecision = decision;
-			return decision;
+			break;
 //			return Hateful (relationshipWithOtherLord);
 		}
-		return DECISION.NEUTRAL;
+
+		if (relationshipWithOtherLord.isFirstEncounter && (eventType == LORD_EVENTS.TRADE || eventType == LORD_EVENTS.HELP || eventType == LORD_EVENTS.GIFT)) {
+			relationshipFromOtherLord.isFirstEncounter = false;
+		} else {
+			relationshipWithOtherLord.isFirstEncounter = false;
+		}
+
+		return decision;
 	}
 	private DECISION TitForTat(Relationship relationshipWithOtherLord, Lord targetLord){
 		if(relationshipWithOtherLord.isFirstEncounter){
@@ -1494,7 +1490,7 @@ public class Lord {
 		}
 	}
 	private void Tyrant(CityTest chosenCity){
-		float chance = UnityEngine.Random.Range (0f, 100f);
+		int chance = UnityEngine.Random.Range (0, 100);
 		if(chance < internalPersonality.tyrantChance){
 			chosenCity.farmerMultiplier = 1f;
 			chosenCity.hunterMultiplier = 1f;
@@ -1503,7 +1499,7 @@ public class Lord {
 			chosenCity.minerMultiplier = 1f;
 			chosenCity.alchemistMultiplier = 1f;
 
-			chosenCity.unrest += 5;
+			chosenCity.unrest += 2;
 			if(chosenCity.unrest > 100){
 				chosenCity.unrest = 100;
 			}
@@ -1649,9 +1645,15 @@ public class Lord {
 	internal void CheckForWars(){
 		if (IsReasonForWarSatisfied()) {
 			if(IsMightCheckSatisfied() && IsRelationshipCheckSatisfied()) {
-				for (int i = 0; i < this.candidatesForWar.Count; i++) {
-					GoToWarWith(this.candidatesForWar[i]);
-					this.candidatesForWar [i].GoToWarWith(this);
+				int chance = Random.Range (0, 100);
+				if (chance < this.currentWarChance) {
+					for (int i = 0; i < this.candidatesForWar.Count; i++) {
+						GoToWarWith (this.candidatesForWar [i]);
+						this.candidatesForWar [i].GoToWarWith (this);
+						this.currentWarChance = this.defaultWarChance;
+					}
+				} else {
+					this.currentWarChance += 1;
 				}
 			}
 		}

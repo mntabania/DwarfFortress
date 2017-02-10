@@ -8,7 +8,7 @@ public class Citizen {
 	[SerializeField] protected int _id;
 	[SerializeField] protected string _name;
 	[SerializeField] protected int _level;
-	[SerializeField] protected const int baseFoodConsumption = 14;
+	[SerializeField] protected const int baseFoodConsumption = 10;
 	[SerializeField] protected HexTile _assignedTile;
 	[SerializeField] protected int _upgradeChance;
 	[SerializeField] protected Job _job;
@@ -119,7 +119,7 @@ public class Citizen {
 	}
 		
 	internal int FoodConsumption(){
-		return baseFoodConsumption + (2 * _level);
+		return baseFoodConsumption;
 	}
 
 	internal void UpgradeCitizen(){
