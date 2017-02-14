@@ -197,6 +197,7 @@ public enum LORD_EVENTS{
 	GIFT,
 	COOPERATE1,
 	COOPERATE2,
+	NONE
 }
 
 public enum LORD_RELATIONSHIP{

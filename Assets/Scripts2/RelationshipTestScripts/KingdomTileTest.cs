@@ -52,11 +52,19 @@ public class KingdomTileTest : MonoBehaviour {
 	}
 
 	void TurnActions(int currentDay){
-		kingdom.CheckForExpansion();
-		if (currentDay % 5 == 0) {
-			kingdom.CheckForRevolution();
-		}
-		kingdom.lord.CheckForWars();
+//		kingdom.CheckForExpansion();
+//		if (currentDay % 5 == 0) {
+//			kingdom.CheckForRevolution();
+//		}
+//		kingdom.lord.CheckForWars();
+//
+//		if (kingdom.lord.hasExperiencedWar) {
+//			if (kingdom.lord.currentWars.Count > 0) {
+//				kingdom.lord.daysWithoutWar = 0;
+//			} else {
+//				kingdom.lord.daysWithoutWar += 1;
+//			}
+//		}
 	}
 
 

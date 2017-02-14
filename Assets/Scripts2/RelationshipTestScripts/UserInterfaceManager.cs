@@ -17,6 +17,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblNumOfDays;
 	public UILabel lblGoldCount;
 	public UILabel lblFoodCount;
+	public UILabel lblFoodStockPileCount;
 	public UILabel lblLumberCount;
 	public UILabel lblStoneCount;
 	public UILabel lblManaStoneCount;
@@ -90,6 +91,7 @@ public class UserInterfaceManager : MonoBehaviour {
 
 		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
 		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
+		lblFoodStockPileCount.text = "Stock: " + cityTile.cityAttributes.foodStockpileCount.ToString();
 		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();
 		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString();
 		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString();
@@ -106,8 +108,8 @@ public class UserInterfaceManager : MonoBehaviour {
 		lblWoodsmanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.WOODSMAN).ToString();
 		lblMinerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MINER).ToString();
 		lblAlchemistCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.ALCHEMIST).ToString();
-		lblWarriorCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.DEFENSE_GENERAL).ToString();
-		lblArcherCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.OFFENSE_GENERAL).ToString();
+//		lblWarriorCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.DEFENSE_GENERAL).ToString();
+//		lblArcherCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.OFFENSE_GENERAL).ToString();
 //		lblMageCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MAGE).ToString();
 		lblQuarrymanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.QUARRYMAN).ToString();
 //		lblBrawlerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.BRAWLER).ToString();

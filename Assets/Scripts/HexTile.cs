@@ -200,21 +200,21 @@ public class HexTile : MonoBehaviour {
 							generatedResourceValue = Random.Range (51, 81);
 						} else {
 //							generatedResourceValue = Random.Range (21, 36);
-							generatedResourceValue = 30;
+							generatedResourceValue = 20;
 						}
 					} else if (j == 1) {
 						if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
 							generatedResourceValue = Random.Range (81, 101);
 						} else {
 //							generatedResourceValue = Random.Range (36, 46);
-							generatedResourceValue = 40;
+							generatedResourceValue = 30;
 						}
 					} else if (j == 2) {
 						if (currentProduceType == BIOME_PRODUCE_TYPE.GOLD) {
 							generatedResourceValue = Random.Range (1, 51);
 						} else {
 //							generatedResourceValue = Random.Range (10, 21);
-							generatedResourceValue = 15;
+							generatedResourceValue = 10;
 						}
 					} else if (j == 3) {
 						generatedResourceValue = 0;
