@@ -21,6 +21,8 @@ public class Lord {
 	public LORD_PERSONALITY personality;
 	public LordInternalPersonality internalPersonality;
 	public CHARACTER character;
+	public INTELLIGENCE intelligence;
+	public AGGRESSIVENESS aggressiveness;
 	public List<GOALS> goals;
 	public List<List<string>> tasks;
 	public List<PUBLIC_IMAGE> publicImages;
@@ -53,6 +55,8 @@ public class Lord {
 		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
 //		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
 		this.personality = LORD_PERSONALITY.TIT_FOR_TAT;
+		this.intelligence = (INTELLIGENCE)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(INTELLIGENCE)).Length));
+		this.aggressiveness = (AGGRESSIVENESS)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(AGGRESSIVENESS)).Length));
 		this.internalPersonality = new LordInternalPersonality ("");
 		this.character = (CHARACTER)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(CHARACTER)).Length));		
 		this.likeCitizen = 0;
@@ -2085,5 +2089,181 @@ public class Lord {
 			}
 		}
 		return null;
+	}
+
+	internal void TriggerAttack(){
+		if(!hasEnemies()){
+			return;
+		}
+		for(int i = 0; i < this.relationshipLords.Count; i++){
+			if(this.relationshipLords[i].isAtWar && this.relationshipLords[i].isAdjacent){
+				KingdomTest attackerKingdom = this.kingdom;
+				KingdomTest defenderKingdom = this.relationshipLords [i].lord.kingdom;
+
+				List<CityTest> yourConnectedCities = GetConnectedCities (attackerKingdom, defenderKingdom);
+				List<CityTest> enemyConnectedCities = GetConnectedCities (defenderKingdom, attackerKingdom);
+
+				int enemyWeakestArmy = GetWeakestArmy (enemyConnectedCities);
+
+				CityTest attackerCity = GetCityWithStrongestArmy (yourConnectedCities, false);
+
+				if(attackerCity != null){
+					CityTest defenderCity = GetCityWithWeakestArmy (attackerCity, enemyConnectedCities, enemyWeakestArmy);
+					attackerCity.TriggerCityAttack (defenderCity);
+				}else{
+					Debug.Log ("ALL CITIES ALREADY HAVE A TARGET!");
+				}
+			}
+		}
+
+	}
+	internal CityTest GetCityWithStrongestArmy(List<CityTest> cities){
+		int strongestArmy = cities[0].GetArmyStrength ();
+		List<CityTest> citiesStrongestArmy = new List<CityTest>();
+		for (int i = 0; i < cities.Count; i++) {
+			if(cities[i].targetCity == null){
+				int currentArmy = cities [i].GetArmyStrength ();
+				if(currentArmy > strongestArmy){
+					strongestArmy = currentArmy;
+				}
+			}
+		}
+		for (int i = 0; i < cities.Count; i++) {
+			if (cities [i].targetCity == null) {
+				int currentArmy = cities [i].GetArmyStrength ();
+				if (currentArmy == strongestArmy) {
+					citiesStrongestArmy.Add (cities [i]);
+				}
+			}
+		}
+		if(citiesStrongestArmy.Count <= 0){
+			return null;
+		}
+		return citiesStrongestArmy[UnityEngine.Random.Range(0, citiesStrongestArmy.Count)];
+	}
+	internal List<CityTest> GetConnectedCities(KingdomTest sourceKingdom, KingdomTest targetKingdom){
+		List<CityTest> connectedCities = new List<CityTest> ();
+		for(int i = 0; i < sourceKingdom.cities.Count; i++){
+			for(int j = 0; j < sourceKingdom.cities[i].cityAttributes.connectedCities; j++){
+				if(sourceKingdom.cities[i].cityAttributes.connectedCities[j].cityAttributes.kingdomTile.kingdom.id == targetKingdom.id){
+					connectedCities.Add (sourceKingdom.cities [i].cityAttributes);
+					break;
+				}
+			}
+		}
+		return connectedCities;
+	}
+	internal CityTest GetCityWithWeakestArmy(CityTest yourCity, List<CityTest> cities, int weakestArmy){
+		if(cities.Count <= 0){
+			return;
+		}
+		List<CityTest> citiesWeakestArmy = new List<CityTest>();
+
+		if(this.intelligence == INTELLIGENCE.SIMPLE){
+			return cities [UnityEngine.Random.Range (0, cities.Count)];
+		}else{
+			for (int i = 0; i < cities.Count; i++) {
+				int currentArmy = cities [i].GetArmyStrength ();
+				if(currentArmy == weakestArmy){
+					citiesWeakestArmy.Add (cities [i]);
+				}
+			}
+
+			if(this.intelligence == INTELLIGENCE.SMART){
+				float shortestDistance = Vector3.Distance (yourCity.hexTile.gameObject.transform.position, citiesWeakestArmy [0].hexTile.gameObject.transform.position);
+				CityTest cityShortestDistance = citiesWeakestArmy [0];
+				for(int i = 0; i < citiesWeakestArmy.Count; i++){
+					float currentDistance = Vector3.Distance (yourCity.hexTile.gameObject.transform.position, citiesWeakestArmy [i].hexTile.gameObject.transform.position);
+					if(currentDistance < shortestDistance){
+						shortestDistance = currentDistance;
+						cityShortestDistance = citiesWeakestArmy [i];
+					}
+				}
+				return cityShortestDistance;
+			}else{
+				return citiesWeakestArmy [UnityEngine.Random.Range (0, citiesWeakestArmy.Count)];
+			}
+		}
+
+//		return citiesWeakestArmy;
+	}
+	internal int GetWeakestArmy(List<CityTest> cities){
+		if(cities.Count <= 0){
+			return;
+		}
+		int weakestArmy = cities[0].GetArmyStrength ();
+//		List<CityTest> citiesWeakestArmy = new List<CityTest>();
+
+		for (int i = 0; i < cities.Count; i++) {
+			int currentArmy = cities [i].GetArmyStrength ();
+			if(currentArmy < weakestArmy){
+				weakestArmy = currentArmy;
+			}
+		}
+		return weakestArmy;
+//		for (int i = 0; i < cities.Count; i++) {
+//			int currentArmy = cities [i].GetArmyStrength (true);
+//			if(currentArmy == weakestArmy){
+//				citiesWeakestArmy.Add (cities [i]);
+//			}
+//		}
+//		return citiesWeakestArmy;
+	}
+	internal bool hasEnemies(){
+		for(int i = 0; i < this.relationshipLords.Count; i++){
+			if(this.relationshipLords[i].isAtWar && this.relationshipLords[i].isAdjacent){
+				return true;
+			}
+		}
+		return false;
+	}
+	internal void ProvideBattleHelp(CityTest neededHelpCity, int neededArmyStrength){
+		int armyStrength = 0;
+		bool hasProvidedHelp = false;
+		for(int i = 0; i < this.kingdom.cities.Count; i++){
+			if(this.kingdom.cities[i].cityAttributes.id != neededHelpCity.id){
+				if(this.kingdom.cities[i].cityAttributes.GetArmyStrength() > neededArmyStrength){
+					if(this.kingdom.cities[i].cityAttributes.enemyGenerals.Count <= 0){
+						if(this.kingdom.cities[i].cityAttributes.generals.Count > 1){
+							List<General> generalOrderByArmyStrength = this.kingdom.cities [i].cityAttributes.generals.OrderByDescending (x => x.ArmyStrength ()).ToList();
+							for(int j = 0; j < generalOrderByArmyStrength.Count - 1; j++){
+								armyStrength += generalOrderByArmyStrength[j].ArmyStrength();
+								neededHelpCity.helpGenerals.Add (new DeployedGenerals (generalOrderByArmyStrength [j], 0));
+								this.kingdom.cities [i].cityAttributes.deployedGenerals.Add (generalOrderByArmyStrength [j]);
+								if(armyStrength >= neededArmyStrength){
+									hasProvidedHelp = true;
+									break;
+								}
+							}
+						}else{
+							//NO OFFENSE GENERAL, MUST NOT LEAVE CITY DEFENSELESS
+						}
+					}else{
+						//MUST DEFEND CAN'T PROVIDE HELP
+					}
+				}else{
+					//CAN'T HELP. STRENGTH IS LOWER THAN NEEDED
+				}
+
+			}
+			if(armyStrength >= neededArmyStrength){
+				hasProvidedHelp = true;
+				break;
+			}
+
+		}
+
+		if(!hasProvidedHelp){
+			//CREATE GENERALS OR INCREASE UPGRADE CITY CHANCE
+			CreateGeneralsForPreparation(neededHelpCity);
+		}
+	}
+
+	internal void CreateGeneralsForPreparation(CityTest neededHelpCity){
+		if(neededHelpCity.generals.Count >= neededHelpCity.generalsLimit){
+			neededHelpCity.cityActionChances.increaseHousingChance += 50;
+		}else{
+			neededHelpCity.AttemptToCreateGeneral ();
+		}
 	}
 }

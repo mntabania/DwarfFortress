@@ -11,9 +11,8 @@ public class DefenseGeneral: Job {
 		req.resource.Add (new Resource(RESOURCE.GOLD, 2000));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
-		this._jobType = JOB_TYPE.DEFENSE_GENERAL;
+//		this._jobType = JOB_TYPE.DEFENSE_GENERAL;
 		this._residence = RESIDENCE.INSIDE;
-		this._army = new Army (GENERAL_CLASSIFICATION.DEFENSE);
 
 	}
 
