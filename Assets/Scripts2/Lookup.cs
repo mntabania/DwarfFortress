@@ -9,8 +9,6 @@ public class Lookup {
 		new Woodsman(),
 		new Quarryman(),
 		new Alchemist(),
-		new DefenseGeneral(),
-		new OffenseGeneral (),
 //		new Brawler(),
 //		new Archer(),
 //		new Mage(),

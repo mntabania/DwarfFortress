@@ -11,10 +11,8 @@ public class OffenseGeneral: Job {
 		req.resource.Add (new Resource(RESOURCE.GOLD, 2000));
 		this._upgradeRequirements = req;
 		this._resourcesProduced = null;
-		this._jobType = JOB_TYPE.OFFENSE_GENERAL;
+//		this._jobType = JOB_TYPE.OFFENSE_GENERAL;
 		this._residence = RESIDENCE.INSIDE;
-		this._army = new Army (GENERAL_CLASSIFICATION.OFFENSE);
-
 	}
 
 	//	override public int GetDailyProduction(RESOURCE resourceType){

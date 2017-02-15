@@ -6,33 +6,24 @@ public class Army {
 
 //	public int id;
 //	public string name;
-	public GENERAL_CLASSIFICATION classification;
 	public int armyLevel;
 	public int armyCount;
 	public int armyExperience;
 	public ArmyStats armyStats;
-	public bool onAttack;
 
-	public Army(GENERAL_CLASSIFICATION classification){
+
+	public Army(CityTest city){
 //		this.id = GetID () + 1;
 //		this.name = "GENERAL" + this.id;
-		this.classification = classification;
-		this.armyCount = 0;
+		this.armyCount = city.kingdomTile.kingdom.armyBaseUnits;
 		this.armyLevel = 1;
 		this.armyExperience = 0;
-		this.armyStats = new ArmyStats(0,0);
-		this.onAttack = false;
+		this.armyStats = new ArmyStats(city.kingdomTile.kingdom.armyBaseStats.hp,city.kingdomTile.kingdom.armyBaseStats.attack);
 	}
 	public void CopyArmyStatsData(ArmyStats armyStats){
 		this.armyStats.hp = armyStats.hp;
 		this.armyStats.attack = armyStats.attack;
 
 	}
-//	int GetID(){
-//		return Utilities.lastGeneralId;
-//	}
-//
-//	void SetLastID(int id){
-//		Utilities.lastGeneralId = id;
-//	}
+
 }

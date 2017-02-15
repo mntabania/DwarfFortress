@@ -3,8 +3,8 @@ using System.Collections;
 
 [System.Serializable]
 public class Relationship {
-	public int id;
-	public string name;
+//	public int id;
+	public Lord lord;
 	public DECISION previousDecision;
 	public int like;
 	public LORD_RELATIONSHIP lordRelationship;
@@ -14,9 +14,9 @@ public class Relationship {
 	public bool isAtWar;
 	public int daysAtWar;
 
-	public Relationship(int id, string name, DECISION previousDecision, int like){
-		this.id = id;
-		this.name = name;
+	public Relationship(Lord lord, DECISION previousDecision, int like){
+//		this.id = id;
+		this.lord = lord;
 		this.previousDecision = previousDecision;
 		this.like = like;
 		this.isFirstEncounter = true;
@@ -28,7 +28,7 @@ public class Relationship {
 	internal void IncreaseWartime(int currentDay){
 		daysAtWar += 1;
 		if (daysAtWar == 90) {
-			Debug.LogError("War with lord: " + this.id.ToString () + " has ended on day: " + currentDay.ToString() + "!");
+			Debug.LogError("War with lord: " + this.lord.name.ToString () + " has ended on day: " + currentDay.ToString() + "!");
 			this.like += 20;
 			this.lordRelationship = GetLordRelationship(this.like);
 			daysAtWar = 0;

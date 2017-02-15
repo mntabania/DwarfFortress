@@ -13,15 +13,10 @@ public class Job {
 	[SerializeField]protected CitizenUpgradeRequirements _upgradeRequirements;
 	[SerializeField]protected RESOURCE[] _resourcesProduced; //gold, food, wood, stone, mana stone
 	[SerializeField]protected RESIDENCE _residence;
-	[SerializeField]protected Army _army;
 
-	public Job(){
-		this._army = null;
-	}
-	public Army army{
-		get{return _army;}
-		set { _army = value; }
-	}
+//	public Job(){
+//		this._army = null;
+//	}
 	public RESIDENCE residence{
 		get{return _residence;}
 	}

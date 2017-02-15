@@ -209,7 +209,7 @@ public class GameManager : MonoBehaviour {
 	public void AddRelationshipToOtherLords(Lord newLord){
 		for (int i = 0; i < this.kingdoms.Count; i++) {
 			if (this.kingdoms[i].kingdom.id != newLord.kingdom.id) {
-				this.kingdoms[i].kingdom.lord.relationshipLords.Add (new Relationship(newLord.id, newLord.name, DECISION.NEUTRAL, 0));
+				this.kingdoms[i].kingdom.lord.relationshipLords.Add (new Relationship(newLord, DECISION.NEUTRAL, 0));
 			}
 		}
 	}
@@ -218,7 +218,7 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < this.kingdoms.Count; i++) {
 			for (int j = 0; j < this.kingdoms[i].kingdom.lord.relationshipLords.Count; j++) {
 //				Relationship currRelationship = this.kingdoms[i].kingdom.lord.relationshipLords[j];
-				if (this.kingdoms[i].kingdom.lord.relationshipLords[j].id == lordToRemove.id) {
+				if (this.kingdoms[i].kingdom.lord.relationshipLords[j].lord.id == lordToRemove.id) {
 					this.kingdoms[i].kingdom.lord.relationshipLords.Remove(this.kingdoms[i].kingdom.lord.relationshipLords[j]);
 				}
 			}
