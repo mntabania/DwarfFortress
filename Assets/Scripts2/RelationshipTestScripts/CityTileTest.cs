@@ -38,22 +38,25 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.ProduceResources();
 		cityAttributes.ConsumeFood(cityAttributes.GetDailyFoodConsumption());
 //		cityAttributes.SelectCitizenToUpgrade ();
-		cityAttributes.AssignNeededRole ();
-		cityAttributes.AssignUnneededRoles ();
+		cityAttributes.UpdateCityExpenses();
+//		cityAttributes.AssignNeededRole ();
+//		cityAttributes.AssignUnneededRoles ();
 		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 
 		if (currentDay % 7 == 0) { 
-			cityAttributes.SelectCitizenForCreation();
+//			cityAttributes.SelectCitizenForCreation();
 			cityAttributes.SelectHexTileToPurchase();
 		}
 
 		cityAttributes.AttemptToUpgradeCity ();
 //		cityAttributes.AttemptToUpgradeCitizen ();
-		cityAttributes.AttemptToCreateNewCitizen ();
-		cityAttributes.AttemptToChangeCitizenRole ();
+//		cityAttributes.AttemptToCreateNewCitizen ();
+//		cityAttributes.AttemptToChangeCitizenRole ();
 		cityAttributes.AttemptToIncreaseArmyCount ();
 		cityAttributes.LaunchTradeMission();
-		cityAttributes.UpdateResourcesStatus();
+		cityAttributes.AttemptToCreatePioneer();
+		cityAttributes.AttemptToPerformCitizenAction();
+//		cityAttributes.UpdateResourcesStatus();
 	}
 }

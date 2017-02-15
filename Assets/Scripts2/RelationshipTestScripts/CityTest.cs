@@ -55,8 +55,15 @@ public class CityTest{
 	public int foodStockpileCount = 0;
 	public HexTile targetHexTileToPurchase;
 
+	public List<Citizen> unneededCitizens;
 	protected int dayPioneerReachesCity = 0;
 	protected CityTileTest pioneerCityTarget = null;
+
+	public CITY_CITIZEN_ACTION nextCityCitizenAction;
+	public JOB_TYPE citizenActionJobType;
+	public HexTile citizenActionHexTile;
+	public Citizen citizenToChange;
+	public int pioneerPoints;
 
 	/*
 	 * Connected cities that
@@ -103,7 +110,7 @@ public class CityTest{
 		this.metalCount = 0;
 		this.goldValue = GetGoldValue ();
 		this.mayorLikeRating = 0;
-		this.citizenLimit = 4;
+		this.citizenLimit = 3;
 		this.offenseGeneralsLimit = 1;
 		this.defenseGeneralsLimit = 1;
 		this.unrest = 0;
@@ -132,6 +139,12 @@ public class CityTest{
 		this.isDead = false;
 		this.ownedBiomeTiles.Add (this.hexTile);
 		this.citizens = this.InitialCitizens;
+		this.unneededCitizens = new List<Citizen>();
+		this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
+		this.citizenActionJobType = JOB_TYPE.NONE;
+		this.citizenActionHexTile = null;
+		this.citizenToChange = null;
+		this.pioneerPoints = 1;
 		SetLastID (this.id);
 	}
 
@@ -154,7 +167,7 @@ public class CityTest{
 		SelectHexTileToPurchase();
 		GenerateInitialFood();
 		UpdateCityUpgradeRequirements ();
-		SelectCitizenForCreation ();
+//		SelectCitizenForCreation ();
 		this.kingdomTile.kingdom.lord.UpdateAdjacentLords();
 
 		//Assign each initial citizen to a tile
@@ -227,7 +240,8 @@ public class CityTest{
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": The entire [FF0000]" + this.citizens[russianRoulette].job.jobType.ToString() + "[-] clan perished.\n\n"; 
 				this.citizens.Remove (this.citizens [russianRoulette]);
 				this.unrest += 10;
-				UpdateResourcesStatus();
+//				UpdateResourcesStatus();
+				this.IdentifyCityCitizenAction();
 			}
 		}else{
 			this.cityState = CITY_STATE.ABUNDANT;
@@ -241,6 +255,7 @@ public class CityTest{
 		cityLogs += GameManager.Instance.currentDay.ToString() + ": Harvest Day, food is now [FF0000]" + this.foodStockpileCount.ToString() + "[-].\n\n";
 		this.foodCount = this.foodStockpileCount;
 		this.foodStockpileCount = 0;
+		this.IdentifyCityCitizenAction();
 	}
 
 	/*
@@ -318,6 +333,544 @@ public class CityTest{
 
 	}
 		
+
+	internal void UpdateCityExpenses(){
+		int[] allNeededResources = GetNeededResources();
+
+		for (int i = 0; i < allNeededResources.Length; i++) {
+			RESOURCE currentResource = RESOURCE.GOLD;
+			if (i == 1) {
+				currentResource = RESOURCE.FOOD;
+			} else if (i == 2) {
+				currentResource = RESOURCE.LUMBER;
+			} else if (i == 3) {
+				currentResource = RESOURCE.STONE;
+			} else if (i == 4) {
+				currentResource = RESOURCE.METAL;
+			} else if (i == 5) {
+				currentResource = RESOURCE.MANA;
+			}
+
+
+			if (currentResource == RESOURCE.FOOD) {
+				int dailyFoodConsumption = GetDailyFoodConsumption();
+				int neededFood = GetNeededFoodForNumberOfDays(GameManager.Instance.daysUntilNextHarvest) + 50;
+				int foodStatusValue = (int)Mathf.Abs (this.foodCount - neededFood);
+				if (neededFood > this.foodCount) {
+					SetResourceStatus (RESOURCE.FOOD, RESOURCE_STATUS.SCARCE, foodStatusValue);
+				} else {
+					SetResourceStatus (RESOURCE.FOOD, RESOURCE_STATUS.ABUNDANT, foodStatusValue);
+				}
+			} else {
+				int statusValue = (int)Mathf.Abs (allNeededResources [i] - GetNumberOfResourcesPerType (currentResource));
+				//If producing resource but kulang
+				if (IsProducingResource (currentResource) && GetNumberOfResourcesPerType (currentResource) < allNeededResources [i]) {
+					//Compute Number of days
+					SetResourceStatus (currentResource, RESOURCE_STATUS.SCARCE, statusValue);
+					List<JOB_TYPE> jobTypesThatProduceResource = GetJobTypeByResourceProduced(currentResource).ToList();
+					for (int j = 0; j < this.unneededCitizens.Count; j++) {
+						if (jobTypesThatProduceResource.Contains(this.unneededCitizens[j].job.jobType)) {
+							this.unneededCitizens.Remove(this.unneededCitizens[j]);
+						}
+					}
+				}
+
+				//If not producing resource but is needed
+				else if (!IsProducingResource (currentResource) && allNeededResources [i] > 0) {
+					//Set resource as scarce
+					SetResourceStatus (currentResource, RESOURCE_STATUS.SCARCE, statusValue);
+					List<JOB_TYPE> jobTypesThatProduceResource = GetJobTypeByResourceProduced(currentResource).ToList();
+					for (int j = 0; j < this.unneededCitizens.Count; j++) {
+						if (jobTypesThatProduceResource.Contains(this.unneededCitizens[j].job.jobType)) {
+							this.unneededCitizens.Remove(this.unneededCitizens[j]);
+						}
+					}
+				}
+
+				//If not needed
+				else if (allNeededResources [i] <= 0) {
+					//Set all jobs that produce currentResource as unneeded
+					SetResourceStatus (currentResource, RESOURCE_STATUS.ABUNDANT, statusValue);
+					List<JOB_TYPE> jobTypesThatProduceResource = GetJobTypeByResourceProduced(currentResource).ToList();
+					for (int j = 0; j < this.citizens.Count; j++) {
+						if (jobTypesThatProduceResource.Contains(this.citizens[j].job.jobType)) {
+							if (!this.unneededCitizens.Contains (this.citizens [j])) {
+								this.unneededCitizens.Add (this.citizens [j]);
+							}
+						}
+					}
+				}
+
+				if (GetNumberOfResourcesPerType(currentResource) > (allNeededResources [i] + 300)) {
+					SetResourceStatus (currentResource, RESOURCE_STATUS.ABUNDANT, statusValue);
+					List<JOB_TYPE> jobTypesThatProduceResource = GetJobTypeByResourceProduced(currentResource).ToList();
+					for (int j = 0; j < this.citizens.Count; j++) {
+						if (jobTypesThatProduceResource.Contains(this.citizens[j].job.jobType)) {
+							if (!this.unneededCitizens.Contains (this.citizens [j])) {
+								this.unneededCitizens.Add (this.citizens [j]);
+							}
+						}
+					}
+				}
+			}
+				
+		}
+	}
+
+	int[] GetNeededResources(){
+		int[] allNeededResources = new int[6]; //gold, food, lumber, stone, metal, mana
+
+		//City Upgrade Cost
+		for (int i = 0; i < cityUpgradeRequirements.resource.Count; i++) {
+			switch(cityUpgradeRequirements.resource[i].resourceType){
+			case RESOURCE.GOLD:
+				allNeededResources [0] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.FOOD:
+				allNeededResources [1] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.LUMBER:
+				allNeededResources [2] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.STONE:
+				allNeededResources [3] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.METAL:
+				allNeededResources [4] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			case RESOURCE.MANA:
+				allNeededResources [5] += cityUpgradeRequirements.resource [i].resourceQuantity;
+				break;
+			}
+		}
+
+		//Pioneer Cost
+		allNeededResources [0] += 2000 * pioneerPoints;
+
+		//Army Upgrade Costs
+		if(this.kingdomTile != null){
+			for(int i = 0; i < this.kingdomTile.kingdom.armyIncreaseUnitResource.Count; i++){
+				switch (this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceType) {
+				case RESOURCE.GOLD:
+					allNeededResources[0] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				case RESOURCE.FOOD:
+					allNeededResources[1] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				case RESOURCE.LUMBER:
+					allNeededResources[2] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				case RESOURCE.STONE:
+					allNeededResources[3] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				case RESOURCE.METAL:
+					allNeededResources[4] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				case RESOURCE.MANA:
+					allNeededResources[5] += this.kingdomTile.kingdom.armyIncreaseUnitResource[i].resourceQuantity;
+					break;
+				}
+			}
+		}
+
+		//Purchase Tile Costs
+		if (this.targetHexTileToPurchase != null) {
+			List<Resource> resourceReqs = GetHexTileCost (this.targetHexTileToPurchase);
+			for (int i = 0; i < resourceReqs.Count; i++) {
+				switch (resourceReqs[i].resourceType) {
+				case RESOURCE.GOLD:
+					allNeededResources[0] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.FOOD:
+					allNeededResources[1] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.LUMBER:
+					allNeededResources[2] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.STONE:
+					allNeededResources[3] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.METAL:
+					allNeededResources[4] += resourceReqs[i].resourceQuantity;
+					break;
+				case RESOURCE.MANA:
+					allNeededResources[5] += resourceReqs[i].resourceQuantity;
+					break;
+				}
+			}
+		}
+
+		return allNeededResources;
+
+	}
+
+	void SetResourceStatus(RESOURCE resourceType, RESOURCE_STATUS resourceStatus, int statusValue){
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus[i].resource == resourceType) {
+				this.allResourcesStatus[i].status = resourceStatus;
+				this.allResourcesStatus[i].amount = statusValue;
+			}
+		}
+	}
+
+	bool IsProducingResource(RESOURCE resourceType){
+		if (resourceType == RESOURCE.GOLD) {
+			return true;
+		}
+		if (GetAveDailyProduction (resourceType, this.citizens) > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	internal void IdentifyCityCitizenAction(){
+		cityLogs += GameManager.Instance.currentDay.ToString() + ": Identifying citizen action...\n\n";
+		int currentFoodProduction = GetAveDailyProduction (RESOURCE.FOOD, this.citizens);
+		int currentFoodConsumption = (int)(GetDailyFoodConsumption() * 1.1f);
+
+		List<Citizen> tempCitizens = GetCitizensPerType(JOB_TYPE.FARMER);
+		tempCitizens.OrderBy(x => x.GetAveDailyProduction(RESOURCE.FOOD));
+		Citizen lowestFoodProducer = tempCitizens[0];
+		//Remove lowest producing
+		tempCitizens.RemoveAt(0);
+
+		if (currentFoodProduction > currentFoodConsumption) {
+			int modifiedDailyFoodProduction = GetAveDailyProduction (RESOURCE.FOOD, tempCitizens);
+			if (modifiedDailyFoodProduction > currentFoodConsumption) {
+				if (!this.unneededCitizens.Contains (lowestFoodProducer)) {
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": Added: " + lowestFoodProducer.name + "/" + 
+						lowestFoodProducer.job.jobType.ToString() + " to unneeded citizens\n\n";
+					this.unneededCitizens.Add (lowestFoodProducer);
+				}
+			} 
+		} else {
+			for (int i = 0; i < this.unneededCitizens.Count; i++) {
+				if (this.unneededCitizens [i].job.jobType == JOB_TYPE.FARMER || this.unneededCitizens [i].job.jobType == JOB_TYPE.HUNTER) {
+					this.unneededCitizens.Remove (this.unneededCitizens [i]);
+				}
+			}
+
+			if (!this.IsCitizenCapReached () && this.unoccupiedOwnedTiles.Count > 0) {
+				List<HexTile> tilesOrderedByHighestFoodValue = this.unoccupiedOwnedTiles.OrderByDescending (x => x.farmingValue).ThenByDescending (x => x.huntingValue).ToList ();
+				//Check if there are positive hunting/farming values
+				if (tilesOrderedByHighestFoodValue [0].huntingValue <= 0 && tilesOrderedByHighestFoodValue [0].farmingValue <= 0) {
+					if (this.unneededCitizens.Count <= 0) {
+						return;
+					}
+					List<Citizen> unneededCitizensOrderedByHighestFoodValue = this.unneededCitizens.OrderByDescending (x => x.assignedTile.farmingValue).ThenByDescending (x => x.assignedTile.huntingValue).ToList ();
+					//Check if there are positive hunting/farming values
+					for (int i = 0; i < unneededCitizensOrderedByHighestFoodValue.Count; i++) {
+						if (unneededCitizensOrderedByHighestFoodValue [i].job.jobType == JOB_TYPE.FARMER ||
+						   unneededCitizensOrderedByHighestFoodValue [i].job.jobType == JOB_TYPE.HUNTER) {
+							continue;
+						}
+
+						if (unneededCitizensOrderedByHighestFoodValue [i].assignedTile.huntingValue > 0 ||
+							unneededCitizensOrderedByHighestFoodValue [i].assignedTile.farmingValue > 0) {
+
+							//Set unneededCitizensOrderedByHighestFoodValue[i] to be changed
+							this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CHANGE_CITIZEN;
+							this.citizenToChange = unneededCitizensOrderedByHighestFoodValue [i];
+							if (unneededCitizensOrderedByHighestFoodValue [i].assignedTile.huntingValue >
+								unneededCitizensOrderedByHighestFoodValue [i].assignedTile.farmingValue) {
+								this.citizenActionJobType = JOB_TYPE.HUNTER;
+							} else {
+								this.citizenActionJobType = JOB_TYPE.FARMER;
+							}
+
+							cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 1: Set " + this.citizenToChange.name + "/" + 
+								this.citizenToChange.job.jobType.ToString() + " to be changed to " + this.citizenActionJobType.ToString() + "\n\n";
+						}
+					}
+
+				} else {
+
+					//Create Famer/Hunter on tile tilesOrderedByHighestFoodValue[0]
+					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CREATE_CITIZEN;
+					this.citizenActionHexTile = tilesOrderedByHighestFoodValue [0];
+					if (tilesOrderedByHighestFoodValue [0].huntingValue > tilesOrderedByHighestFoodValue [0].farmingValue) {
+						this.citizenActionJobType = JOB_TYPE.HUNTER;
+					} else {
+						this.citizenActionJobType = JOB_TYPE.FARMER;
+					}
+
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 1: Set " + this.citizenActionJobType.ToString() + " to be created on tile " 
+						+ this.citizenActionHexTile.name + "\n\n";
+
+				}
+			}
+		}
+
+		if (this.citizenActionJobType != JOB_TYPE.NONE) {
+			List<Resource> cityCitizenActionCost = GetCitizenCreationCostPerType (this.citizenActionJobType);
+			//if can afford/produce needed resources for citizen action, keep citizen action
+			if (!HasEnoughResourcesForAction (cityCitizenActionCost)) {
+				for (int i = 0; i < cityCitizenActionCost.Count; i++) {
+					if (!IsProducingResource (cityCitizenActionCost [i].resourceType)) {
+						this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
+						this.citizenActionJobType = JOB_TYPE.NONE;
+						this.citizenActionHexTile = null;
+						this.citizenToChange = null;
+						break;
+					}
+				}
+				if (this.nextCityCitizenAction != CITY_CITIZEN_ACTION.NONE) {
+					//is producing all needed resources, keep current action
+					return;
+				}
+			} else {
+				//can afford citizen action, keep current action
+				return;
+			}
+		}
+
+		//Assign new citizen action, code will only reach here if the city cannot afford/produce the needed resources for the Farmer/Hunter citizen action
+
+		//Determine Needed Resources
+		List<RESOURCE> scarceResources = new List<RESOURCE>();
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus [i].resource == RESOURCE.GOLD || this.allResourcesStatus [i].resource == RESOURCE.FOOD) {
+				continue;
+			}
+			if (this.allResourcesStatus[i].status == RESOURCE_STATUS.SCARCE) {
+				scarceResources.Add(this.allResourcesStatus[i].resource);
+			}
+		}
+
+		scarceResources.Distinct ().ToList ();
+
+		if (scarceResources.Count > 0) {
+			for (int i = 0; i < scarceResources.Count; i++) {
+				if (scarceResources [i] == RESOURCE.GOLD) {
+					continue;
+				}
+				//Get all roles that can produce needed resource
+				JOB_TYPE[] jobTypesThatCanProduceResource = GetJobTypeByResourceProduced (scarceResources [i]);
+				for (int j = 0; j < jobTypesThatCanProduceResource.Length; j++) {
+					List<Resource> cityCitizenActionCost = GetCitizenCreationCostPerType (jobTypesThatCanProduceResource [j]);
+					//Filter roles that the city cannot create
+					if (!HasEnoughResourcesForAction (cityCitizenActionCost)) {
+						for (int k = 0; k < cityCitizenActionCost.Count; k++) {
+							if (!IsProducingResource (cityCitizenActionCost [k].resourceType)) {
+								jobTypesThatCanProduceResource [j] = JOB_TYPE.NONE;
+								break;
+							}
+						}
+					}
+				}
+
+				for (int j = 0; j < jobTypesThatCanProduceResource.Length; j++) {
+					JOB_TYPE currentJobType = jobTypesThatCanProduceResource [j];
+					if (!this.IsCitizenCapReached () && this.unoccupiedOwnedTiles.Count > 0) {
+						List<HexTile> tilesOrderedByHighestResourceValue = this.unoccupiedOwnedTiles.
+						OrderByDescending (x => x.GetRelevantResourceValueByJobType (currentJobType)).ToList ();
+						//Check if there are positive resource values
+						if (tilesOrderedByHighestResourceValue [0].GetRelevantResourceValueByJobType (currentJobType) <= 0) {
+							if (this.unneededCitizens.Count <= 0) {
+								return;
+							}
+							List<Citizen> unneededCitizensOrderedByHighestResourceValue = this.unneededCitizens.
+								OrderByDescending (x => x.assignedTile.GetRelevantResourceValueByJobType (currentJobType)).ToList();
+
+							//Check if there are positive resource values
+							for (int k = 0; k < unneededCitizensOrderedByHighestResourceValue.Count; k++) {
+								if (unneededCitizensOrderedByHighestResourceValue [k].job.jobType == currentJobType) {
+									continue;
+								}
+								if (unneededCitizensOrderedByHighestResourceValue [k].assignedTile.GetRelevantResourceValueByJobType (currentJobType) > 0) {
+
+									//Set unneededCitizensOrderedByHighestResourceValue[0] to be changed
+									this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CHANGE_CITIZEN;
+									this.citizenToChange = unneededCitizensOrderedByHighestResourceValue [k];
+									this.citizenActionJobType = currentJobType;
+
+									cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 2: Set " + this.citizenToChange.name + "/" + 
+										this.citizenToChange.job.jobType.ToString() + " to be changed to " + this.citizenActionJobType.ToString() + "\n\n";
+									return;
+								}
+							}
+
+						} else {
+						
+							//Create currentJobType on tile tilesOrderedByHighestResourceValue[0]
+							this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CREATE_CITIZEN;
+							this.citizenActionHexTile = tilesOrderedByHighestResourceValue [0];
+							this.citizenActionJobType = currentJobType;
+
+							cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 2: Set " + this.citizenActionJobType.ToString() + " to be created on tile " 
+								+ this.citizenActionHexTile.name + "\n\n";
+							return;
+		
+						}
+					} else {
+						if (this.unneededCitizens.Count <= 0) {
+							return;
+						}
+
+						List<Citizen> unneededCitizensOrderedByHighestResourceValue = this.unneededCitizens.
+							OrderByDescending (x => x.assignedTile.GetRelevantResourceValueByJobType (currentJobType)).ToList();
+
+						//Check if there are positive resource values
+						for (int k = 0; k < unneededCitizensOrderedByHighestResourceValue.Count; k++) {
+							if (unneededCitizensOrderedByHighestResourceValue [k].job.jobType == currentJobType) {
+								continue;
+							}
+
+							if (unneededCitizensOrderedByHighestResourceValue [k].assignedTile.GetRelevantResourceValueByJobType (currentJobType) > 0) {
+
+								//Set unneededCitizensOrderedByHighestResourceValue[0] to be changed
+								this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CHANGE_CITIZEN;
+								this.citizenToChange = unneededCitizensOrderedByHighestResourceValue [k];
+								this.citizenActionJobType = currentJobType;
+
+								cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 3: Set " + this.citizenToChange.name + "/" + 
+									this.citizenToChange.job.jobType.ToString() + " to be changed to " + this.citizenActionJobType.ToString() + "\n\n";
+								return;
+							}
+						}
+					}
+
+				}
+			}
+		} else {
+			//no needed resources
+			//Get all jobtypes
+			List<JOB_TYPE> allJobTypesCityCanCreate = Enum.GetValues(typeof(JOB_TYPE)).Cast<JOB_TYPE>().ToList();
+			//Filter jobtypes that the city can't create
+			for (int i = 0; i < allJobTypesCityCanCreate.Count; i++) {
+				if (allJobTypesCityCanCreate [i] == JOB_TYPE.NONE) {
+					continue;
+				}
+				List<Resource> jobTypeCreationCost = GetCitizenCreationCostPerType(allJobTypesCityCanCreate[i]);
+				if (!HasEnoughResourcesForAction(jobTypeCreationCost)) {
+					for (int k = 0; k < jobTypeCreationCost.Count; k++) {
+						if (!IsProducingResource (jobTypeCreationCost [k].resourceType)) {
+							allJobTypesCityCanCreate.Remove(allJobTypesCityCanCreate[i]);
+							break;
+						}
+					}
+				}
+			}
+
+			if (!this.IsCitizenCapReached () && this.unoccupiedOwnedTiles.Count > 0) {
+				for (int i = 0; i < allJobTypesCityCanCreate.Count; i++) {
+					List<HexTile> tilesOrderedByHighestResourceValue = this.unoccupiedOwnedTiles.
+						OrderByDescending (x => x.GetRelevantResourceValueByJobType (allJobTypesCityCanCreate[i])).ToList ();
+					//Check if there are positive resource values
+					if (tilesOrderedByHighestResourceValue [0].GetRelevantResourceValueByJobType (allJobTypesCityCanCreate [i]) <= 0) {
+						continue;
+					} else {
+
+						//Create currentJobType on tile tilesOrderedByHighestResourceValue[0]
+						this.nextCityCitizenAction = CITY_CITIZEN_ACTION.CREATE_CITIZEN;
+						this.citizenActionHexTile = tilesOrderedByHighestResourceValue [0];
+						this.citizenActionJobType = allJobTypesCityCanCreate[i];
+						cityLogs += GameManager.Instance.currentDay.ToString() + ": Trigger Point 3: Set " + this.citizenActionJobType.ToString() + " to be created on tile " 
+							+ this.citizenActionHexTile.name + "\n\n";
+						return;
+
+					}
+				}
+			}
+
+		}
+
+
+	}
+
+	internal void AttemptToPerformCitizenAction(){
+		if (this.nextCityCitizenAction == CITY_CITIZEN_ACTION.NONE) {
+			return;
+		}
+		List<Resource> cityCitizenActionCost = this.GetCitizenCreationCostPerType(this.citizenActionJobType);
+		if (HasEnoughResourcesForAction(cityCitizenActionCost)) {
+			int chance = UnityEngine.Random.Range (0, 100);
+			if (chance < this.cityActionChances.performCityCitizenActionChance) {
+				//Perform City Action
+				if (this.nextCityCitizenAction == CITY_CITIZEN_ACTION.CREATE_CITIZEN) {
+					
+					Citizen newCitizen = new Citizen(this.citizenActionJobType, this);
+					newCitizen.SetCitizenTile(this.citizenActionHexTile);
+					this.citizens.Add(newCitizen);
+
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": Created new: [FF0000]" + this.citizenActionJobType.ToString() + "[-] on tile " +
+						"[FF0000]" + this.citizenActionHexTile.name + "[-] \n\n";
+
+					this.citizenActionJobType = JOB_TYPE.NONE;
+					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
+					this.citizenActionHexTile = null;
+				} else if (this.nextCityCitizenAction == CITY_CITIZEN_ACTION.CHANGE_CITIZEN) {
+					cityLogs += GameManager.Instance.currentDay.ToString() + ": Changed : [FF0000]" + this.citizenToChange.job.jobType.ToString() + "[-] to " +
+						"[FF0000]" + this.citizenActionJobType.ToString() + "[-] \n\n";
+					
+					this.citizenToChange.ChangeJob(this.citizenActionJobType);
+
+					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
+					this.citizenActionJobType = JOB_TYPE.NONE;
+					this.citizenToChange = null;
+				}
+
+				this.ReduceResources(cityCitizenActionCost);
+				this.cityActionChances.performCityCitizenActionChance = this.cityActionChances.defaultPerformCityCitizenActionChance;
+				this.IdentifyCityCitizenAction();
+			} else {
+				this.cityActionChances.performCityCitizenActionChance += 1;
+			}
+		}
+	}
+
+	internal void AttemptToCreatePioneer(){
+		if (this.pioneerPoints <= 0 || this.pioneerCityTarget != null) {
+			return;
+		}
+
+		int chance = UnityEngine.Random.Range(0, 100);
+		if (chance < this.cityActionChances.expansionChance) {
+			//TODO: Change Distance Value To Pathfinding instead of Vector2.Distance
+			pioneerCityTarget = kingdomTile.kingdom.NearestUnoccupiedCity();
+			if (pioneerCityTarget == null) {
+				return;
+			}
+			dayPioneerReachesCity = GameManager.Instance.currentDay + (int)Vector2.Distance(kingdomTile.kingdom.cities[0].transform.position, 
+				pioneerCityTarget.hexTile.transform.position);
+			GameManager.Instance.turnEnded += SendPioneer;
+			cityLogs += GameManager.Instance.currentDay.ToString() + ": Pioneer will reach city: [FF0000]" + pioneerCityTarget.hexTile.name + "[-] on day [FF0000]" + dayPioneerReachesCity.ToString() + "[-]\n\n";
+		}
+	}
+
+	JOB_TYPE[] GetJobTypeByResourceProduced(RESOURCE resourceProduced){
+		if (resourceProduced == RESOURCE.FOOD) {
+			return new JOB_TYPE[]{JOB_TYPE.FARMER, JOB_TYPE.HUNTER};
+		} else if (resourceProduced == RESOURCE.LUMBER) {
+			return new JOB_TYPE[]{ JOB_TYPE.WOODSMAN };
+		} else if (resourceProduced == RESOURCE.STONE) {
+			return new JOB_TYPE[]{ JOB_TYPE.QUARRYMAN };
+		} else if (resourceProduced == RESOURCE.MANA) {
+			return new JOB_TYPE[]{ JOB_TYPE.ALCHEMIST };
+		} else if (resourceProduced == RESOURCE.METAL) {
+			return new JOB_TYPE[]{ JOB_TYPE.MINER };
+		}
+		return new JOB_TYPE[]{ JOB_TYPE.NONE };
+	}
+
+	List<Citizen> GetCitizensPerType(JOB_TYPE jobType){
+		List<Citizen> citizenListPerType = new List<Citizen>();
+		for (int i = 0; i < this.citizens.Count; i++) {
+			if (jobType == JOB_TYPE.FARMER || jobType == JOB_TYPE.HUNTER) {
+				if (this.citizens [i].job.jobType == JOB_TYPE.FARMER || this.citizens [i].job.jobType == JOB_TYPE.HUNTER) {
+					citizenListPerType.Add (this.citizens [i]);
+				} else {
+					if(this.citizens[i].job.jobType == jobType){
+						citizenListPerType.Add(this.citizens[i]);
+					}
+				}
+			}
+		}
+		return citizenListPerType;
+	}
+
+
 	#region Citizen Creation Functions
 	internal void SelectCitizenForCreation(){
 		if(isDead){
@@ -434,7 +987,7 @@ public class CityTest{
 			return;
 		}
 
-		int averageDailyProd = GetAveDailyProduction (RESOURCE.FOOD);
+		int averageDailyProd = GetAveDailyProduction (RESOURCE.FOOD, this.citizens);
 		int daysUntilResourcesFinish = 0;
 		if (averageDailyProd > 0) {
 			int neededFood = (GetNeededFoodForNumberOfDays(33));
@@ -756,6 +1309,7 @@ public class CityTest{
 				this.cityActionChances.increaseHousingChance =  this.cityActionChances.defaultIncreaseHousingChance;
 				this.citizenLimit += 1;
 				this.cityLevel += 1;
+				this.pioneerPoints += 1;
 //				if((this.cityLevel % 4) == 0){
 //					this.offenseGeneralsLimit += 1;
 //				}
@@ -766,7 +1320,9 @@ public class CityTest{
 				cityLogs += "\n";
 				ReduceResources(this.cityUpgradeRequirements.resource);
 				UpdateCityUpgradeRequirements();
-				UpdateResourcesStatus();
+				UpdateCityExpenses();
+//				UpdateResourcesStatus();
+				this.IdentifyCityCitizenAction();
 
 			} else {
 				//On not performing upgrade, increase chance to upgrade by 1
@@ -844,7 +1400,7 @@ public class CityTest{
 		if (dayPioneerReachesCity == (currentDay+1)) {
 			//Pioneer has reached city
 			cityLogs += GameManager.Instance.currentDay.ToString() + ": [FF0000]PIONEER[-] has reached city\n\n";
-			if (!pioneerCityTarget.hexTile.isOccupied) {
+			if (!this.pioneerCityTarget.hexTile.isOccupied) {
 				this.kingdomTile.AddCityToKingdom (pioneerCityTarget);
 				pioneerCityTarget.cityAttributes.OccupyCity();
 				pioneerCityTarget.hexTile.GetComponent<CityTileTest>().SetCityAsActiveAndSetProduction ();
@@ -854,11 +1410,14 @@ public class CityTest{
 			} else {
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": PIONEER [FF0000]failed[-] in expansion\n\n";
 			}
-			for (int i = 0; i < citizens.Count; i++) {
-				if (citizens[i].job.jobType == JOB_TYPE.PIONEER) {
-					citizens.Remove(citizens[i]);
-				}
-			}
+
+			this.pioneerPoints -= 1;
+			this.pioneerCityTarget = null;
+//			for (int i = 0; i < citizens.Count; i++) {
+//				if (citizens[i].job.jobType == JOB_TYPE.PIONEER) {
+//					citizens.Remove(citizens[i]);
+//				}
+//			}
 			GameManager.Instance.turnEnded -= SendPioneer;
 		}
 
@@ -978,6 +1537,7 @@ public class CityTest{
 				}
 				cityLogs +="[-]\n";
 				this.targetHexTileToPurchase = null;
+				this.IdentifyCityCitizenAction();
 			}
 //			else {
 //				this.cityActionChances.purchaseTileChance += 1;
@@ -1213,10 +1773,10 @@ public class CityTest{
 	}
 
 	//Get Daily Production Based On Resource Type
-	internal int GetAveDailyProduction(RESOURCE resourceType){
+	internal int GetAveDailyProduction(RESOURCE resourceType, List<Citizen> citizensConcerned){
 		int totalDailyProduction = 0;
-		for (int i = 0; i < this.citizens.Count; i++) {
-			totalDailyProduction += this.citizens [i].GetAveDailyProduction(resourceType);
+		for (int i = 0; i < citizensConcerned.Count; i++) {
+			totalDailyProduction += citizensConcerned[i].GetAveDailyProduction(resourceType);
 		}
 		return totalDailyProduction;
 	}
