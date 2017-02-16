@@ -5,10 +5,16 @@ using System.Linq;
 
 public class CityTileTest : MonoBehaviour {
 
+	public JOB_TYPE citizenTypeToCreate;
+	public RESOURCE resourceToAdd;
+	public int resourceAmountToAdd;
+	public int numOfTileToPurchase;
+	public int citizenIndexToRemove;
+	[Space(10)]
 	public HexTile hexTile;
-	public CityTest cityAttributes; 
-
 	public List<HexTile> cityTilesByDistance;
+	[Space(10)]
+	public CityTest cityAttributes; 
 
 	public List<HexTile> GetAllCitiesByDistance(){
 		List<HexTile> allCityTiles = CityGenerator.Instance.cities.OrderBy(
@@ -29,6 +35,45 @@ public class CityTileTest : MonoBehaviour {
 		return cityTilesByDistance [0];
 	}
 
+	[ContextMenu("PurchaseTilesForTesting")]
+	public void PurchaseTilesForTesting(){
+		cityAttributes.PurchaseTilesForTesting(this.numOfTileToPurchase);
+	}
+
+	[ContextMenu("Force Update City Expenses")]
+	public void ForceUpdateCityExpenses(){
+		cityAttributes.UpdateCityExpenses();
+		Debug.Log ("Updated City Expenses");
+	}
+
+	[ContextMenu("Compute Food Production")]
+	public void ComputeFoodProduction(){
+		Debug.Log(cityAttributes.GetAveDailyProduction(RESOURCE.FOOD, cityAttributes.citizens).ToString());
+	}
+
+	[ContextMenu("Add New Citizen")]
+	public void ForceAddNewCitizen(){
+		Citizen newCitizen = new Citizen (this.citizenTypeToCreate, this.cityAttributes);
+		newCitizen.AssignCitizenToTile(this.cityAttributes.unoccupiedOwnedTiles);
+		this.cityAttributes.citizens.Add(newCitizen);
+		Debug.Log ("Created new Citizen: " + newCitizen.name);
+		ForceUpdateCityExpenses();
+
+	}
+
+	[ContextMenu("Remove Citizen")]
+	public void ForceRemoveCitizen(){
+		Debug.Log ("Removed Citizen: " + this.cityAttributes.citizens.ElementAt (citizenIndexToRemove).name);
+		this.cityAttributes.citizens.RemoveAt(citizenIndexToRemove);
+		ForceUpdateCityExpenses();
+	}
+
+	[ContextMenu("Adjust Resource Count")]
+	public void AddToResource(){
+		this.cityAttributes.AdjustResourceCount (resourceToAdd, resourceAmountToAdd);
+		Debug.Log ("Adjusted " + resourceToAdd.ToString () + " by " + resourceAmountToAdd);
+	}
+
 	public void SetCityAsActiveAndSetProduction(){
 		GameManager.Instance.turnEnded += TurnActions;
 		cityAttributes.GenerateInitialFood();
@@ -41,6 +86,7 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.UpdateCityExpenses();
 //		cityAttributes.AssignNeededRole ();
 //		cityAttributes.AssignUnneededRoles ();
+		cityAttributes.AttemptToCreateNewGeneral();
 		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 

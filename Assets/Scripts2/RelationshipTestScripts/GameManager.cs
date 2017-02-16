@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour {
 				neighbours[j].SetTileBiomeType(targetBiomeType);
 				neighbours[j].GenerateResourceValues ();
 				neighbours[j].GetComponent<SpriteRenderer> ().sprite = biomeSprite;
-
+				neighbours [j].elevationType = ELEVATION.PLAIN;
 				switch (targetBiomeType) {
 				case BIOMES.GRASSLAND:
 					neighbours[j].primaryResourceToPurchaseTile = RESOURCE.STONE;
@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour {
 
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 

@@ -26,6 +26,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblMetalCount;
 	public UILabel lblUnrest;
 	public UILabel lblCityCitizenAction;
+	public UILabel lblNeededResources;
 
 	public UILabel lblFarmerCount;
 	public UILabel lblHunterCount;
@@ -94,6 +95,12 @@ public class UserInterfaceManager : MonoBehaviour {
 			lblCityCitizenAction.text = "No Citizen Action";
 		}
 
+		lblNeededResources.text = "[";
+		int[] neededResources = cityTile.cityAttributes.GetNeededResources();
+		for (int i = 0; i < neededResources.Length; i++) {
+			lblNeededResources.text += neededResources[i].ToString() + ",";
+		}
+		lblNeededResources.text += "]";
 
 
 		for (int i = 0; i < cityTile.cityAttributes.cityUpgradeRequirements.resource.Count; i++) {
