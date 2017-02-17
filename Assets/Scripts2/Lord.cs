@@ -2288,7 +2288,7 @@ public class Lord {
 		if(neededHelpCity.generals.Count >= neededHelpCity.generalsLimit){
 			neededHelpCity.cityActionChances.increaseHousingChance += 50;
 		}else{
-			neededHelpCity.AttemptToCreateGeneral ();
+			neededHelpCity.CreateGeneral ();
 		}
 	}
 	internal bool CheckForSpecificWar(Lord lord){

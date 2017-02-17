@@ -25,6 +25,8 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblExternalAffairs;
 	public UILabel lblMetalCount;
 	public UILabel lblUnrest;
+	public UILabel lblCityCitizenAction;
+	public UILabel lblNeededResources;
 
 	public UILabel lblFarmerCount;
 	public UILabel lblHunterCount;
@@ -60,28 +62,45 @@ public class UserInterfaceManager : MonoBehaviour {
 		lblCityName.text = "Name: " + cityTile.cityAttributes.cityName;
 		lblCityLevel.text = "Lvl: " + cityTile.cityAttributes.cityLevel.ToString();
 
-		lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
-		List<Resource> neededRoleCost = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.neededRole);
-		if (neededRoleCost != null) {
-			for (int i = 0; i < neededRoleCost.Count; i++) {
-				lblUpgradeCitizenCost.text += neededRoleCost [i].resourceType.ToString () + ": " + neededRoleCost [i].resourceQuantity.ToString () + "\n";
-			}
-		}
-
-
-		if (cityTile.cityAttributes.newCitizenTarget != JOB_TYPE.NONE) {
-			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
-		}
-//		else {
-//			lblCreateCitizenTarget.text = "Create: NONE";
+//		lblUpgradeCitizenTarget.text = "Needed Role: " + cityTile.cityAttributes.neededRole.ToString ();
+//		List<Resource> neededRoleCost = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.neededRole);
+//		if (neededRoleCost != null) {
+//			for (int i = 0; i < neededRoleCost.Count; i++) {
+//				lblUpgradeCitizenCost.text += neededRoleCost [i].resourceType.ToString () + ": " + neededRoleCost [i].resourceQuantity.ToString () + "\n";
+//			}
+//		}
+//
+//
+//		if (cityTile.cityAttributes.newCitizenTarget != JOB_TYPE.NONE) {
+//			lblCreateCitizenTarget.text = "Create: " + cityTile.cityAttributes.newCitizenTarget.ToString();
+//		}
+////		else {
+////			lblCreateCitizenTarget.text = "Create: NONE";
+////		}
+//
+//		List<Resource> createCitizenResources = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.newCitizenTarget);
+//		if(createCitizenResources != null){
+//			for (int i = 0; i < createCitizenResources.Count; i++) {
+//				lblCreateCitizenCost.text += createCitizenResources[i].resourceQuantity + " " + createCitizenResources[i].resourceType.ToString() + "\n";
+//			}
 //		}
 
-		List<Resource> createCitizenResources = cityTile.cityAttributes.GetCitizenCreationCostPerType (cityTile.cityAttributes.newCitizenTarget);
-		if(createCitizenResources != null){
-			for (int i = 0; i < createCitizenResources.Count; i++) {
-				lblCreateCitizenCost.text += createCitizenResources[i].resourceQuantity + " " + createCitizenResources[i].resourceType.ToString() + "\n";
-			}
+		if (cityTile.cityAttributes.nextCityCitizenAction == CITY_CITIZEN_ACTION.CREATE_CITIZEN) {
+			lblCityCitizenAction.text = "CREATE new " + cityTile.cityAttributes.citizenActionJobType.ToString () + " on tile "
+			+ cityTile.cityAttributes.citizenActionHexTile.name;
+		} else if (cityTile.cityAttributes.nextCityCitizenAction == CITY_CITIZEN_ACTION.CHANGE_CITIZEN) {
+			lblCityCitizenAction.text = "CHANGE " + cityTile.cityAttributes.citizenToChange.name + "/" + cityTile.cityAttributes.citizenToChange.job.jobType.ToString () +
+			" to " + cityTile.cityAttributes.citizenActionJobType.ToString ();
+		} else {
+			lblCityCitizenAction.text = "No Citizen Action";
 		}
+
+		lblNeededResources.text = "[";
+		int[] neededResources = cityTile.cityAttributes.GetNeededResources();
+		for (int i = 0; i < neededResources.Length; i++) {
+			lblNeededResources.text += neededResources[i].ToString() + ",";
+		}
+		lblNeededResources.text += "]";
 
 
 		for (int i = 0; i < cityTile.cityAttributes.cityUpgradeRequirements.resource.Count; i++) {
