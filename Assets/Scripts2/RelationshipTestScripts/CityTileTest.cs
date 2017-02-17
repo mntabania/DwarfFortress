@@ -10,6 +10,12 @@ public class CityTileTest : MonoBehaviour {
 
 	public List<HexTile> cityTilesByDistance;
 
+	public void DevelopNewCity(KingdomTileTest conqueror, List<General> visitingGenerals){
+		this.cityAttributes = new CityTest (this.hexTile, conqueror);
+		this.cityAttributes.OccupyCity();
+		this.GetComponent<SpriteRenderer> ().color = this.cityAttributes.kingdomTile.kingdom.tileColor;
+		this.cityAttributes.visitingGenerals.AddRange (visitingGenerals);
+	}
 	public List<HexTile> GetAllCitiesByDistance(){
 		List<HexTile> allCityTiles = CityGenerator.Instance.cities.OrderBy(
 			x => Vector2.Distance(this.transform.position, x.transform.position) 
@@ -35,6 +41,7 @@ public class CityTileTest : MonoBehaviour {
 	}
 
 	public void TurnActions(int currentDay){
+		GeneralAI.TriggerMove ();
 		cityAttributes.ProduceResources();
 		cityAttributes.ConsumeFood(cityAttributes.GetDailyFoodConsumption());
 //		cityAttributes.SelectCitizenToUpgrade ();

@@ -276,3 +276,14 @@ public enum LORD_INSTRUCTIONS{
 	ATTACK,
 	DEFEND,
 }
+
+public enum GENERAL_STATUS{
+	BATTLE_DONE,
+}
+
+public enum GENERAL_TASK{
+	NONE,
+	ON_ATTACK,
+	ON_DEFEND,
+	ON_HELP,
+}

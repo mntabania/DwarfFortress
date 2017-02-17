@@ -323,5 +323,4 @@ public class KingdomTest{
 		}
 		return totalCitizenCount;
 	}
-
  }

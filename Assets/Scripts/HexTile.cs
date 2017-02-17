@@ -181,6 +181,9 @@ public class HexTile : MonoBehaviour {
 	public CityTile GetCityTile(){
 		return gameObject.GetComponent<CityTile>();
 	}
+	public CityTileTest GetCityTileTest(){
+		return gameObject.GetComponent<CityTileTest>();
+	}
 
 	public void GenerateResourceValues(){
 		Dictionary<BIOME_PRODUCE_TYPE, int[]> chancesDict = Utilities.biomeResourceChances[biomeType];

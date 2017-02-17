@@ -32,6 +32,7 @@ public class Lord {
 	public List<PEACE_REASONS> lordPeaceReasons;
 	public MIGHT_TRAIT lordMightTrait;
 	public RELATIONSHIP_TRAIT lordRelationshipTrait;
+	public List<MilitaryData> militaryData;
 
 	public int daysWithoutWar = -1;
 
@@ -77,6 +78,7 @@ public class Lord {
 		this.lordRelationshipTrait = GenerateRelationshipTrait();
 		this.lordPeaceReasons = GeneratePeaceReasons();
 		this.currentWarChance = this.defaultWarChance;
+		this.militaryData = new List<MilitaryData> ();
 		SetLastID (this.id);
 	}
 
@@ -2106,6 +2108,14 @@ public class Lord {
 		return null;
 	}
 
+	internal void MilitaryData(){
+		if(!hasEnemies()){
+			return;
+		}
+		for(int i = 0; i < this.kingdom.cities.Count; i++){
+			
+		}
+	}
 	internal void TriggerAttack(){
 		if(!hasEnemies()){
 			return;
@@ -2124,7 +2134,7 @@ public class Lord {
 
 				if(attackerCity != null){
 					CityTest defenderCity = GetCityWithWeakestArmy (attackerCity, enemyConnectedCities, enemyWeakestArmy);
-					attackerCity.TriggerCityAttack (defenderCity);
+//					attackerCity.TriggerCityAttack (defenderCity);
 				}else{
 					Debug.Log ("ALL CITIES ALREADY HAVE A TARGET!");
 				}
@@ -2232,47 +2242,47 @@ public class Lord {
 		}
 		return false;
 	}
-	internal void ProvideBattleHelp(CityTest neededHelpCity, int neededArmyStrength){
-		int armyStrength = 0;
-		bool hasProvidedHelp = false;
-		for(int i = 0; i < this.kingdom.cities.Count; i++){
-			if(this.kingdom.cities[i].cityAttributes.id != neededHelpCity.id){
-				if(this.kingdom.cities[i].cityAttributes.GetArmyStrength() > neededArmyStrength){
-					if(this.kingdom.cities[i].cityAttributes.enemyGenerals.Count <= 0){
-						if(this.kingdom.cities[i].cityAttributes.generals.Count > 1){
-							List<General> generalOrderByArmyStrength = this.kingdom.cities [i].cityAttributes.generals.OrderByDescending (x => x.ArmyStrength ()).ToList();
-							for(int j = 0; j < generalOrderByArmyStrength.Count - 1; j++){
-								armyStrength += generalOrderByArmyStrength[j].ArmyStrength();
-								neededHelpCity.helpGenerals.Add (new DeployedGenerals (generalOrderByArmyStrength [j], 0));
-								this.kingdom.cities [i].cityAttributes.deployedGenerals.Add (generalOrderByArmyStrength [j]);
-								if(armyStrength >= neededArmyStrength){
-									hasProvidedHelp = true;
-									break;
-								}
-							}
-						}else{
-							//NO OFFENSE GENERAL, MUST NOT LEAVE CITY DEFENSELESS
-						}
-					}else{
-						//MUST DEFEND CAN'T PROVIDE HELP
-					}
-				}else{
-					//CAN'T HELP. STRENGTH IS LOWER THAN NEEDED
-				}
-
-			}
-			if(armyStrength >= neededArmyStrength){
-				hasProvidedHelp = true;
-				break;
-			}
-
-		}
-
-		if(!hasProvidedHelp){
-			//CREATE GENERALS OR INCREASE UPGRADE CITY CHANCE
-			CreateGeneralsForPreparation(neededHelpCity);
-		}
-	}
+//	internal void ProvideBattleHelp(CityTest neededHelpCity, int neededArmyStrength){
+//		int armyStrength = 0;
+//		bool hasProvidedHelp = false;
+//		for(int i = 0; i < this.kingdom.cities.Count; i++){
+//			if(this.kingdom.cities[i].cityAttributes.id != neededHelpCity.id){
+//				if(this.kingdom.cities[i].cityAttributes.GetArmyStrength() > neededArmyStrength){
+//					if(this.kingdom.cities[i].cityAttributes.enemyGenerals.Count <= 0){
+//						if(this.kingdom.cities[i].cityAttributes.generals.Count > 1){
+//							List<General> generalOrderByArmyStrength = this.kingdom.cities [i].cityAttributes.generals.OrderByDescending (x => x.ArmyStrength ()).ToList();
+//							for(int j = 0; j < generalOrderByArmyStrength.Count - 1; j++){
+//								armyStrength += generalOrderByArmyStrength[j].ArmyStrength();
+//								neededHelpCity.helpGenerals.Add (new DeployedGenerals (generalOrderByArmyStrength [j], 0));
+//								this.kingdom.cities [i].cityAttributes.deployedGenerals.Add (generalOrderByArmyStrength [j]);
+//								if(armyStrength >= neededArmyStrength){
+//									hasProvidedHelp = true;
+//									break;
+//								}
+//							}
+//						}else{
+//							//NO OFFENSE GENERAL, MUST NOT LEAVE CITY DEFENSELESS
+//						}
+//					}else{
+//						//MUST DEFEND CAN'T PROVIDE HELP
+//					}
+//				}else{
+//					//CAN'T HELP. STRENGTH IS LOWER THAN NEEDED
+//				}
+//
+//			}
+//			if(armyStrength >= neededArmyStrength){
+//				hasProvidedHelp = true;
+//				break;
+//			}
+//
+//		}
+//
+//		if(!hasProvidedHelp){
+//			//CREATE GENERALS OR INCREASE UPGRADE CITY CHANCE
+//			CreateGeneralsForPreparation(neededHelpCity);
+//		}
+//	}
 
 	internal void CreateGeneralsForPreparation(CityTest neededHelpCity){
 		if(neededHelpCity.generals.Count >= neededHelpCity.generalsLimit){
@@ -2280,5 +2290,30 @@ public class Lord {
 		}else{
 			neededHelpCity.AttemptToCreateGeneral ();
 		}
+	}
+	internal bool CheckForSpecificWar(Lord lord){
+		for(int i = 0; i < this.relationshipLords.Count; i++){
+			if(this.relationshipLords[i].lord.id == lord.id){
+				if(this.relationshipLords[i].isAtWar){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	internal void UpdateMilitaryData(){
+		this.militaryData.RemoveAll (x => x.isResolved);
+		List<MilitaryData> allDefense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
+		List<MilitaryData> allOffense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.ATTACK).ToList();
+		allDefense = allDefense.OrderBy (x => x.enemyGeneral.daysBeforeArrival).ToList();
+		allOffense = allOffense.OrderBy (x => x.enemyCity.GetArmyStrength ()).ToList();
+
+		List<MilitaryData> allData = new List<MilitaryData> ();
+		allData.AddRange(allDefense);
+		allData.AddRange (allOffense);
+
+
+		this.militaryData = new List<MilitaryData>(allData);
 	}
 }
