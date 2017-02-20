@@ -276,8 +276,6 @@ public enum LORD_INSTRUCTIONS{
 	ATTACK,
 	DEFEND,
 }
-
-<<<<<<< HEAD
 public enum GENERAL_STATUS{
 	BATTLE_DONE,
 }
@@ -287,10 +285,9 @@ public enum GENERAL_TASK{
 	ON_ATTACK,
 	ON_DEFEND,
 	ON_HELP,
-=======
+}
 public enum CITY_CITIZEN_ACTION{
 	CREATE_CITIZEN,
 	CHANGE_CITIZEN,
-	NONE
->>>>>>> 217311a2889925b13b8b25e4c286b44d2c2ba70f
+	NONE,
 }
