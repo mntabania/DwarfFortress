@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
 
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour {
 	public int daysUntilNextHarvest = 30;
 	public bool harvestTime;
 
+
 	void Awake(){
 		Instance = this;
 		this.cities = new List<GameObject>();
@@ -49,6 +52,17 @@ public class GameManager : MonoBehaviour {
 //		GenerateInitialCitizens ();
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (this.cities [0].GetComponent<CityTileTest> ());
+	}
+
+
+	/*
+	 * Get List of tiles (Path) that will connect 2 city tiles
+	 * */
+	IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
+		Func<Tile, Tile, double> distance = (node1, node2) => 1;
+		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destinationTile.X, 2) + Math.Pow(t.Y - destinationTile.Y, 2));
+		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, forCreatingRoads);
+		return path;
 	}
 
 	void MapGenerator(){
@@ -78,9 +92,32 @@ public class GameManager : MonoBehaviour {
 				previousCityIndex = 5;
 			}
 
-			currentCityTile.cityAttributes.connectedCities.Add(this.cities[nextCityIndex].GetComponent<CityTileTest>());
-			currentCityTile.cityAttributes.connectedCities.Add(this.cities[previousCityIndex].GetComponent<CityTileTest>());
+			currentCityTile.cityAttributes.AddCityAsConnected(this.cities [nextCityIndex].GetComponent<CityTileTest>());
+			currentCityTile.cityAttributes.AddCityAsConnected(this.cities [previousCityIndex].GetComponent<CityTileTest>());
+
+			Tile thisCity = currentCityTile.GetComponent<HexTile>().tile;
+			for (int j = 0; j < currentCityTile.cityAttributes.connectedCities.Count; j++) {
+				Tile tileToConnectTo = currentCityTile.cityAttributes.connectedCities[j].hexTile.tile;
+				thisCity.canPass = true;
+				tileToConnectTo.canPass = true;
+				List<Tile> roads = GetPath(thisCity, tileToConnectTo, true).ToList();
+				for (int k = 0; k < roads.Count; k++) {
+					roads [k].hexTile.isRoad = true;
+					if (!roads [k].hexTile.isCity && !roads [k].hexTile.isOccupied) {
+						roads [k].hexTile.SetTileColor (Color.gray);
+					}
+				}
+				thisCity.canPass = false;
+				tileToConnectTo.canPass = false;
+			}
 		}
+
+
+
+
+
+
+
 	}
 
 	void GenerateBiomes(){
@@ -196,7 +233,7 @@ public class GameManager : MonoBehaviour {
 	public KingdomTileTest CreateNewKingdom(RACE race, List<CityTileTest> initialCities){
 		GameObject goKingdom = (GameObject)GameObject.Instantiate(kingdomTilePrefab);
 		goKingdom.transform.parent = this.transform;
-		goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, race, initialCities, Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
+		goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, race, initialCities, UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
 		goKingdom.name = goKingdom.GetComponent<KingdomTileTest>().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
 		goKingdom.GetComponent<KingdomTileTest>().kingdom.lord.CreateInitialRelationshipsToLords();
@@ -242,7 +279,7 @@ public class GameManager : MonoBehaviour {
 	}
 	void AssignCitiesToKingdoms(){
 		for (int i = 0; i < cities.Count; i++) {
-			KingdomTileTest randomKingdom = kingdoms [Random.Range (0, kingdoms.Count)];
+			KingdomTileTest randomKingdom = kingdoms [UnityEngine.Random.Range (0, kingdoms.Count)];
 			randomKingdom.AddCityToKingdom (cities [i].GetComponent<CityTileTest> ());
 		}
 	}

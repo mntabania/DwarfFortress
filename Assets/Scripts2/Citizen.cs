@@ -73,7 +73,6 @@ public class Citizen {
 			return new Farmer ();
 		case JOB_TYPE.HUNTER:
 			return new Hunter ();
-
 		case JOB_TYPE.MINER:
 			return new Miner ();
 		case JOB_TYPE.QUARRYMAN:
@@ -82,6 +81,8 @@ public class Citizen {
 			return new Woodsman ();
 		case JOB_TYPE.PIONEER:
 			return new Pioneer ();
+		case JOB_TYPE.MERCHANT:
+			return new Merchant ();
 		default:
 			return new Job ();
 		}
@@ -122,9 +123,9 @@ public class Citizen {
 	internal void ChangeJob(JOB_TYPE jobType){
 		this._job = GetJob(jobType);
 		this._job.citizen = this;
-		if (jobType != JOB_TYPE.PIONEER) {
-			UpdateUpgradeRequirements ();
-		}
+//		if (jobType != JOB_TYPE.PIONEER) {
+//			UpdateUpgradeRequirements ();
+//		}
 	}
 
 	internal void AssignCitizenToTile(List<HexTile> hexTiles){
