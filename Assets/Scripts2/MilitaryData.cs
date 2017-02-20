@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[System.Serializable]
 public class MilitaryData {
 	public CityTest enemyCity;
 	public General enemyGeneral;

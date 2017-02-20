@@ -73,7 +73,6 @@ public class Citizen {
 			return new Farmer ();
 		case JOB_TYPE.HUNTER:
 			return new Hunter ();
-
 		case JOB_TYPE.MINER:
 			return new Miner ();
 		case JOB_TYPE.QUARRYMAN:

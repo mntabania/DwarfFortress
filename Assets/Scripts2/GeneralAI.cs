@@ -9,6 +9,9 @@ public class GeneralAI : MonoBehaviour {
 	public delegate void Move();
 	public static event Move onMove;
 
+	public delegate void CheckTask();
+	public static event CheckTask onCheckTask;
+
 	public static void SendInstructions(GENERAL_STATUS status, General general){
 		if(onInstruct != null){
 			onInstruct (status, general);
@@ -18,6 +21,12 @@ public class GeneralAI : MonoBehaviour {
 	public static void TriggerMove(){
 		if(onMove != null){
 			onMove ();
+		}
+	}
+
+	public static void TriggerCheckTask(){
+		if(onCheckTask != null){
+			onCheckTask ();
 		}
 	}
 }

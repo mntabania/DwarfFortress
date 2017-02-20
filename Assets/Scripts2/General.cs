@@ -25,14 +25,18 @@ public class General {
 		this.task = GENERAL_TASK.NONE;
 		this.daysBeforeArrival = 0;
 		this.daysBeforeReleaseTask = 0;
-//		GeneralAI.onMove += Move;
+		GeneralAI.onMove += Move;
+		GeneralAI.onCheckTask += CheckTask;
 		SetLastID (this.id);
 	}
 
 	private void Move(){
 //		if(this.onAttack || this.onHelp){
 		if (this.targetLocation != null) {
-			
+			if(this.location != this.targetLocation){
+				this.location = this.targetLocation;
+				Debug.Log (this.name + " HAS MOVED TO " + this.location.name);
+			}
 //			if (this.location == this.targetLocation) {
 //				if (this.location != this.city.hexTile) {
 //					this.targetLocation.GetCityTileTest ().cityAttributes.visitingGenerals.Add (this);
@@ -56,6 +60,7 @@ public class General {
 		}
 	}
 	private void CheckTask(){
+		Debug.Log (this.name + " CHECKING TASK....");
 		if(this.task == GENERAL_TASK.NONE){
 			this.city.GiveMeTask (this);
 		}
