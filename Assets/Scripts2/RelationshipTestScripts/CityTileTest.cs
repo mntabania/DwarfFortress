@@ -86,7 +86,7 @@ public class CityTileTest : MonoBehaviour {
 	}
 
 	public void TurnActions(int currentDay){
-		GeneralAI.TriggerMove ();
+
 		cityAttributes.ProduceResources();
 		cityAttributes.ConsumeFood(cityAttributes.GetDailyFoodConsumption());
 //		cityAttributes.SelectCitizenToUpgrade ();
@@ -110,6 +110,9 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.LaunchTradeMission();
 		cityAttributes.AttemptToCreatePioneer();
 		cityAttributes.AttemptToPerformCitizenAction();
+		GeneralAI.TriggerCheckTask ();
+		GeneralAI.TriggerMove ();
+		cityAttributes.CheckVisitingGenerals ();
 //		cityAttributes.UpdateResourcesStatus();
 	}
 }

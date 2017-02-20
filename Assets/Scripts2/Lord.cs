@@ -1680,6 +1680,11 @@ public class Lord {
 			relOfThisLord.like = -50;
 			relOfThisLord.lordRelationship = GetLordRelationship (relOfThisLord.like);
 		}
+
+		for(int i = 0; i < lord.kingdom.cities.Count; i++){
+			this.militaryData.Add (new MilitaryData (lord.kingdom.cities [i].cityAttributes, null, 0, BATTLE_MOVE.ATTACK));
+		}
+		this.UpdateMilitaryData ();
 		GameManager.Instance.turnEnded += relOfThisLord.IncreaseWartime;
 	}
 
@@ -2315,5 +2320,43 @@ public class Lord {
 
 
 		this.militaryData = new List<MilitaryData>(allData);
+	}
+
+	internal MilitaryData SearchForDefenseMilitaryData(CityTest city){
+		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
+		if(milData == null){
+			return null;
+		}
+		for (int i = 0; i < milData.Count; i++) {
+			if(!milData[i].isResolved){
+				if(milData[i].enemyGeneral.targetCity.id == city.id){
+					return milData [i];
+				}
+			}
+		}
+		return null;
+	}
+	internal MilitaryData RemoveMilitaryData(BATTLE_MOVE battleMove, CityTest city, General general){
+		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == battleMove).ToList();
+
+		if(battleMove == BATTLE_MOVE.ATTACK){
+			for (int i = 0; i < milData.Count; i++) {
+				if(milData[i].enemyCity.id == city.id){
+					milData.RemoveAt (i);
+					break;
+				}
+
+			}
+		}else{
+			for (int i = 0; i < milData.Count; i++) {
+				if(milData[i].enemyGeneral.id == general.id){
+					milData.RemoveAt (i);
+					break;
+				}
+
+			}
+		}
+
+		return null;
 	}
 }
