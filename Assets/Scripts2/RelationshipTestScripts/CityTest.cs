@@ -2602,6 +2602,7 @@ public class CityTest{
 			//CONQUER CITY
 			Debug.Log (this.cityName + " IS CONQUERED BY " + victoriousGeneral.city.cityName);
 			victoriousGeneral.city.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.ATTACK, this, null);
+			this.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.DEFEND, null, victoriousGeneral);
 			victoriousGeneral.task = GENERAL_TASK.NONE;
 			victoriousGeneral.targetCity = null;
 			this.generals.Clear ();
