@@ -382,19 +382,20 @@ public class CityTest{
 		int halfGoldValue = (int)((float)this.goldValue / 2f);
 		int producedGold = (int)((float)(halfGoldValue + UnityEngine.Random.Range(1, halfGoldValue + 1)) * goldMultiplier);
 		this.goldCount += producedGold;
-
-		for(int i = 0; i < this.citizens.Count; i++){
-			int starvationModifier = 1;
-			if (this.cityState == CITY_STATE.STARVATION) {
-				starvationModifier = 2;
+		if(this.citizens.Count > 0){
+			for(int i = 0; i < this.citizens.Count; i++){
+				int starvationModifier = 1;
+				if (this.cityState == CITY_STATE.STARVATION) {
+					starvationModifier = 2;
+				}
+				int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
+				this.goldCount += (int)(resourcesProducedByCitizen[0] / starvationModifier);
+				this.foodStockpileCount += resourcesProducedByCitizen[1]; //Add food to stockpile instead
+				this.lumberCount += (int)(resourcesProducedByCitizen[2] / starvationModifier);
+				this.stoneCount += (int)(resourcesProducedByCitizen[3] / starvationModifier);
+				this.manaStoneCount += (int)(resourcesProducedByCitizen[4] / starvationModifier);
+				this.metalCount += (int)(resourcesProducedByCitizen[5] / starvationModifier);
 			}
-			int[] resourcesProducedByCitizen = this.citizens[i].GetAllDailyProduction();
-			this.goldCount += (int)(resourcesProducedByCitizen[0] / starvationModifier);
-			this.foodStockpileCount += resourcesProducedByCitizen[1]; //Add food to stockpile instead
-			this.lumberCount += (int)(resourcesProducedByCitizen[2] / starvationModifier);
-			this.stoneCount += (int)(resourcesProducedByCitizen[3] / starvationModifier);
-			this.manaStoneCount += (int)(resourcesProducedByCitizen[4] / starvationModifier);
-			this.metalCount += (int)(resourcesProducedByCitizen[5] / starvationModifier);
 		}
 	}
 
@@ -404,8 +405,10 @@ public class CityTest{
 	 * */
 	internal int GetGoldValue(){
 		int goldValue = 0;
-		for(int i = 0; i < this.ownedBiomeTiles.Count; i++){
-			goldValue += this.ownedBiomeTiles [i].goldValue;
+		if(this.ownedBiomeTiles.Count > 0){
+			for(int i = 0; i < this.ownedBiomeTiles.Count; i++){
+				goldValue += this.ownedBiomeTiles [i].goldValue;
+			}
 		}
 		return goldValue;
 	}
@@ -1214,9 +1217,11 @@ public class CityTest{
 
 
 	private bool isResourceUnneeded (RESOURCE resource){
-		for(int i = 0; i < this.unneededResources.Count; i++){
-			if(resource == this.unneededResources[i]){
-				return true;
+		if(this.unneededResources.Count > 0){
+			for(int i = 0; i < this.unneededResources.Count; i++){
+				if(resource == this.unneededResources[i]){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1237,7 +1242,6 @@ public class CityTest{
 		List<JOB_TYPE> tempUnneededJobs = new List<JOB_TYPE>();
 		bool isAllUnneeded = true;
 		bool hasUnneeded = false;
-		int excess = 0;
 		for (int i = 0; i < Lookup.JOB_REF.Length; i++) {
 			isAllUnneeded = true;
 			if(Lookup.GetJobInfo(i).resourcesProduced == null){
@@ -1281,19 +1285,22 @@ public class CityTest{
 	}
 	internal void ArmyMaintenance(){
 		if(GameManager.Instance.currentDay % 8 == 0){
-			for(int i = 0; i < this.generals.Count; i++){
-				if (this.goldCount >= this.armyMaintenanceAmount) {
-					Debug.Log (this.generals[i].name + " ARMY IS MAINTAINED!");
-					AdjustResourceCount (RESOURCE.GOLD, -this.armyMaintenanceAmount);
-				}else{
-					Debug.Log ("CAN'T MAINTAIN ARMY. COUNT WILL BE REDUCED!");
-					this.generals [i].army.armyCount -= this.kingdomTile.kingdom.armyIncreaseUnits;
-					if(this.generals[i].army.armyCount <= 0){
-						this.generals.RemoveAt (i);
-						i--;
+			if(this.generals.Count > 0){
+				for(int i = 0; i < this.generals.Count; i++){
+					if (this.goldCount >= this.armyMaintenanceAmount) {
+						Debug.Log (this.generals[i].name + " ARMY IS MAINTAINED!");
+						AdjustResourceCount (RESOURCE.GOLD, -this.armyMaintenanceAmount);
+					}else{
+						Debug.Log ("CAN'T MAINTAIN ARMY. COUNT WILL BE REDUCED!");
+						this.generals [i].army.armyCount -= this.kingdomTile.kingdom.armyIncreaseUnits;
+						if(this.generals[i].army.armyCount <= 0){
+							this.generals.RemoveAt (i);
+							i--;
+						}
 					}
 				}
 			}
+
 //			for(int i = 0; i < this.citizens.Count; i++){
 //				if(this.citizens[i].job.jobType == JOB_TYPE.DEFENSE_GENERAL || this.citizens[i].job.jobType == JOB_TYPE.OFFENSE_GENERAL){
 //					if (this.goldCount >= this.armyMaintenanceAmount) {
@@ -1317,10 +1324,12 @@ public class CityTest{
 			if(HasEnoughResourcesForAction(this.kingdomTile.kingdom.armyIncreaseUnitResource)){
 				if (this.generals.Count > 0) {
 					List<General> generals = this.generals.Where (x => x.location == this.hexTile).ToList();
-					this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
-					General chosenGeneral = generals [UnityEngine.Random.Range (0, generals.Count)];
-					chosenGeneral.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
-					ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
+					if(generals.Count > 0){
+						this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
+						General chosenGeneral = generals [UnityEngine.Random.Range (0, generals.Count)];
+						chosenGeneral.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
+						ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
+					}
 				}
 			}else{
 //				Debug.Log ("DON'T HAVE ENOUGH RESOURCES FOR INCREASE ARMY COUNT!");
@@ -1603,11 +1612,14 @@ public class CityTest{
 
 	internal Citizen GetCitizenForChange(JOB_TYPE unneededRole){
 		List<Citizen> unneededCitizens = new List<Citizen> ();
-		for(int i = 0; i < this.citizens.Count; i++){
-			if(this.citizens[i].job.jobType == unneededRole){
-				unneededCitizens.Add (this.citizens [i]);
+		if(this.citizens.Count > 0){
+			for(int i = 0; i < this.citizens.Count; i++){
+				if(this.citizens[i].job.jobType == unneededRole){
+					unneededCitizens.Add (this.citizens [i]);
+				}
 			}
 		}
+
 		if (unneededCitizens.Count > 0) {
 			return unneededCitizens [UnityEngine.Random.Range (0, unneededCitizens.Count)];
 		}
@@ -2346,14 +2358,14 @@ public class CityTest{
 //		}
 //	}
 	internal void CheckVisitingGenerals(){
+		this.visitingGenerals.RemoveAll (x => x.targetLocation != this.hexTile && x.location != this.hexTile);
+
 		if(this.visitingGenerals.Count <= 0){
 			return;
 		}
 		General victoriousGeneral = null;
 		General friendlyGeneral = null;
 		General visitingGeneral = null;
-
-		this.visitingGenerals.RemoveAll (x => x.targetLocation != this.hexTile && x.location != this.hexTile);
 
 		List<General> helpingGenerals = this.visitingGenerals.Where (x => x.task == GENERAL_TASK.ON_HELP && x.location == this.hexTile).ToList ();
 		
@@ -2393,7 +2405,7 @@ public class CityTest{
 										victoriousGeneral = this.visitingGenerals [i];
 									} else {
 										friendlyGeneral = victoriousGeneral;
-										if (this.visitingGenerals [i].city.kingdomTile.kingdom.lord.CheckForSpecificWar (friendlyGeneral.city.kingdomTile.kingdom.lord)) {
+										if (this.visitingGenerals [i].city.kingdomTile.kingdom.lord.CheckForSpecificWar(friendlyGeneral.city.kingdomTile.kingdom.lord)) {
 											Debug.Log ("CITY IS FOR TAKING! NO MORE GENERALS! BATTLE FOR OWNERSHIP!");
 											Battle (ref visitingGeneral, ref friendlyGeneral);
 											this.visitingGenerals [i] = visitingGeneral;
@@ -2470,10 +2482,6 @@ public class CityTest{
 			this.generals.Clear ();
 			ConquerCity (victoriousGeneral.city.kingdomTile, this.visitingGenerals);
 		}
-	}
-	internal void BattleGenerals(){
-		
-
 	}
 //	internal void CheckVisitingGenerals(){
 //		if(this.visitingGenerals.Count <= 0){
@@ -2581,8 +2589,10 @@ public class CityTest{
 //							deadFriendlies.Add (friendlyGeneral);
 //						} 
 		}
-		for (int j = 0; j < deadFriendlies.Count; j++) {
-			friendlyGenerals.Remove (deadFriendlies [j]);
+		if(deadFriendlies.Count > 0){
+			for (int j = 0; j < deadFriendlies.Count; j++) {
+				friendlyGenerals.Remove (deadFriendlies [j]);
+			}
 		}
 //		return this.generals;
 	}
@@ -2598,6 +2608,10 @@ public class CityTest{
 		
 	}
 	internal void Battle(ref General general1, ref General general2){
+		Debug.Log ("BATTLE: " + general1.name + " and " + general2.name);
+		Debug.Log ("enemy general army: " + general1.ArmyStrength ());
+		Debug.Log ("friendly general army: " + general2.ArmyStrength ());
+
 		float general1HPmultiplier = 1f;
 		float general2HPmultiplier = 1f;
 
@@ -2621,7 +2635,7 @@ public class CityTest{
 			general1.army.armyCount = (int)Math.Ceiling((double)(general1TotalHP / general1.army.armyStats.hp));
 			general2.army.armyCount = (int)Math.Ceiling((double)(general2TotalHP / general2.army.armyStats.hp));
 		}
-
+		Debug.Log ("RESULTS: " + general1.name + " army count left: " + general1.army.armyCount + "\n" + general2.name + " army count left: " + general2.army.armyCount);
 //		if(general1.job.army.armyCount == 0){
 //			general1.city.citizens.Remove (general1);
 //		}
@@ -2679,34 +2693,39 @@ public class CityTest{
 
 	internal int GetArmyStrength(bool forAttack = false){
 		int strength = 0;
-		for(int i = 0; i < this.generals.Count; i++){
-			if(this.generals[i].city.id == this.id){
-				if(forAttack){
-					if(this.generals[i].task == GENERAL_TASK.NONE){
-						strength += this.generals[i].ArmyStrength();
-					}
-				}else{
-					if (this.generals [i].location == this.hexTile) {
-						strength += this.generals [i].ArmyStrength ();
-					} else {
-						if(this.generals[i].task == GENERAL_TASK.ON_DEFEND){
+		if(this.generals.Count > 0){
+			for(int i = 0; i < this.generals.Count; i++){
+				if(this.generals[i].city.id == this.id){
+					if(forAttack){
+						if(this.generals[i].task == GENERAL_TASK.NONE){
+							strength += this.generals[i].ArmyStrength();
+						}
+					}else{
+						if (this.generals [i].location == this.hexTile) {
 							strength += this.generals [i].ArmyStrength ();
+						} else {
+							if(this.generals[i].task == GENERAL_TASK.ON_DEFEND){
+								strength += this.generals [i].ArmyStrength ();
+							}
 						}
 					}
 				}
 			}
 		}
-		for(int i = 0; i < this.visitingGenerals.Count; i++){
-			if(this.visitingGenerals[i].location == this.hexTile){
-				if(this.visitingGenerals[i].task != GENERAL_TASK.ON_ATTACK){
-					strength += this.visitingGenerals [i].ArmyStrength ();
-				}
-			}else{
-				if(this.visitingGenerals[i].task == GENERAL_TASK.ON_HELP){
-					strength += this.visitingGenerals [i].ArmyStrength ();
+		if(this.visitingGenerals.Count > 0){
+			for(int i = 0; i < this.visitingGenerals.Count; i++){
+				if(this.visitingGenerals[i].location == this.hexTile){
+					if(this.visitingGenerals[i].task != GENERAL_TASK.ON_ATTACK){
+						strength += this.visitingGenerals [i].ArmyStrength ();
+					}
+				}else{
+					if(this.visitingGenerals[i].task == GENERAL_TASK.ON_HELP){
+						strength += this.visitingGenerals [i].ArmyStrength ();
+					}
 				}
 			}
 		}
+
 		return strength;
 	}
 	#endregion
@@ -2714,47 +2733,55 @@ public class CityTest{
 		MilitaryData mildata = new MilitaryData (null, enemyGeneral, 0, BATTLE_MOVE.DEFEND);
 
 		int strength = 0;
-		this.generals = this.generals.OrderByDescending (x => x.ArmyStrength ()).ToList();
-		for(int i = 0; i < this.generals.Count; i++){
-			if(this.generals[i].location == this.hexTile){
-				if(this.generals[i].task == GENERAL_TASK.NONE){
-					strength += this.generals [i].ArmyStrength ();
-					this.generals [i].task = GENERAL_TASK.ON_DEFEND;
-					this.generals [i].daysBeforeReleaseTask = enemyGeneral.daysBeforeArrival + 1;
-					this.generals [i].targetCity = null;
-					this.generals [i].targetLocation = this.hexTile;
-					if(strength >= enemyGeneral.ArmyStrength()){
-						break;
-					}
-				}
-			}
-		}
-		if(strength < enemyGeneral.ArmyStrength()){
-			for(int i = 0; i < this.generals.Count; i++){
-				if(this.generals[i].location != this.hexTile){
-					if(this.generals[i].task == GENERAL_TASK.NONE){
-						//Check if distance will suffice the needed days
-						int distance = 0;
 
-						if(distance <= enemyGeneral.daysBeforeArrival){
-							strength += this.generals [i].ArmyStrength ();
-							this.generals [i].task = GENERAL_TASK.ON_DEFEND;
-							this.generals [i].daysBeforeReleaseTask = enemyGeneral.daysBeforeArrival + 1;
-							this.generals [i].targetCity = null;
-							this.generals [i].targetLocation = this.hexTile;
-							this.generals [i].daysBeforeArrival = distance;
-							if(strength >= enemyGeneral.ArmyStrength()){
-								break;
-							}
+		if(this.generals.Count > 0){
+			this.generals = this.generals.OrderByDescending (x => x.ArmyStrength ()).ToList();
+			for(int i = 0; i < this.generals.Count; i++){
+				if(this.generals[i].location == this.hexTile){
+					if(this.generals[i].task == GENERAL_TASK.NONE){
+						strength += this.generals [i].ArmyStrength ();
+						this.generals [i].task = GENERAL_TASK.ON_DEFEND;
+						this.generals [i].daysBeforeReleaseTask = enemyGeneral.daysBeforeArrival + 1;
+						this.generals [i].targetCity = null;
+						this.generals [i].targetLocation = this.hexTile;
+						if(strength >= enemyGeneral.ArmyStrength()){
+							break;
 						}
 					}
 				}
-			}		
+			}
+			if(strength < enemyGeneral.ArmyStrength()){
+				for(int i = 0; i < this.generals.Count; i++){
+					if(this.generals[i].location != this.hexTile){
+						if(this.generals[i].task == GENERAL_TASK.NONE){
+							//Check if distance will suffice the needed days
+							List<Tile> roads = new List<Tile>(GameManager.Instance.GetPath(this.generals[i].location.tile, this.hexTile.tile, false).Reverse().ToList());
+							roads.RemoveAt (0);
+							int distance = roads.Count;
+
+							if(distance <= enemyGeneral.daysBeforeArrival){
+								strength += this.generals [i].ArmyStrength ();
+								this.generals [i].task = GENERAL_TASK.ON_DEFEND;
+								this.generals [i].daysBeforeReleaseTask = enemyGeneral.daysBeforeArrival + 1;
+								this.generals [i].targetCity = null;
+								this.generals [i].targetLocation = this.hexTile;
+								this.generals [i].daysBeforeArrival = distance;
+								this.generals [i].roads.Clear ();
+								this.generals [i].roads = roads;
+								if(strength >= enemyGeneral.ArmyStrength()){
+									break;
+								}
+							}
+						}
+					}
+				}		
+			}
+
+			if (strength >= enemyGeneral.ArmyStrength ()) {
+				mildata.isResolved = true;
+			}
 		}
 
-		if (strength >= enemyGeneral.ArmyStrength ()) {
-			mildata.isResolved = true;
-		}
 
 		this.kingdomTile.kingdom.lord.militaryData.Add(mildata);
 		this.kingdomTile.kingdom.lord.UpdateMilitaryData ();
@@ -2767,7 +2794,9 @@ public class CityTest{
 		MilitaryData milDataForDef = this.kingdomTile.kingdom.lord.SearchForDefenseMilitaryData (this);
 		if(milDataForDef != null){
 			int neededStrength = milDataForDef.enemyGeneral.ArmyStrength () - milDataForDef.enemyGeneral.targetCity.GetArmyStrength ();
-			int distance = 0;
+			List<Tile> roads = new List<Tile>(GameManager.Instance.GetPath(general.location.tile, this.hexTile.tile, false).Reverse().ToList());
+			roads.RemoveAt (0);
+			int distance = roads.Count;
 
 			if (distance <= milDataForDef.enemyGeneral.daysBeforeArrival) {
 				askingGeneral.task = GENERAL_TASK.ON_DEFEND;
@@ -2775,25 +2804,28 @@ public class CityTest{
 				askingGeneral.targetCity = null;
 				askingGeneral.targetLocation = this.hexTile;
 				askingGeneral.daysBeforeArrival = distance;
+				askingGeneral.roads.Clear ();
+				askingGeneral.roads = roads;
 			}
 
 			if(milDataForDef.enemyGeneral.targetCity.GetArmyStrength() >= milDataForDef.enemyGeneral.ArmyStrength()){
 				milDataForDef.isResolved = true;
 			}
 		}else{
-			for(int i = 0; i < this.kingdomTile.kingdom.lord.militaryData.Count; i++){
-				if(!this.kingdomTile.kingdom.lord.militaryData [i].isResolved){
-					MilitaryData milData = this.kingdomTile.kingdom.lord.militaryData [i];
-					ProcessTask (ref milData, ref askingGeneral);
-					if(askingGeneral.task == GENERAL_TASK.NONE){
-						continue;
-					}else{
-						break;
+			if(this.kingdomTile.kingdom.lord.militaryData.Count > 0){
+				for(int i = 0; i < this.kingdomTile.kingdom.lord.militaryData.Count; i++){
+					if(!this.kingdomTile.kingdom.lord.militaryData [i].isResolved){
+						MilitaryData milData = this.kingdomTile.kingdom.lord.militaryData [i];
+						ProcessTask (ref milData, ref askingGeneral);
+						if(askingGeneral.task == GENERAL_TASK.NONE){
+							continue;
+						}else{
+							break;
+						}
 					}
 				}
 			}
 		}
-
 	}
 	internal void ProcessTask(ref MilitaryData militaryData, ref General general){
 		if (militaryData.battleMove == BATTLE_MOVE.ATTACK) {
@@ -2801,10 +2833,14 @@ public class CityTest{
 				this.targetCity = militaryData.enemyCity;
 			}
 			if(this.targetCity == militaryData.enemyCity){
+				List<Tile> roads = new List<Tile>(GameManager.Instance.GetPath(general.location.tile, militaryData.enemyCity.hexTile.tile, false).Reverse().ToList());
+				roads.RemoveAt (0);
 				general.targetCity = militaryData.enemyCity;
 				general.targetLocation = militaryData.enemyCity.hexTile;
-				general.daysBeforeArrival = 0;
+				general.daysBeforeArrival = roads.Count;
 				general.task = GENERAL_TASK.ON_ATTACK;
+				general.roads.Clear ();
+				general.roads = roads;
 				militaryData.enemyCity.visitingGenerals.Add (general);
 				militaryData.enemyCity.TriggerCityDefense (general);
 				militaryData.yourArmyStrength += general.ArmyStrength ();
@@ -2813,24 +2849,32 @@ public class CityTest{
 				}
 			}else{
 				if(general.location != this.hexTile){
-					int distance = 0;
+					List<Tile> roads = new List<Tile>(GameManager.Instance.GetPath(general.location.tile, this.hexTile.tile, false).Reverse().ToList());
+					roads.RemoveAt (0);
+					int distance = roads.Count;
 					general.daysBeforeArrival = distance;
 					general.task = GENERAL_TASK.ON_DEFEND;
 					general.daysBeforeReleaseTask = general.daysBeforeArrival;
 					general.targetCity = null;
 					general.targetLocation = this.hexTile;
+					general.roads.Clear ();
+					general.roads = roads;
 				}
 			}
 		}else{
 			if(militaryData.enemyGeneral.ArmyStrength() > militaryData.enemyGeneral.targetCity.GetArmyStrength()){
 				int neededStrength = militaryData.enemyGeneral.ArmyStrength () - militaryData.enemyGeneral.targetCity.GetArmyStrength ();
-				int distance = 0;
+				List<Tile> roads = new List<Tile>(GameManager.Instance.GetPath(general.location.tile,  militaryData.enemyGeneral.targetCity.hexTile.tile, false).Reverse().ToList());
+				roads.RemoveAt (0);
+				int distance = roads.Count;
 
 				if (distance <= militaryData.enemyGeneral.daysBeforeArrival) {
 					general.task = GENERAL_TASK.ON_HELP;
 					general.targetCity = null;
 					general.targetLocation = militaryData.enemyGeneral.targetCity.hexTile;
 					general.daysBeforeArrival = distance;
+					general.roads.Clear ();
+					general.roads = roads;
 					militaryData.enemyGeneral.targetCity.visitingGenerals.Add (general);
 				}
 
@@ -2843,9 +2887,11 @@ public class CityTest{
 
 	}
 	internal General SearchGeneralByID(int id){
-		for(int i = 0; i < this.generals.Count; i++){
-			if(this.generals[i].id == id){
-				return this.generals [i];
+		if(this.generals.Count > 0){
+			for(int i = 0; i < this.generals.Count; i++){
+				if(this.generals[i].id == id){
+					return this.generals [i];
+				}
 			}
 		}
 		return null;

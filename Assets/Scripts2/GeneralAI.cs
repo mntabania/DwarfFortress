@@ -18,13 +18,13 @@ public class GeneralAI : MonoBehaviour {
 		}
 	}
 
-	public static void TriggerMove(){
+	public static void TriggerMove(int currentDay){
 		if(onMove != null){
 			onMove ();
 		}
 	}
 
-	public static void TriggerCheckTask(){
+	public static void TriggerCheckTask(int currentDay){
 		if(onCheckTask != null){
 			onCheckTask ();
 		}

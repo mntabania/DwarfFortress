@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Get List of tiles (Path) that will connect 2 city tiles
 	 * */
-	IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
+	public IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destinationTile.X, 2) + Math.Pow(t.Y - destinationTile.Y, 2));
 		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, forCreatingRoads);
@@ -304,6 +304,8 @@ public class GameManager : MonoBehaviour {
 		}
 		turnEnded += TriggerCooperateEvents;
 		turnEnded += CheckCooperateEvents;
+		turnEnded += GeneralAI.TriggerCheckTask;
+		turnEnded += GeneralAI.TriggerMove;
 		ActivateProducationCycle();
 	}
 
@@ -316,6 +318,9 @@ public class GameManager : MonoBehaviour {
 			return;
 		}
 		turnEnded(this.currentDay);
+
+		this.kingdoms.RemoveAll (x => x.kingdom.cities.Count <= 0);
+
 		if((this.currentDay % 500) == 0){
 			Debug.Log ("-----------------500 DAYS!------------------");
 			Debug.Log ("TRADE COUNT: " + Utilities.tradeCount);
