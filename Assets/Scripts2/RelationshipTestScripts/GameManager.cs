@@ -318,8 +318,26 @@ public class GameManager : MonoBehaviour {
 			return;
 		}
 		turnEnded(this.currentDay);
-
-		this.kingdoms.RemoveAll (x => x.kingdom.cities.Count <= 0);
+		if(this.kingdoms.Count > 0){
+			for (int i = 0; i < this.kingdoms.Count; i++) {
+				for (int j = 0; j < this.kingdoms[i].kingdom.lord.relationshipLords.Count; j++) {
+					if(this.kingdoms[i].kingdom.lord.relationshipLords[j].lord.kingdom.cities.Count <= 0){
+						this.kingdoms [i].kingdom.lord.relationshipLords.RemoveAt (j);
+						j--;
+					}	
+				}
+			}
+			for (int i = 0; i < this.kingdoms.Count; i++) {
+				if(this.kingdoms[i].kingdom.cities.Count <= 0){
+					this.kingdoms [i].kingdom.isDead = true;
+					turnEnded -= this.kingdoms [i].TurnActions;
+					Destroy (this.kingdoms [i].gameObject);
+					this.kingdoms.RemoveAt (i);
+					i--;
+				}else{
+				}
+			}
+		}
 
 		if((this.currentDay % 500) == 0){
 			Debug.Log ("-----------------500 DAYS!------------------");

@@ -2337,26 +2337,24 @@ public class Lord {
 		return null;
 	}
 	internal MilitaryData RemoveMilitaryData(BATTLE_MOVE battleMove, CityTest city, General general){
-		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == battleMove).ToList();
+		List<MilitaryData> milData = this.militaryData.Where (x => x.battleMove == battleMove).ToList ();
 
-		if(battleMove == BATTLE_MOVE.ATTACK){
+		if (battleMove == BATTLE_MOVE.ATTACK) {
 			for (int i = 0; i < milData.Count; i++) {
-				if(milData[i].enemyCity.id == city.id){
+				if (milData [i].enemyCity.id == city.id) {
 					milData.RemoveAt (i);
 					break;
 				}
 
 			}
-		}else{
+		} else {
 			for (int i = 0; i < milData.Count; i++) {
-				if(milData[i].enemyGeneral.id == general.id){
+				if (milData [i].enemyGeneral.id == general.id) {
 					milData.RemoveAt (i);
 					break;
 				}
-
 			}
 		}
-
 		return null;
 	}
 }
