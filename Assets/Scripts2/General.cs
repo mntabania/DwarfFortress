@@ -12,9 +12,11 @@ public class General {
 	public HexTile targetLocation;
 	public List<Tile> roads;
 	public Army army;
+	public int taskID;
 	public GENERAL_TASK task;
 	public int daysBeforeArrival;
 	public int daysBeforeReleaseTask;
+	public bool isOnTheWay;
 
 	public General(CityTest city){
 		this.id = GetID() + 1;
@@ -24,7 +26,9 @@ public class General {
 		this.targetLocation = null;
 		this.targetCity = null;
 		this.army = new Army (city);
+		this.taskID = 0;
 		this.task = GENERAL_TASK.NONE;
+		this.isOnTheWay = false;
 		this.daysBeforeArrival = 0;
 		this.daysBeforeReleaseTask = 0;
 		this.roads = new List<Tile> ();
@@ -47,6 +51,9 @@ public class General {
 					this.roads.RemoveAt (0);
 				}
 				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS MOVED TO " + this.location.name);
+			}else{
+				this.isOnTheWay = false;
+				this.targetLocation = null;
 			}
 //			if (this.location == this.targetLocation) {
 //				if (this.location != this.city.hexTile) {
@@ -71,13 +78,22 @@ public class General {
 	}
 	private void CheckTask(){
 //		Debug.Log (this.name + " CHECKING TASK....");
+		if(this.task == GENERAL_TASK.ON_ATTACK){
+			if(this.targetCity.id == 0){
+				this.taskID = 0;
+				this.task = GENERAL_TASK.NONE;
+			}
+		}
 		if(this.task == GENERAL_TASK.NONE){
-			this.city.GiveMeTask (this);
+			if (!this.isOnTheWay) {
+				this.city.GiveMeTask (this);
+			}
 		}
 		if(this.task == GENERAL_TASK.ON_HELP || this.task == GENERAL_TASK.ON_DEFEND){
 			this.daysBeforeReleaseTask -= 1;
 			if(this.daysBeforeReleaseTask <= 0){
 				this.task = GENERAL_TASK.NONE;
+				this.taskID = 0;
 				this.daysBeforeReleaseTask = 0;
 			}
 		}

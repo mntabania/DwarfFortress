@@ -2309,10 +2309,40 @@ public class Lord {
 
 	internal void UpdateMilitaryData(){
 //		this.militaryData.RemoveAll (x => x.isResolved);
+
 		List<MilitaryData> allDefense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
 		List<MilitaryData> allOffense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.ATTACK).ToList();
-		allDefense = allDefense.OrderBy (x => x.enemyGeneral.daysBeforeArrival).ToList();
-		allOffense = allOffense.OrderBy (x => x.enemyCity.GetArmyStrength ()).ToList();
+
+		if(allDefense.Count > 0){
+			allDefense.RemoveAll (x => x.enemyGeneral == null ||  x.enemyGeneral.targetCity == null || x.enemyGeneral.army.armyCount <= 0);
+			allDefense = allDefense.OrderBy (x => x.enemyGeneral.daysBeforeArrival).ToList();
+
+		}
+		if (allOffense.Count > 0) {
+			allOffense.RemoveAll (x => x.enemyCity == null || x.enemyCity.isDead == true);
+			allOffense = allOffense.OrderBy (x => x.enemyCity.GetArmyStrength ()).ToList();
+
+		}
+
+
+//		allDefense.RemoveAll (x => x.enemyGeneral.targetCity.id == 0);
+		if(allOffense.Count > 0){
+			for(int i = 0; i < allOffense.Count; i++){
+				allOffense [i].yourArmyStrength = 0;
+				if(this.kingdom.cities.Count > 0){
+					for(int j = 0; j < this.kingdom.cities.Count; j++){
+						if (this.kingdom.cities [j].cityAttributes.generals.Count > 0) {
+							for (int k = 0; k < this.kingdom.cities [j].cityAttributes.generals.Count; k++) {
+								if (allOffense [i].id == this.kingdom.cities [j].cityAttributes.generals [k].taskID) {
+									allOffense [i].yourArmyStrength += this.kingdom.cities [j].cityAttributes.generals [k].ArmyStrength ();
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
 
 		List<MilitaryData> allData = new List<MilitaryData> ();
 		allData.AddRange(allDefense);
@@ -2321,18 +2351,42 @@ public class Lord {
 
 		this.militaryData = new List<MilitaryData>(allData);
 	}
-
+	internal void UpdateSpecificOffenseMilitaryData(int id){
+		MilitaryData milData = SearchMilitaryDataById (id);
+		if(milData != null){
+			milData.yourArmyStrength = 0;
+			if(this.kingdom.cities.Count > 0){
+				for(int j = 0; j < this.kingdom.cities.Count; j++){
+					if (this.kingdom.cities [j].cityAttributes.generals.Count > 0) {
+						for (int k = 0; k < this.kingdom.cities [j].cityAttributes.generals.Count; k++) {
+							if (milData.id == this.kingdom.cities [j].cityAttributes.generals [k].taskID) {
+								milData.yourArmyStrength += this.kingdom.cities [j].cityAttributes.generals [k].ArmyStrength ();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	internal MilitaryData SearchMilitaryDataById(int id){
+		for (int i = 0; i < this.militaryData.Count; i++) {
+			if(this.militaryData[i].id == id){
+				return this.militaryData [i];
+			}
+		}
+		return null;
+	}
 	internal MilitaryData SearchForDefenseMilitaryData(CityTest city){
 		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
 		if(milData == null){
 			return null;
 		}
 		for (int i = 0; i < milData.Count; i++) {
-			if(!milData[i].isResolved){
+//			if(!milData[i].isResolved){
 				if(milData[i].enemyGeneral.targetCity.id == city.id){
 					return milData [i];
 				}
-			}
+//			}
 		}
 		return null;
 	}

@@ -21,6 +21,7 @@ public class CityTileTest : MonoBehaviour {
 		this.cityAttributes.OccupyCity();
 		this.GetComponent<SpriteRenderer> ().color = this.cityAttributes.kingdomTile.kingdom.tileColor;
 		this.cityAttributes.visitingGenerals.AddRange (visitingGenerals);
+		GameManager.Instance.UpdateAllMilitaryData ();
 	}
 	public List<HexTile> GetAllCitiesByDistance(){
 		List<HexTile> allCityTiles = CityGenerator.Instance.cities.OrderBy(
