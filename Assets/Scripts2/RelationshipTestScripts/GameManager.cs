@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Get List of tiles (Path) that will connect 2 city tiles
 	 * */
-	IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
+	public IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destinationTile.X, 2) + Math.Pow(t.Y - destinationTile.Y, 2));
 		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, forCreatingRoads);
@@ -194,13 +194,13 @@ public class GameManager : MonoBehaviour {
 
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>(), this.cities[4].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[1].GetComponent<CityTileTest>(), this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 

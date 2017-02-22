@@ -166,7 +166,6 @@ public enum DECISION{
 	NEUTRAL,
 	NICE,
 	RUDE,
-	NONE
 }
 public enum LORD_PERSONALITY{
 	TIT_FOR_TAT,
@@ -277,6 +276,10 @@ public enum LORD_INSTRUCTIONS{
 	ATTACK,
 	DEFEND,
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> eb491d8616473b9f1fb71a22227a1412113ecadf
 public enum GENERAL_STATUS{
 	BATTLE_DONE,
 }
@@ -287,9 +290,16 @@ public enum GENERAL_TASK{
 	ON_DEFEND,
 	ON_HELP,
 }
+<<<<<<< HEAD
 
 public enum CITY_CITIZEN_ACTION{
 	CREATE_CITIZEN,
 	CHANGE_CITIZEN,
+	NONE
+=======
+public enum CITY_CITIZEN_ACTION{
+	CREATE_CITIZEN,
+	CHANGE_CITIZEN,
 	NONE,
+>>>>>>> eb491d8616473b9f1fb71a22227a1412113ecadf
 }
