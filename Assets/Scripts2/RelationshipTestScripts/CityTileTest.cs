@@ -110,7 +110,11 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.LaunchTradeMission();
 		cityAttributes.AttemptToCreatePioneer();
 		cityAttributes.AttemptToPerformCitizenAction();
-		cityAttributes.CheckVisitingGenerals ();
+
 //		cityAttributes.UpdateResourcesStatus();
+	}
+
+	internal void CheckVisitingGenerals(int currentDay){
+		cityAttributes.CheckVisitingGenerals ();
 	}
 }

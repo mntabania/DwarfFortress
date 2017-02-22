@@ -306,6 +306,12 @@ public class GameManager : MonoBehaviour {
 		turnEnded += CheckCooperateEvents;
 		turnEnded += GeneralAI.TriggerCheckTask;
 		turnEnded += GeneralAI.TriggerMove;
+
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			for (int j = 0; j < this.kingdoms [i].kingdom.cities.Count; j++) {
+				turnEnded += this.kingdoms[i].kingdom.cities[j].CheckVisitingGenerals;
+			}
+		}
 		ActivateProducationCycle();
 	}
 

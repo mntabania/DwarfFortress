@@ -2308,7 +2308,7 @@ public class Lord {
 	}
 
 	internal void UpdateMilitaryData(){
-		this.militaryData.RemoveAll (x => x.isResolved);
+//		this.militaryData.RemoveAll (x => x.isResolved);
 		List<MilitaryData> allDefense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
 		List<MilitaryData> allOffense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.ATTACK).ToList();
 		allDefense = allDefense.OrderBy (x => x.enemyGeneral.daysBeforeArrival).ToList();
