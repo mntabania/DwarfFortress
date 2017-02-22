@@ -1330,7 +1330,7 @@ public class CityTest{
 						this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
 						General chosenGeneral = generals [UnityEngine.Random.Range (0, generals.Count)];
 						chosenGeneral.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
-						ReduceResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
+						this.AdjustResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
 					}
 				}
 			}else{
