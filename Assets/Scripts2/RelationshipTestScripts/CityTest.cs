@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -104,6 +104,27 @@ public class CityTest{
 				new Citizen (JOB_TYPE.WOODSMAN, this)
 			};
 		}
+	}
+
+	public List<RESOURCE> GetScarceResources(){
+		List<RESOURCE> scarceResources = new List<RESOURCE>();
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus [i].status == RESOURCE_STATUS.SCARCE) {
+				scarceResources.Add(this.allResourcesStatus[i].resource);
+			}
+		}
+		return scarceResources;
+
+	}
+
+	public List<RESOURCE> GetAbundantResources(){
+		List<RESOURCE> abundantResources = new List<RESOURCE>();
+		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
+			if (this.allResourcesStatus[i].status == RESOURCE_STATUS.ABUNDANT && this.allResourcesStatus[i].amount > 0) {
+				abundantResources.Add(this.allResourcesStatus[i].resource);
+			}
+		}
+		return abundantResources;
 	}
 		
 	public CityTest(HexTile hexTile, KingdomTileTest kingdom){
@@ -482,7 +503,7 @@ public class CityTest{
 				}
 			} else {
 				bool isResourceNeeded = allNeededResources[i] > 0;
-				int statusValue = (int)Mathf.Abs ((allNeededResources[i] * 1.3f) - GetNumberOfResourcesPerType (currentResource));
+				int statusValue = (int)Mathf.Abs ((allNeededResources[i] * 1.1f) - GetNumberOfResourcesPerType (currentResource));
 				if (isResourceNeeded && IsProducingResource (currentResource)) {
 					if (GetNumberOfResourcesPerType (currentResource) < allNeededResources [i]) {//If producing needed resource but kulang
 						if (currentResource == RESOURCE.GOLD) {
@@ -1028,9 +1049,10 @@ public class CityTest{
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": Created new: [FF0000]" + this.citizenActionJobType.ToString() + "[-] on tile " +
 						"[FF0000]" + this.citizenActionHexTile.name + "[-] \n\n";
 
-//					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
-//						SetMerchantActions((Merchant)newCitizen.job);
-//					}
+					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
+						GameManager.Instance.turnEnded += ((Merchant)newCitizen.job).WaitForElligibleCity;
+						((Merchant)newCitizen.job).SetActions();
+					}
 
 					this.citizenActionJobType = JOB_TYPE.NONE;
 					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
@@ -1042,16 +1064,17 @@ public class CityTest{
 					this.unneededCitizens.Remove(this.citizenToChange);
 					this.citizenToChange.ChangeJob(this.citizenActionJobType);
 
-//					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
-//						SetMerchantActions((Merchant)this.citizenToChange.job);
-//					}
+					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
+						GameManager.Instance.turnEnded += ((Merchant)this.citizenToChange.job).WaitForElligibleCity;
+						((Merchant)this.citizenToChange.job).SetActions();
+					}
 
 					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
 					this.citizenActionJobType = JOB_TYPE.NONE;
 					this.citizenToChange = null;
 				}
 
-				this.ReduceResources(cityCitizenActionCost);
+				this.AdjustResources(cityCitizenActionCost);
 				this.cityActionChances.performCityCitizenActionChance = this.cityActionChances.defaultPerformCityCitizenActionChance;
 				this.UpdateCityExpenses();
 				this.IdentifyCityCitizenAction();
@@ -1059,31 +1082,6 @@ public class CityTest{
 				this.cityActionChances.performCityCitizenActionChance += 1;
 			}
 		}
-	}
-
-	void SetMerchantActions(Merchant merchant){
-		Debug.LogError (merchant.citizen.name);
-		List<Resource> excessResources = new List<Resource>();
-		for (int i = 0; i < this.allResourcesStatus.Count; i++) {
-			if (this.allResourcesStatus[i].status == RESOURCE_STATUS.ABUNDANT) {
-				excessResources.Add (new Resource(this.allResourcesStatus[i].resource, this.allResourcesStatus[i].amount));
-			}
-		}
-		merchant.tradeGoods = excessResources;
-		merchant.currentTile = this.hexTile;
-
-		List<CityTest> elligibleCitiesForTrade = new List<CityTest>();
-		for (int i = 0; i < excessResources.Count; i++) {
-			RESOURCE currentAbundantResource = excessResources[i].resourceType;
-			if (currentAbundantResource == RESOURCE.GOLD) {
-
-			} else {
-
-			}
-			
-		}
-
-
 	}
 
 	internal void AttemptToCreatePioneer(){
@@ -1110,7 +1108,7 @@ public class CityTest{
 			int chance = UnityEngine.Random.Range (0, 100);
 			if (chance < this.cityActionChances.createGeneralChance) {
 				this.CreateGeneral();
-				this.ReduceResources(this.generalCreationCost);
+				this.AdjustResources(this.generalCreationCost);
 				this.cityActionChances.createGeneralChance = this.cityActionChances.defaultCreateGeneralChance;
 			} else {
 				this.cityActionChances.createGeneralChance += 1;
@@ -1326,6 +1324,10 @@ public class CityTest{
 			if(HasEnoughResourcesForAction(this.kingdomTile.kingdom.armyIncreaseUnitResource)){
 				if (this.generals.Count > 0) {
 					List<General> generals = this.generals.Where (x => x.location == this.hexTile).ToList();
+					//this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
+					//General chosenGeneral = generals [UnityEngine.Random.Range (0, generals.Count)];
+					//chosenGeneral.army.armyCount += this.kingdomTile.kingdom.armyIncreaseUnits;
+					//this.AdjustResources (this.kingdomTile.kingdom.armyIncreaseUnitResource);
 					if(generals.Count > 0){
 						this.cityActionChances.increaseArmyCountChance = this.cityActionChances.defaultIncreaseArmyCountChance;
 						General chosenGeneral = generals [UnityEngine.Random.Range (0, generals.Count)];
@@ -1376,7 +1378,7 @@ public class CityTest{
 					cityLogs += this.cityUpgradeRequirements.resource [i].resourceQuantity + " " + this.cityUpgradeRequirements.resource [i].resourceType + "\n";
 				}
 				cityLogs += "\n";
-				ReduceResources(this.cityUpgradeRequirements.resource);
+				this.AdjustResources(this.cityUpgradeRequirements.resource);
 				UpdateCityUpgradeRequirements();
 				UpdateCityExpenses();
 //				UpdateResourcesStatus();
@@ -1460,7 +1462,7 @@ public class CityTest{
 				this.cityActionChances.changeCitizenChance = this.cityActionChances.defaultChangeCitizenChance;
 				citizen.ResetLevel();
 				AssignCitizenToTile(citizen);
-				ReduceResources(citizenCreationCost);
+				this.AdjustResources(citizenCreationCost);
 				RemoveUnneededResources (randomUnneededJob);
 				this.unneededRoles.Remove(randomUnneededJob);
 				this.unneededResources = GetUnneededResources (GetNeededResources ());
@@ -1525,7 +1527,7 @@ public class CityTest{
 				this.cityActionChances.purchaseTileChance = this.cityActionChances.defaultPurchaseTileChance;
 				this.ownedBiomeTiles.Add(this.targetHexTileToPurchase);
 				this.targetHexTileToPurchase.SetTileColor(Color.red);
-				ReduceResources(tilePurchaseCost.ToList());
+				this.AdjustResources(tilePurchaseCost.ToList());
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Purchased Tile [FF0000]" + this.targetHexTileToPurchase.name + "[-] for [FF0000] ";
 				for (int i = 0; i < tilePurchaseCost.Count; i++) {
 					cityLogs += tilePurchaseCost [i].resourceQuantity + " " + tilePurchaseCost [i].resourceType + "\n";
@@ -1662,9 +1664,14 @@ public class CityTest{
 		}
 	}
 
-	internal void ReduceResources(List<Resource> resource){
+	internal void AdjustResources(List<Resource> resource, bool reduce = true){
+		int currentResourceQuantity = 0;
 		for(int i = 0; i < resource.Count; i++){
-			AdjustResourceCount (resource [i].resourceType, resource [i].resourceQuantity);
+			currentResourceQuantity = resource [i].resourceQuantity;
+			if (reduce) {
+				currentResourceQuantity *= -1;
+			}
+			AdjustResourceCount (resource [i].resourceType, currentResourceQuantity);
 		}
 	}
 
@@ -1885,7 +1892,6 @@ public class CityTest{
 					cityLogs += GameManager.Instance.currentDay.ToString () + ": Returned " + caravanGold.ToString () + " Gold. \n\n";
 					AdjustResourceCount (RESOURCE.GOLD, caravanGold);
 				}
-				//TODO: Insert add like to both lords
 				cityLogs += GameManager.Instance.currentDay.ToString () + ": Bought " + affordResource.ToString () + " " + resourceToBuy.resource.ToString () + " from " + tradeCity.cityName +
 				" in exchange for " + cost.ToString () + " " + resourceToOffer.ToString () + "\n\n";
 

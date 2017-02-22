@@ -1711,6 +1711,10 @@ public class Lord {
 
 	bool IsReasonForWarSatisfied(){
 		bool result = false;
+		if (this.targetableLords.Count <= 0) {
+			return result;
+		}
+
 		candidatesForWar = new List<Lord>();
 		for (int i = 0; i < this.lordWarReasons.Count; i++) {
 			switch(this.lordWarReasons[i]){
