@@ -2312,7 +2312,7 @@ public class Lord {
 	}
 
 	internal void UpdateMilitaryData(){
-		this.militaryData.RemoveAll (x => x.isResolved);
+//		this.militaryData.RemoveAll (x => x.isResolved);
 		List<MilitaryData> allDefense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
 		List<MilitaryData> allOffense = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.ATTACK).ToList();
 		allDefense = allDefense.OrderBy (x => x.enemyGeneral.daysBeforeArrival).ToList();
@@ -2341,26 +2341,24 @@ public class Lord {
 		return null;
 	}
 	internal MilitaryData RemoveMilitaryData(BATTLE_MOVE battleMove, CityTest city, General general){
-		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == battleMove).ToList();
+		List<MilitaryData> milData = this.militaryData.Where (x => x.battleMove == battleMove).ToList ();
 
-		if(battleMove == BATTLE_MOVE.ATTACK){
+		if (battleMove == BATTLE_MOVE.ATTACK) {
 			for (int i = 0; i < milData.Count; i++) {
-				if(milData[i].enemyCity.id == city.id){
+				if (milData [i].enemyCity.id == city.id) {
 					milData.RemoveAt (i);
 					break;
 				}
 
 			}
-		}else{
+		} else {
 			for (int i = 0; i < milData.Count; i++) {
-				if(milData[i].enemyGeneral.id == general.id){
+				if (milData [i].enemyGeneral.id == general.id) {
 					milData.RemoveAt (i);
 					break;
 				}
-
 			}
 		}
-
 		return null;
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class General {
@@ -9,6 +10,7 @@ public class General {
 	public CityTest targetCity;
 	public HexTile location;
 	public HexTile targetLocation;
+	public List<Tile> roads;
 	public Army army;
 	public GENERAL_TASK task;
 	public int daysBeforeArrival;
@@ -25,6 +27,7 @@ public class General {
 		this.task = GENERAL_TASK.NONE;
 		this.daysBeforeArrival = 0;
 		this.daysBeforeReleaseTask = 0;
+		this.roads = new List<Tile> ();
 		GeneralAI.onMove += Move;
 		GeneralAI.onCheckTask += CheckTask;
 		SetLastID (this.id);
@@ -34,8 +37,16 @@ public class General {
 //		if(this.onAttack || this.onHelp){
 		if (this.targetLocation != null) {
 			if(this.location != this.targetLocation){
-				this.location = this.targetLocation;
-				Debug.Log (this.name + " HAS MOVED TO " + this.location.name);
+				if(this.daysBeforeArrival > 0){
+					this.daysBeforeArrival -= 1;
+				}else if(this.daysBeforeArrival < 0){
+					this.daysBeforeArrival = 0;
+				}
+				if(this.roads.Count > 0){
+					this.location = this.roads[0].hexTile;
+					this.roads.RemoveAt (0);
+				}
+				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS MOVED TO " + this.location.name);
 			}
 //			if (this.location == this.targetLocation) {
 //				if (this.location != this.city.hexTile) {
@@ -56,11 +67,10 @@ public class General {
 //
 //				this.targetLocation = null; 
 //			}
-
 		}
 	}
 	private void CheckTask(){
-		Debug.Log (this.name + " CHECKING TASK....");
+//		Debug.Log (this.name + " CHECKING TASK....");
 		if(this.task == GENERAL_TASK.NONE){
 			this.city.GiveMeTask (this);
 		}

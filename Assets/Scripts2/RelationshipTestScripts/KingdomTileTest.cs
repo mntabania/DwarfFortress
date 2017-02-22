@@ -57,7 +57,7 @@ public class KingdomTileTest : MonoBehaviour {
 		city.GetComponent<HexTile> ().SetTileColor (kingdom.tileColor);
 	}
 
-	void TurnActions(int currentDay){
+	internal void TurnActions(int currentDay){
 //		kingdom.CheckForExpansion();
 		if (currentDay % 5 == 0) {
 			kingdom.CheckForRevolution();
