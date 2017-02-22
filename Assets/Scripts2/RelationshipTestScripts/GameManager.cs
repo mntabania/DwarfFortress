@@ -200,7 +200,8 @@ public class GameManager : MonoBehaviour {
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[1].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+//		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
 
@@ -538,5 +539,11 @@ public class GameManager : MonoBehaviour {
 		}
 
 		return null;
+	}
+
+	internal void UpdateAllMilitaryData(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			this.kingdoms [i].kingdom.lord.UpdateMilitaryData ();
+		}
 	}
 }
