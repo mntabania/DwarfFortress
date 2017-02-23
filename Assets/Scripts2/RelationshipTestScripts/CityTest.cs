@@ -241,9 +241,9 @@ public class CityTest{
 	internal void OccupyCity(){
 		this.hexTile.isOccupied = true;
 		this.citizens = this.InitialCitizens;
-//		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < 5; i++){
 			CreateGeneral();
-//		}
+		}
 		ComputeGeneralCreationCost();
 		SelectHexTileToPurchase();
 		GenerateInitialFood();
@@ -2496,7 +2496,9 @@ public class CityTest{
 		General visitingGeneral = null;
 
 		List<General> helpingGenerals = this.visitingGenerals.Where (x => x.task == GENERAL_TASK.ON_HELP && x.location == this.hexTile).ToList ();
-		
+		List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).OrderByDescending(x => x.ArmyStrength()).ToList ();
+
+
 		for(int i = 0; i < this.visitingGenerals.Count; i++){
 			visitingGeneral = this.visitingGenerals [i];
 			if(this.visitingGenerals[i].location == this.hexTile){
@@ -2512,7 +2514,7 @@ public class CityTest{
 							helpingGenerals = newHelpingGenerals;
 
 							if (helpingGenerals.Count <= 0 && this.visitingGenerals [i].army.armyCount > 0) {
-								List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).ToList ();
+//								List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).ToList ();
 
 								if (yourGenerals.Count > 0) {
 									
@@ -2550,7 +2552,7 @@ public class CityTest{
 							}
 						} else {
 							//CITY DEFEATED AND CONQUERED --- IF BOTH YOU AND YOUR ENEMY ARE DEAD FROM LAST ENCOUNTER, THIS ENEMY WILL PICK UP THE WIN BECAUSE YOU HAVE NO DEFENSE LEFT.
-							List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).ToList ();
+//							List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).ToList ();
 							if (yourGenerals.Count > 0) {
 
 								List<General> newYourGenerals = new List<General> (yourGenerals);
@@ -2702,11 +2704,11 @@ public class CityTest{
 
 		General friendlyGeneral = null;
 			
-		List<General> generalOrderedByStrength = friendlyGenerals.OrderByDescending (x => x.ArmyStrength ()).ToList();
+//		List<General> generalOrderedByStrength = friendlyGenerals.OrderByDescending (x => x.ArmyStrength ()).ToList();
 
-		for(int j = 0; j < generalOrderedByStrength.Count; j++){
+		for(int j = 0; j < friendlyGenerals.Count; j++){
 			
-			friendlyGeneral = generalOrderedByStrength [j];
+			friendlyGeneral = friendlyGenerals [j];
 
 			Battle (ref enemyGeneral, ref friendlyGeneral);
 			if (friendlyGeneral.army.armyCount <= 0) {
@@ -2745,7 +2747,7 @@ public class CityTest{
 		
 	}
 	internal void Battle(ref General general1, ref General general2){
-		Debug.Log ("BATTLE: " + general1.name + " and " + general2.name);
+		Debug.Log ("BATTLE: (" + general1.city.cityName + ") " + general1.name + " and (" + general2.city.cityName + ") " + general2.name + " on " + this.cityName);
 		Debug.Log ("enemy general army: " + general1.ArmyStrength ());
 		Debug.Log ("friendly general army: " + general2.ArmyStrength ());
 
