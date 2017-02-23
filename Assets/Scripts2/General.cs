@@ -50,8 +50,9 @@ public class General {
 					this.location = this.roads[0].hexTile;
 					this.roads.RemoveAt (0);
 				}
-				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS MOVED TO " + this.location.name);
+//				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS MOVED TO " + this.location.name);
 			}else{
+				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS ARRIVED AT " + this.targetLocation.name);
 				this.isOnTheWay = false;
 				this.targetLocation = null;
 			}
