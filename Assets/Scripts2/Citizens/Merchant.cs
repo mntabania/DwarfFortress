@@ -17,18 +17,35 @@ public class Merchant : Job {
 
 	protected int daysWaitingForElligibleCity = 0;
 
+	public bool isOutsideCity;
+
 	public Merchant(){
 		this._jobType = JOB_TYPE.MERCHANT;
 		this._residence = RESIDENCE.OUTSIDE;
 		this.tradeGoods = new List<Resource>();
 		this.pathToTargetCity = null;
 		this.targetCity = null;
+		this.isOutsideCity = false;
 	}
 
 	internal void WaitForElligibleCity(int currentDay){
 		if (daysWaitingForElligibleCity == 5) {
 			this.SetActions();
 			daysWaitingForElligibleCity = 0;
+			if (this.targetCity == null) {
+				bool areAllMerchantsIdle = true;
+				List<Citizen> merchants = this.citizen.city.GetCitizensByType (JOB_TYPE.MERCHANT);
+				for (int i = 0; i < merchants.Count; i++) {
+					if (merchants[i].id != this.citizen.id) {
+						if(((Merchant)merchants[i].job).targetCity != null){
+							areAllMerchantsIdle = false;
+						}
+					}
+				}
+				if (areAllMerchantsIdle) {
+					this.citizen.city.unneededCitizens.Add(this.citizen);
+				}
+			}
 		}
 		daysWaitingForElligibleCity += 1;
 	}
@@ -74,6 +91,16 @@ public class Merchant : Job {
 			}
 		}
 
+		List<Citizen> merchants = this.citizen.city.GetCitizensByType (JOB_TYPE.MERCHANT);
+		for (int i = 0; i < merchants.Count; i++) {
+			if (merchants[i].id != this.citizen.id) {
+				Merchant otherMerchant = (Merchant)merchants[i].job;
+				if (elligibleCitiesForTrade.Contains(otherMerchant.targetCity)) {
+					elligibleCitiesForTrade.Remove(otherMerchant.targetCity);
+				}
+			}
+		}
+
 		if (elligibleCitiesForTrade.Count > 0) {
 			this.targetCity = elligibleCitiesForTrade [UnityEngine.Random.Range(0, elligibleCitiesForTrade.Count)];
 			this.pathToTargetCity = GameManager.Instance.GetPath(this.citizen.city.hexTile.tile, this.targetCity.hexTile.tile, false).ToList();
@@ -81,6 +108,7 @@ public class Merchant : Job {
 
 			this.citizenAvatar = GameObject.Instantiate(Resources.Load ("CitizenAvatar", typeof(GameObject)), this.citizen.city.hexTile.transform) as GameObject;
 			this.citizenAvatar.transform.localPosition = Vector3.zero;
+			this.citizenAvatar.GetComponent<CitizenAvatar>().citizen = this.citizen;
 
 			this.currentTile = this.citizen.city.hexTile;
 			GameManager.Instance.turnEnded -= WaitForElligibleCity;
@@ -93,6 +121,7 @@ public class Merchant : Job {
 
 			this.citizen.city.AdjustResources(this.tradeGoods);
 			GameManager.Instance.turnEnded += GoToDestination;
+			this.isOutsideCity = true;
 		} 
 	}
 
@@ -109,9 +138,13 @@ public class Merchant : Job {
 				}
 				this.citizen.city.cityLogs += "\n\n";
 
+				this.isOutsideCity = false;
+				this.targetCity = null;
+				this.pathToTargetCity.Clear();
 				GameObject.Destroy(this.citizenAvatar);
 				this.citizen.city.AdjustResources(this.tradeGoods, false);
 				GameManager.Instance.turnEnded += WaitForElligibleCity;
+
 				SetActions();
 			} else {
 				//merchant is at city to trade to, start trade then go back home
@@ -122,121 +155,168 @@ public class Merchant : Job {
 				GameManager.Instance.turnEnded += GoToDestination;
 			}
 		} else {
-			currentLocationIndex += 1;
-			Tile nextTile = this.pathToTargetCity [currentLocationIndex];
-			while (this.citizenAvatar.transform.position != nextTile.hexTile.transform.position) {
-				this.citizenAvatar.transform.position = Vector3.Lerp (this.citizenAvatar.transform.position, nextTile.hexTile.transform.position, 0.5f);
+			int increments = 2;
+			for (int i = 0; i < increments; i++) {
+				currentLocationIndex += 1;
+				Tile nextTile = this.pathToTargetCity [currentLocationIndex];
+				while (this.citizenAvatar.transform.position != nextTile.hexTile.transform.position) {
+					this.citizenAvatar.transform.position = Vector3.Lerp (this.citizenAvatar.transform.position, nextTile.hexTile.transform.position, 0.5f);
+				}
+				this.currentTile = nextTile.hexTile;
+				if (this.currentTile == this.targetCity.hexTile) {
+					break;
+				}
 			}
-			this.currentTile = nextTile.hexTile;
+
 		}
 
 	}
 
 
 	void StartTrade(){
-		int goldOtherCityCanSpend = this.targetCity.GetResourceStatusByType(RESOURCE.GOLD).amount;
-		int goldThisCityCanSpend = this.citizen.city.GetResourceStatusByType (RESOURCE.GOLD).amount;
-		List<RESOURCE> thisCityScarceResources = this.citizen.city.GetScarceResources();
-		RESOURCE currentResourceOffered = RESOURCE.GOLD;
-		int quantityOfResourceOffered = 0;
-		ResourceStatus resourceStatusOfResourceOfTargetCity = null;
+		List<Resource> soldList = new List<Resource>();
+		List<Resource> boughtList = new List<Resource>();
 
-		DECISION targetCityDecision = DECISION.NONE;
-		int numOfResourcesThatCanBuy = 0;
-		int costOfCurrentPurchase = 0;
+		List<RESOURCE> scarceResourcesOfTargetCity = this.targetCity.GetScarceResources();
+		int goldTargetCityCanSpend = this.targetCity.goldCount;
+
+		List<RESOURCE> scarceResourcesOfThisCity = this.citizen.city.GetScarceResources();
+
+
 		for (int i = 0; i < this.tradeGoods.Count; i++) {
-			if (this.tradeGoods [i].resourceType == RESOURCE.GOLD) {
-				for (int j = 0; j < thisCityScarceResources.Count; j++) {
-					currentResourceOffered = thisCityScarceResources [j];
-					resourceStatusOfResourceOfTargetCity = this.targetCity.GetResourceStatusByType(currentResourceOffered);
-					if (resourceStatusOfResourceOfTargetCity.status == RESOURCE_STATUS.ABUNDANT) {
-						//buy resource
-						quantityOfResourceOffered = resourceStatusOfResourceOfTargetCity.amount;
-						numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldThisCityCanSpend / GetCostPerResourceUnit (currentResourceOffered)));
-						if (numOfResourcesThatCanBuy > quantityOfResourceOffered) {
-							numOfResourcesThatCanBuy = quantityOfResourceOffered;
+			Resource currentResourceOnOffer = this.tradeGoods[i];
+			int costOfResourcePerUnit = GetCostPerResourceUnit (currentResourceOnOffer.resourceType);
+
+			if (currentResourceOnOffer.resourceType == RESOURCE.GOLD) {
+				//trader will buy resources from city
+				int goldThisCityCanSpend = currentResourceOnOffer.resourceQuantity;
+				for (int j = 0; j < scarceResourcesOfThisCity.Count; j++) {
+					//check all scarce resources of this city, then check if the scarce resource is abundant in target city
+					if (scarceResourcesOfThisCity [j] == RESOURCE.GOLD) {
+						continue;
+					}
+
+					if (goldThisCityCanSpend <= 0) {
+						//this city has no more budget to buy
+						break;
+					}
+					ResourceStatus resourceTargetCityIsOffering = this.targetCity.GetResourceStatusByType(scarceResourcesOfThisCity[j]);
+					if (resourceTargetCityIsOffering.status == RESOURCE_STATUS.ABUNDANT) {
+						ResourceStatus statusOfThisCityScarceResource = this.citizen.city.GetResourceStatusByType(scarceResourcesOfThisCity[j]);
+						costOfResourcePerUnit = GetCostPerResourceUnit (resourceTargetCityIsOffering.resource);
+
+						int numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldThisCityCanSpend / costOfResourcePerUnit));
+						if (numOfResourcesThatCanBuy > statusOfThisCityScarceResource.amount) {
+							numOfResourcesThatCanBuy = statusOfThisCityScarceResource.amount;
+						}
+
+						if (numOfResourcesThatCanBuy > resourceTargetCityIsOffering.amount) {
+							numOfResourcesThatCanBuy = resourceTargetCityIsOffering.amount;
+						}
+
+						if (numOfResourcesThatCanBuy > 0) {
+							int totalCostOfItem = numOfResourcesThatCanBuy * costOfResourcePerUnit;
+							goldThisCityCanSpend -= totalCostOfItem;
+							boughtList.Add (new Resource (resourceTargetCityIsOffering.resource, numOfResourcesThatCanBuy));
 						}
 					}
 				}
 			} else {
-				currentResourceOffered = this.tradeGoods[i].resourceType;
-				quantityOfResourceOffered = this.tradeGoods [i].resourceQuantity;
-				resourceStatusOfResourceOfTargetCity = this.targetCity.GetResourceStatusByType(currentResourceOffered);
-				if (resourceStatusOfResourceOfTargetCity.status == RESOURCE_STATUS.SCARCE) {
-
-					numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldOtherCityCanSpend / GetCostPerResourceUnit (currentResourceOffered)));
-					if (numOfResourcesThatCanBuy > quantityOfResourceOffered) {
-						numOfResourcesThatCanBuy = quantityOfResourceOffered;
-					}
-				}
-			}
-
-			if (numOfResourcesThatCanBuy > 0) {
-				//Determine if targetCity lord will trade with merchant
-				targetCityDecision = this.targetCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.TRADE, this.citizen.city.kingdomTile.kingdom.lord);
-				if (targetCityDecision == DECISION.NICE) {
-					this.citizen.city.kingdomTile.kingdom.lord.AdjustLikeness (this.targetCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.NICE, LORD_EVENTS.TRADE, true);
-					this.targetCity.kingdomTile.kingdom.lord.AdjustLikeness (this.citizen.city.kingdomTile.kingdom.lord, DECISION.NICE, DECISION.NEUTRAL, LORD_EVENTS.TRADE, false);
-
-					UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.targetCity.kingdomTile.kingdom.lord.name + " ACCEPTED the trade.\n\n";
-				} else {
-					this.citizen.city.kingdomTile.kingdom.lord.AdjustLikeness (this.targetCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE, true);
-					this.targetCity.kingdomTile.kingdom.lord.AdjustLikeness (this.citizen.city.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE, false);
-
-					UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.targetCity.kingdomTile.kingdom.lord.name + " REJECTED the trade.\n\n";
+				//trader will sell resource
+				if (goldTargetCityCanSpend <= 0) {
+					//target city has no more budget to buy
 					continue;
 				}
 
+				if (scarceResourcesOfTargetCity.Contains (currentResourceOnOffer.resourceType)) {
+					//target city is scarce on the offered resource, target city will buy
+					ResourceStatus statusOfOtherCityScarceResource = this.targetCity.GetResourceStatusByType(currentResourceOnOffer.resourceType);
 
-				if (targetCityDecision == DECISION.NICE) {
-					if (this.tradeGoods [i].resourceType == RESOURCE.GOLD) {
-						costOfCurrentPurchase = numOfResourcesThatCanBuy * GetCostPerResourceUnit (currentResourceOffered);
-						goldThisCityCanSpend -= costOfCurrentPurchase;
-						this.targetCity.AdjustResourceCount (RESOURCE.GOLD, costOfCurrentPurchase);
-						this.targetCity.AdjustResourceCount (currentResourceOffered, (numOfResourcesThatCanBuy * -1));
+					int numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldTargetCityCanSpend / costOfResourcePerUnit));
+					if (numOfResourcesThatCanBuy > statusOfOtherCityScarceResource.amount) {
+						numOfResourcesThatCanBuy = statusOfOtherCityScarceResource.amount;
+					}
 
-						this.tradeGoods [i].resourceQuantity -= costOfCurrentPurchase;
-						this.IncreaseEarnings (currentResourceOffered, numOfResourcesThatCanBuy);
-						targetCityDecision = DECISION.NONE;
-					} else {
-						costOfCurrentPurchase = numOfResourcesThatCanBuy * GetCostPerResourceUnit (currentResourceOffered);
-						goldOtherCityCanSpend -= costOfCurrentPurchase;
-						this.targetCity.AdjustResourceCount (RESOURCE.GOLD, (costOfCurrentPurchase * -1));
-						this.targetCity.AdjustResourceCount (currentResourceOffered, numOfResourcesThatCanBuy);
+					if (numOfResourcesThatCanBuy > currentResourceOnOffer.resourceQuantity) {
+						numOfResourcesThatCanBuy = currentResourceOnOffer.resourceQuantity;
+					}
 
-						this.tradeGoods [i].resourceQuantity -= numOfResourcesThatCanBuy;
-						this.IncreaseEarnings (RESOURCE.GOLD, costOfCurrentPurchase);
-						targetCityDecision = DECISION.NONE;
+					if (numOfResourcesThatCanBuy > 0) {
+						int totalCostOfItem = numOfResourcesThatCanBuy * costOfResourcePerUnit;
+						goldTargetCityCanSpend -= totalCostOfItem;
+						soldList.Add (new Resource (currentResourceOnOffer.resourceType, numOfResourcesThatCanBuy));
 					}
 				}
-
 			}
+		}
 
+		this.ProcessOrders(soldList, boughtList);
+	}
 
+	void ProcessOrders(List<Resource> soldList, List<Resource> boughtList){
+		//process sold
+		if (soldList.Count > 0) {
+			this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": City bought ";
+			for (int i = 0; i < soldList.Count; i++) {
+				int costPerUnit = GetCostPerResourceUnit (soldList [i].resourceType);
+				int totalCostOfItem = costPerUnit * soldList [i].resourceQuantity;
+				//Pay gold
+				this.AdjustItems (RESOURCE.GOLD, totalCostOfItem);
+				this.targetCity.AdjustResourceCount (RESOURCE.GOLD, (totalCostOfItem * -1));
+				//Get items
+				this.AdjustItems (soldList [i].resourceType, (soldList [i].resourceQuantity * -1));
+				this.targetCity.AdjustResourceCount (soldList [i].resourceType, soldList [i].resourceQuantity);
+
+				this.targetCity.cityLogs += soldList [i].resourceQuantity.ToString () + " " + soldList [i].resourceType.ToString () + " for " + totalCostOfItem.ToString () + " GOLD\n\n";
+			}
+			this.targetCity.cityLogs += " from merchant from " + this.citizen.city.cityName + "\n\n";
+		}
+
+		if (boughtList.Count > 0) {
+			//process bought
+			this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString () + ": City bought ";
+			for (int i = 0; i < boughtList.Count; i++) {
+				int costPerUnit = GetCostPerResourceUnit (boughtList [i].resourceType);
+				int totalCostOfItem = costPerUnit * boughtList [i].resourceQuantity;
+				//Pay gold
+				this.AdjustItems (RESOURCE.GOLD, (totalCostOfItem * -1));
+				this.targetCity.AdjustResourceCount (RESOURCE.GOLD, totalCostOfItem);
+				//Get items
+				this.AdjustItems (boughtList [i].resourceType, boughtList [i].resourceQuantity);
+				this.targetCity.AdjustResourceCount (boughtList [i].resourceType, (boughtList [i].resourceQuantity * -1));
+
+				this.citizen.city.cityLogs += boughtList [i].resourceQuantity.ToString () + " " + boughtList [i].resourceType.ToString () + " for " + totalCostOfItem.ToString () + " GOLD\n";
+			}
+			this.targetCity.cityLogs += "from " + this.targetCity.cityName + "\n\n";
 		}
 	}
 
-	void IncreaseEarnings(RESOURCE resourceType, int earnings){
+	void AdjustItems(RESOURCE resourceType, int earnings){
+		bool adjustedSuccessfully = false;
 		for (int i = 0; i < this.tradeGoods.Count; i++) {
 			if (this.tradeGoods [i].resourceType == resourceType) {
 				this.tradeGoods [i].resourceQuantity += earnings;
+				adjustedSuccessfully = true;
 				break;
 			}
+		}
+		if (!adjustedSuccessfully) {
+			this.tradeGoods.Add(new Resource (resourceType, earnings));
 		}
 	}
 
 	int GetCostPerResourceUnit(RESOURCE resourceType){
 		switch (resourceType) {
 		case RESOURCE.FOOD:
-			return 10;
+			return 5;
 		case RESOURCE.LUMBER:
-			return 20;
+			return 10;
 		case RESOURCE.STONE:
-			return 20;
+			return 10;
 		case RESOURCE.MANA:
-			return 20;
+			return 10;
 		case RESOURCE.METAL:
-			return 20;
+			return 10;
 		}
 		return 0;
 	}

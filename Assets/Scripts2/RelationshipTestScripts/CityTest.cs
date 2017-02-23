@@ -373,7 +373,12 @@ public class CityTest{
 			if (chance < 2) {
 				int russianRoulette = UnityEngine.Random.Range (0, this.citizens.Count);
 				cityLogs += GameManager.Instance.currentDay.ToString() + ": The entire [FF0000]" + this.citizens[russianRoulette].job.jobType.ToString() + "[-] clan perished.\n\n"; 
-				this.citizens.Remove (this.citizens [russianRoulette]);
+				if (this.citizens [russianRoulette].job.jobType == JOB_TYPE.MERCHANT) {
+					if (((Merchant)this.citizens [russianRoulette].job).isOutsideCity) {
+						return;
+					}
+				}
+				this.citizens.Remove(this.citizens[russianRoulette]);
 				this.unrest += 10;
 				this.UpdateCityExpenses();
 				this.IdentifyCityCitizenAction();
@@ -503,7 +508,8 @@ public class CityTest{
 				}
 			} else {
 				bool isResourceNeeded = allNeededResources[i] > 0;
-				int statusValue = (int)Mathf.Abs ((allNeededResources[i] * 1.1f) - GetNumberOfResourcesPerType (currentResource));
+				int statusValue = (int)Mathf.Abs (allNeededResources[i] - GetNumberOfResourcesPerType (currentResource));
+
 				if (isResourceNeeded && IsProducingResource (currentResource)) {
 					if (GetNumberOfResourcesPerType (currentResource) < allNeededResources [i]) {//If producing needed resource but kulang
 						if (currentResource == RESOURCE.GOLD) {
@@ -515,7 +521,7 @@ public class CityTest{
 
 							SetResourceStatus (currentResource, RESOURCE_STATUS.SCARCE, statusValue, daysUntilGoalIsReached);
 						}
-					} else if (GetNumberOfResourcesPerType (currentResource) > (allNeededResources [i] * 1.5f)) {//If producing needed resource and sobra w/ buffer
+					} else if (GetNumberOfResourcesPerType (currentResource) > (allNeededResources [i] * 1.2f)) {//If producing needed resource and sobra w/ buffer
 						SetResourceStatus (currentResource, RESOURCE_STATUS.ABUNDANT, statusValue, -1);
 					} else {
 						SetResourceStatus (currentResource, RESOURCE_STATUS.NORMAL, statusValue, 0);
@@ -1058,6 +1064,12 @@ public class CityTest{
 					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
 					this.citizenActionHexTile = null;
 				} else if (this.nextCityCitizenAction == CITY_CITIZEN_ACTION.CHANGE_CITIZEN) {
+					if (this.citizenToChange.job.jobType == JOB_TYPE.MERCHANT) {
+						if (((Merchant)this.citizenToChange.job).isOutsideCity) {
+							return;
+						}
+					}
+
 					cityLogs += GameManager.Instance.currentDay.ToString() + ": Changed : [FF0000]" + this.citizenToChange.job.jobType.ToString() + "[-] to " +
 						"[FF0000]" + this.citizenActionJobType.ToString() + "[-] \n\n";
 
@@ -1098,7 +1110,7 @@ public class CityTest{
 			}
 			dayPioneerReachesCity = GameManager.Instance.currentDay + (int)Vector2.Distance(kingdomTile.kingdom.cities[0].transform.position, 
 				pioneerCityTarget.hexTile.transform.position);
-//			GameManager.Instance.turnEnded += SendPioneer;
+			GameManager.Instance.turnEnded += SendPioneer;
 			cityLogs += GameManager.Instance.currentDay.ToString() + ": Pioneer will reach city: [FF0000]" + pioneerCityTarget.hexTile.name + "[-] on day [FF0000]" + dayPioneerReachesCity.ToString() + "[-]\n\n";
 		}
 	}
@@ -1559,29 +1571,29 @@ public class CityTest{
 		}
 
 		neighbours = neighbours.Distinct().ToList();
-
-		if (scarceResource == RESOURCE.FOOD) {
-			neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList();
-			int highestFarmingValue = neighbours [0].farmingValue;
-			neighbours = neighbours.OrderByDescending (x => (x.huntingValue)).ToList();
-			int highestHuntingValue = neighbours [0].huntingValue;
-			if (highestFarmingValue >= highestHuntingValue) {
-				neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList();
+		if (neighbours.Count > 0) {
+			if (scarceResource == RESOURCE.FOOD) {
+				neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList ();
+				int highestFarmingValue = neighbours [0].farmingValue;
+				neighbours = neighbours.OrderByDescending (x => (x.huntingValue)).ToList ();
+				int highestHuntingValue = neighbours [0].huntingValue;
+				if (highestFarmingValue >= highestHuntingValue) {
+					neighbours = neighbours.OrderByDescending (x => (x.farmingValue)).ToList ();
+				}
+			} else if (scarceResource == RESOURCE.GOLD) {
+				neighbours = neighbours.OrderByDescending (x => (x.goldValue)).ToList ();
+			} else if (scarceResource == RESOURCE.LUMBER) {
+				neighbours = neighbours.OrderByDescending (x => (x.woodValue)).ToList ();
+			} else if (scarceResource == RESOURCE.MANA) {
+				neighbours = neighbours.OrderByDescending (x => (x.manaValue)).ToList ();
+			} else if (scarceResource == RESOURCE.METAL) {
+				neighbours = neighbours.OrderByDescending (x => (x.metalValue)).ToList ();
+			} else if (scarceResource == RESOURCE.STONE) {
+				neighbours = neighbours.OrderByDescending (x => (x.stoneValue)).ToList ();
 			}
-		} else if (scarceResource == RESOURCE.GOLD) {
-			neighbours = neighbours.OrderByDescending (x => (x.goldValue)).ToList();
-		} else if (scarceResource == RESOURCE.LUMBER) {
-			neighbours = neighbours.OrderByDescending (x => (x.woodValue)).ToList();
-		} else if (scarceResource == RESOURCE.MANA) {
-			neighbours = neighbours.OrderByDescending (x => (x.manaValue)).ToList();
-		} else if (scarceResource == RESOURCE.METAL) {
-			neighbours = neighbours.OrderByDescending (x => (x.metalValue)).ToList();
-		} else if (scarceResource == RESOURCE.STONE) {
-			neighbours = neighbours.OrderByDescending (x => (x.stoneValue)).ToList();
+
+			this.targetHexTileToPurchase = neighbours [0];
 		}
-
-		this.targetHexTileToPurchase = neighbours [0];
-
 //		return neighbours[0];
 	} 
 
@@ -1799,7 +1811,7 @@ public class CityTest{
 				this.cityActionChances.tradeMissionChance = this.cityActionChances.defaultTradeMissionChance;
 				int chanceTradeHelpGift = UnityEngine.Random.Range (0, 100);
 				if(chanceTradeHelpGift < 70){//TRADE
-					TradeMission();
+//					TradeMission();
 				}else if(chanceTradeHelpGift >= 70 && chanceTradeHelpGift < 85){//HELP
 					AskHelp();
 				}else{//GIFT
@@ -2315,6 +2327,16 @@ public class CityTest{
 		}
 
 		return citizenCreationCosts;
+	}
+
+	public List<Citizen> GetCitizensByType(JOB_TYPE jobType){
+		List<Citizen> citizensOfType = new List<Citizen>();
+		for (int i = 0; i < this.citizens.Count; i++) {
+			if (this.citizens [i].job.jobType == jobType) {
+				citizensOfType.Add (this.citizens [i]);
+			}
+		}
+		return citizensOfType;
 	}
 
 

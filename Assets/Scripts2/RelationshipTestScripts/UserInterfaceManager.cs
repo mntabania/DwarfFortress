@@ -38,6 +38,7 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblMageCount;
 	public UILabel lblQuarrymanCount;
 	public UILabel lblBrawlerCount;
+	public UILabel lblMerchantCount;
 
 	public GameObject goCitizenInfo;
 	public UILabel lblCitizenCap;
@@ -131,6 +132,7 @@ public class UserInterfaceManager : MonoBehaviour {
 //		lblArcherCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.OFFENSE_GENERAL).ToString();
 //		lblMageCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MAGE).ToString();
 		lblQuarrymanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.QUARRYMAN).ToString();
+		lblMerchantCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MERCHANT).ToString();
 //		lblBrawlerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.BRAWLER).ToString();
 
 		lblUnrest.text = "Unrest: " + cityTile.cityAttributes.unrest.ToString();
@@ -147,12 +149,14 @@ public class UserInterfaceManager : MonoBehaviour {
 				lblCitizenInfo.text += "Name: " + currentCitizen.name + "\n";
 				lblCitizenInfo.text += "Level: " + currentCitizen.level.ToString() + "\n";
 				lblCitizenInfo.text += "Assigned Tile: " + currentCitizen.assignedTile.name + "\n";
-				lblCitizenInfo.text += "Upgrade Reqs: ";
-				for (int j = 0; j < currentCitizen.GetUpgradeRequirements().resource.Count; j++) {
-					Resource currentResource = currentCitizen.GetUpgradeRequirements ().resource [j];
-					lblCitizenInfo.text += currentResource.resourceType.ToString() + " - " + currentResource.resourceQuantity.ToString() + "\n";
-				}
-				lblCitizenInfo.text += "\n";
+//				lblCitizenInfo.text += "Upgrade Reqs: ";
+//				if (jobType != JOB_TYPE.MERCHANT) {
+//					for (int j = 0; j < currentCitizen.GetUpgradeRequirements ().resource.Count; j++) {
+//						Resource currentResource = currentCitizen.GetUpgradeRequirements ().resource [j];
+//						lblCitizenInfo.text += currentResource.resourceType.ToString () + " - " + currentResource.resourceQuantity.ToString () + "\n";
+//					}
+//					lblCitizenInfo.text += "\n";
+//				}
 			}
 		}
 		goCitizenInfo.SetActive (true);

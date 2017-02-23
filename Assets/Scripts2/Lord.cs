@@ -1818,7 +1818,7 @@ public class Lord {
 	bool IsCompetetiveSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.relationshipLords.Count; j++) {
-			Lord otherLord = this.targetableLords[j].lord;
+			Lord otherLord = this.relationshipLords[j].lord;
 			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
 				result = true;
 			}

@@ -20,7 +20,7 @@ public class RelationshipTestScript : MonoBehaviour {
 		GenerateInitialKingdoms();
 		GenerateInitialCitizens ();
 		StartResourceProductions ();
-		UserInterfaceManager.Instance.SetCityInfoToShow (hexTiles [0].GetComponent<CityTileTest> ());
+		UserInterfaceManager.Instance.SetCityInfoToShow (hexTiles [3].GetComponent<CityTileTest> ());
 
 	}
 
