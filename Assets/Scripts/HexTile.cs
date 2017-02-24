@@ -169,6 +169,9 @@ public class HexTile : MonoBehaviour {
 			if (nearHexes[i].gameObject == null || nearHexes[i].gameObject == this.gameObject) {
 				continue;
 			}
+			if (nearHexes [i].gameObject.GetComponent<HexTile> () == null) {
+				continue;
+			}
 			if (!nearHexes[i].gameObject.GetComponent<HexTile> ().isCity) {
 				if(!nearHexes[i].gameObject.GetComponent<HexTile> ().isOccupied){
 					nearTiles.Add(nearHexes[i].gameObject.GetComponent<HexTile>());

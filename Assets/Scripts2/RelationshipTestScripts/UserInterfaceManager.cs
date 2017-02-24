@@ -44,6 +44,9 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblCitizenCap;
 	public UILabel lblCitizenInfo;
 
+	public GameObject goSpecificCitizenInfo;
+	public UILabel lblSpecificCitizenInfo;
+
 	public UILabel lblPause;
 
 	CityTileTest currentDisplayingCityTile;
@@ -164,6 +167,36 @@ public class UserInterfaceManager : MonoBehaviour {
 
 	public void HoverOutCitizen(){
 		goCitizenInfo.SetActive (false);
+	}
+
+	public void ShowSpecificCitizenInfo(Citizen citizen){
+		lblSpecificCitizenInfo.text = "";
+		lblSpecificCitizenInfo.text += "Name: " + citizen.name + "    ";
+		lblSpecificCitizenInfo.text += "Job: " + citizen.job.jobType.ToString() + "\n";
+		lblSpecificCitizenInfo.text += "Home City: " + citizen.city.cityName + "\n";
+		if (citizen.job.jobType == JOB_TYPE.MERCHANT) {
+			Merchant merchant = (Merchant)citizen.job;
+			if (merchant.targetCity != null) {
+				if (merchant.targetCity.id == merchant.citizen.city.id) {
+					lblSpecificCitizenInfo.text += "Target City: HOME \n";
+				} else {
+					lblSpecificCitizenInfo.text += "Target City: " + merchant.targetCity.cityName + "\n";
+				}
+			}
+
+			if (merchant.tradeGoods.Count > 0) {
+				lblSpecificCitizenInfo.text += "Trade Goods: \n";
+				for (int i = 0; i < merchant.tradeGoods.Count; i++) {
+					lblSpecificCitizenInfo.text += merchant.tradeGoods[i].resourceQuantity.ToString() + " " + merchant.tradeGoods[i].resourceType.ToString() + "\n";
+				}
+			}
+		}
+		goSpecificCitizenInfo.SetActive (true);
+
+	}
+
+	public void HideSpecificCitizenInfo(){
+		goSpecificCitizenInfo.SetActive (false);
 	}
 
 	public void UpdateDayCounter(int numOfDays){
