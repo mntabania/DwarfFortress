@@ -86,7 +86,14 @@ public class Merchant : Job {
 				}
 			}
 		}
-
+			
+//		if (elligibleCitiesForTrade.Count > 0) {
+//			this.targetCity = elligibleCitiesForTrade [UnityEngine.Random.Range(0, elligibleCitiesForTrade.Count)];
+//			this.pathToTargetCity = GameManager.Instance.GetPath(this.citizen.city.hexTile.tile, this.targetCity.hexTile.tile, PATHFINDING_MODE.NORMAL).ToList();
+//			this.pathToTargetCity.Reverse();
+//
+//			this.citizenAvatar = GameObject.Instantiate(Resources.Load ("CitizenAvatar", typeof(GameObject)), this.citizen.city.hexTile.transform) as GameObject;
+//			this.citizenAvatar.transform.localPosition = Vector3.zero;
 		if (elligibleCitiesForTrade.Count <= 0) {
 			for (int i = 0; i < this.currentTile.GetCityTileTest().cityAttributes.connectedCities.Count; i++) {
 				if (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.id == this.citizen.city.id || 
@@ -121,6 +128,12 @@ public class Merchant : Job {
 				GameObject.Destroy (this.citizenAvatar);
 				this.citizen.city.RemoveCitizen(this.citizen);
 			} else {
+//				//merchant is at city to trade to, start trade then go back home
+//				this.StartTrade();
+//				this.targetCity = this.citizen.city;
+//				this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, PATHFINDING_MODE.NORMAL).ToList();
+//				this.pathToTargetCity.Reverse();
+//				GameManager.Instance.turnEnded += GoToDestination;
 				ChooseTargetCity ();
 			}
 		} else {

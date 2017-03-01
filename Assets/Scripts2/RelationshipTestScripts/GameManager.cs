@@ -24,13 +24,26 @@ public class GameManager : MonoBehaviour {
 
 	public List<CooperateEvents> pendingCooperateEvents = new List<CooperateEvents>();
 
-	public int currentDay = 0;
+	public int currentDay = 1;
 
 	public bool isDayPaused = false;
 
 	public int daysUntilNextHarvest = 30;
 	public bool harvestTime;
 
+
+	#region Functions for testing
+	public HexTile startingHexTile;
+	public HexTile targetHexTile;
+	[ContextMenu("PATHFINDING TEST COMBAT")]
+	public void TestCombatPathfinding(){
+		Utilities.targetCity = targetHexTile.GetComponent<CityTileTest> ().cityAttributes;
+		List<Tile> path = GetPath (startingHexTile.tile, targetHexTile.tile, PATHFINDING_MODE.COMBAT).ToList();
+		for (int i = 0; i < path.Count; i++) {
+			path [i].hexTile.SetTileColor (Color.red);
+		}
+	}
+	#endregion
 
 	void Awake(){
 		Instance = this;
@@ -53,15 +66,14 @@ public class GameManager : MonoBehaviour {
 		StartResourceProductions ();
 		UserInterfaceManager.Instance.SetCityInfoToShow (this.cities [0].GetComponent<CityTileTest> ());
 	}
-
-
+		
 	/*
 	 * Get List of tiles (Path) that will connect 2 city tiles
 	 * */
-	public IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
+	public IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, PATHFINDING_MODE pathfindingMode){
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destinationTile.X, 2) + Math.Pow(t.Y - destinationTile.Y, 2));
-		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, forCreatingRoads);
+		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, pathfindingMode);
 		return path;
 	}
 
@@ -72,7 +84,8 @@ public class GameManager : MonoBehaviour {
 	void GenerateCities(){
 		CreateCity(GridMap.Instance.listHexes [293].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [1244].GetComponent<HexTile>());
-		CreateCity(GridMap.Instance.listHexes [2094].GetComponent<HexTile>());
+//		CreateCity(GridMap.Instance.listHexes [2094].GetComponent<HexTile>());
+		CreateCity(GridMap.Instance.listHexes [1994].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [2127].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [1222].GetComponent<HexTile>());
 		CreateCity(GridMap.Instance.listHexes [276].GetComponent<HexTile>());
@@ -100,7 +113,7 @@ public class GameManager : MonoBehaviour {
 				Tile tileToConnectTo = currentCityTile.cityAttributes.connectedCities[j].hexTile.tile;
 				thisCity.canPass = true;
 				tileToConnectTo.canPass = true;
-				List<Tile> roads = GetPath(thisCity, tileToConnectTo, true).ToList();
+				List<Tile> roads = GetPath(thisCity, tileToConnectTo, PATHFINDING_MODE.ROAD_CREATION).ToList();
 				for (int k = 0; k < roads.Count; k++) {
 					roads [k].hexTile.isRoad = true;
 					if (!roads [k].hexTile.isCity && !roads [k].hexTile.isOccupied) {
@@ -194,13 +207,13 @@ public class GameManager : MonoBehaviour {
 
 		GameObject goKingdom1 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom1.transform.parent = this.transform;
-		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>(), this.cities[4].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
+		goKingdom1.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[0].GetComponent<CityTileTest>(), this.cities[5].GetComponent<CityTileTest>(), this.cities[2].GetComponent<CityTileTest>()}, new Color(255f/255f, 0f/255f, 206f/255f));
 		goKingdom1.name = goKingdom1.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		this.kingdoms.Add (goKingdom1.GetComponent<KingdomTileTest>());
 
 		GameObject goKingdom2 = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
 		goKingdom2.transform.parent = this.transform;
-		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[1].GetComponent<CityTileTest>(), this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
+		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.HUMANS, new List<CityTileTest>(){this.cities[4].GetComponent<CityTileTest>(), this.cities[1].GetComponent<CityTileTest>(), this.cities[3].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 //		goKingdom2.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, new List<CityTileTest>(){this.cities[5].GetComponent<CityTileTest>()}, new Color(40f/255f, 255f/255f, 0f/255f));
 		goKingdom2.name = goKingdom2.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 		kingdoms.Add (goKingdom2.GetComponent<KingdomTileTest>());
@@ -313,6 +326,7 @@ public class GameManager : MonoBehaviour {
 				turnEnded += this.kingdoms[i].kingdom.cities[j].CheckVisitingGenerals;
 			}
 		}
+
 		ActivateProducationCycle();
 	}
 
@@ -545,5 +559,9 @@ public class GameManager : MonoBehaviour {
 		for(int i = 0; i < this.kingdoms.Count; i++){
 			this.kingdoms [i].kingdom.lord.UpdateMilitaryData ();
 		}
+	}
+
+	internal void Battle(){
+		
 	}
 }

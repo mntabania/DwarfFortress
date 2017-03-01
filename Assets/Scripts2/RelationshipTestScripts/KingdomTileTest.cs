@@ -59,6 +59,7 @@ public class KingdomTileTest : MonoBehaviour {
 
 	internal void TurnActions(int currentDay){
 //		kingdom.CheckForExpansion();
+		kingdom.lord.AutoUpdateMilitaryData(currentDay);
 		if (currentDay % 5 == 0) {
 			kingdom.CheckForRevolution();
 		}

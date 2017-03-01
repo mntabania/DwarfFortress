@@ -4,11 +4,20 @@ using System.Collections;
 public class CitizenAvatar : MonoBehaviour {
 
 	[HideInInspector] public Citizen citizen;
+	[HideInInspector] public General general;
 	public GameObject goCitizenInfo;
 	public TextMesh citizenInfo;
+	public Sprite[] avatars;
 
 	void OnMouseOver(){
-		UserInterfaceManager.Instance.ShowSpecificCitizenInfo (this.citizen);
+		if(citizen != null){
+			UserInterfaceManager.Instance.ShowSpecificCitizenInfo (this.citizen);
+
+		}
+		if(general != null){
+			
+
+		}
 //		citizenInfo.text = "";
 //		goCitizenInfo.SetActive (true);
 //		citizenInfo.text += "Name: " + citizen.name + "\n";
@@ -32,6 +41,32 @@ public class CitizenAvatar : MonoBehaviour {
 
 	void OnMouseExit(){
 		UserInterfaceManager.Instance.HideSpecificCitizenInfo();
+	}
+
+	internal void ProcessAvatar(){
+		if(citizen != null){
+			//TODO: change the fucking image
+		}
+		if(general != null){
+			switch(general.city.kingdomTile.kingdom.kingdomRace){
+			case RACE.HUMANS:
+				this.GetComponent<SpriteRenderer> ().sprite = avatars [0];
+				break;
+			case RACE.ELVES:
+				this.GetComponent<SpriteRenderer> ().sprite = avatars [0];
+				break;
+			case RACE.CROMADS:
+				this.GetComponent<SpriteRenderer> ().sprite = avatars [0];
+				break;
+			case RACE.MINGONS:
+				this.GetComponent<SpriteRenderer> ().sprite = avatars [0];
+				break;
+			}
+		}
+	}
+
+	internal void MakeCitizenMove(HexTile startTile, HexTile targetTile){
+		this.transform.position = Vector3.Lerp (startTile.transform.position, targetTile.transform.position, 0.5f);
 	}
 
 }

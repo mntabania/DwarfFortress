@@ -9,6 +9,7 @@ public class MilitaryData {
 	public General enemyGeneral;
 	public BATTLE_MOVE battleMove;
 	public int yourArmyStrength;
+	public bool isAllowedAttack;
 //	public bool isResolved;
 
 	public MilitaryData(CityTest enemyCity, General enemyGeneral, int yourArmyStrength, BATTLE_MOVE battleMove){
@@ -17,6 +18,9 @@ public class MilitaryData {
 		this.enemyGeneral = enemyGeneral;
 		this.battleMove = battleMove;
 		this.yourArmyStrength = yourArmyStrength;
+		this.isAllowedAttack = false;
+
+		SetLastID (this.id);
 //		this.isResolved = false;
 	}
 

@@ -127,6 +127,15 @@ public class HexTile : MonoBehaviour {
 	public void SetTileAsUnpassable(){
 		tile.canPass = false;
 	}
+		
+	[ContextMenu("Show Combat Tiles")]
+	public void ShowCombatTiles(){
+		Utilities.targetCity = GameManager.Instance.targetHexTile.GetComponent<CityTileTest> ().cityAttributes;
+		foreach (Tile t in tile.CombatTiles) {
+			t.hexTile.SetTileColor (Color.red);
+			Debug.Log ("Neighbours: " + t.hexTile.name);
+		}
+	}
 
 	[ContextMenu("Get Neighbours")]
 	public void GetNeighbours(){

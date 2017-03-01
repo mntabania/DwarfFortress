@@ -80,6 +80,11 @@ public class CityTileTest : MonoBehaviour {
 		this.cityAttributes.AdjustResourceCount (resourceToAdd, resourceAmountToAdd);
 		Debug.Log ("Adjusted " + resourceToAdd.ToString () + " by " + resourceAmountToAdd);
 	}
+		
+	[ContextMenu("Add General")]
+	public void AddGeneral(){
+		this.cityAttributes.CreateGeneral ();
+	}
 
 	[ContextMenu("Force Caravan")]
 	public void ForceSendMerchant(){
@@ -105,8 +110,8 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.UpdateCityExpenses();
 //		cityAttributes.AssignNeededRole ();
 //		cityAttributes.AssignUnneededRoles ();
-		cityAttributes.AttemptToCreateNewGeneral();
-		cityAttributes.ArmyMaintenance ();
+//		cityAttributes.AttemptToCreateNewGeneral();
+//		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 
 		if (currentDay % 7 == 0) { 
@@ -118,7 +123,7 @@ public class CityTileTest : MonoBehaviour {
 //		cityAttributes.AttemptToUpgradeCitizen ();
 //		cityAttributes.AttemptToCreateNewCitizen ();
 //		cityAttributes.AttemptToChangeCitizenRole ();
-		cityAttributes.AttemptToIncreaseArmyCount ();
+//		cityAttributes.AttemptToIncreaseArmyCount ();
 		cityAttributes.LaunchTradeMission();
 		cityAttributes.AttemptToCreatePioneer();
 		cityAttributes.AttemptToPerformCitizenAction();

@@ -18,6 +18,7 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
 	public IEnumerable<Tile> AllNeighbours { get;  set;  }
 	public IEnumerable<Tile> ValidTiles { get { return AllNeighbours.Where (o => o.canPass); } } //Returns all neighbour tiles that aren't cities
 	public IEnumerable<Tile> RoadTiles { get { return AllNeighbours.Where (o => o.hexTile.isRoad); } } // Returns all neighbouring road tiles
+	public IEnumerable<Tile> CombatTiles { get { return AllNeighbours.Where (o => o.hexTile.isRoad && Utilities.IsTileIncludedInYourKingdom(o.hexTile)); } }
 
     public void FindNeighbours(Tile[,] gameBoard) {
         var neighbours = new List<Tile>();
