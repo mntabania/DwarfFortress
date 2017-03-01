@@ -105,7 +105,7 @@ public class Merchant : Job {
 		elligibleCitiesForTrade.OrderByDescending(x => x.GetScarcityValue());
 
 		this.targetCity = elligibleCitiesForTrade[0];
-		this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, false).Reverse().ToList();
+		this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, PATHFINDING_MODE.NORMAL).Reverse().ToList();
 		this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString() + ": Merchant will go to [FF0000]" + this.targetCity.cityName + "[-]. The Merchant been to " + this.numOfCitiesVisited.ToString() + " cities\n\n"; 
 		GameManager.Instance.turnEnded += GoToDestination;
 
@@ -139,9 +139,7 @@ public class Merchant : Job {
 			for (int i = 0; i < increments; i++) {
 				currentLocationIndex += 1;
 				Tile nextTile = this.pathToTargetCity [currentLocationIndex];
-				while (this.citizenAvatar.transform.position != nextTile.hexTile.transform.position) {
-					this.citizenAvatar.transform.position = Vector3.Lerp (this.citizenAvatar.transform.position, nextTile.hexTile.transform.position, 0.5f);
-				}
+				this.citizenAvatar.GetComponent<CitizenAvatar>().MakeCitizenMove(this.currentTile, nextTile.hexTile);
 				this.currentTile = nextTile.hexTile;
 				if (this.currentTile == this.targetCity.hexTile) {
 					break;

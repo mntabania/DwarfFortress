@@ -2656,31 +2656,47 @@ public class CityTest{
 		}
 
 	}
-	internal void CheckBattleMidwayCity(ref CityTest landedCity, ref General attackingGeneral){
-		CityTest city = landedCity;
+	internal void CheckBattleMidwayCity(General attackingGeneral, ref int armyCount, ref bool isDead){
 		General enemyGeneral = attackingGeneral;
-		Relationship relationshipWithLord = this.kingdomTile.kingdom.lord.SearchRelationship (landedCity.kingdomTile.kingdom.lord);
+		Relationship relationshipWithLord = this.kingdomTile.kingdom.lord.SearchRelationship (attackingGeneral.city.kingdomTile.kingdom.lord);
 		if(relationshipWithLord.isAtWar){
-			List<General> helpingGenerals = city.visitingGenerals.Where (x => x.task != GENERAL_TASK.ON_ATTACK && x.location == city.hexTile).ToList ();
-			List<General> yourGenerals = city.generals.Where (x => x.location == city.hexTile).ToList ();
+			List<General> helpingGenerals = this.visitingGenerals.Where (x => x.task != GENERAL_TASK.ON_ATTACK && x.location == this.hexTile).ToList ();
+			List<General> yourGenerals = this.generals.Where (x => x.location == this.hexTile).ToList ();
 			List<General> combinedGenerals = yourGenerals.Concat (helpingGenerals).OrderByDescending (x => x.ArmyStrength ()).ToList ();
 			if(combinedGenerals.Count > 0){
 				Debug.Log ("BATTLE MIDWAY CITY!");
-				GoToBattle (ref combinedGenerals, ref enemyGeneral);
-
-				landedCity = city;
+				List<General> newCombinedGenerals = new List<General> (combinedGenerals);
+				GoToBattle (ref newCombinedGenerals, ref enemyGeneral);
+				combinedGenerals = newCombinedGenerals;
 				attackingGeneral = enemyGeneral;
+				armyCount = enemyGeneral.army.armyCount;
 
 				if(combinedGenerals.Count <= 0 && enemyGeneral.army.armyCount > 0){
-					Debug.Log (landedCity.cityName + " IS CONQUERED BY " + enemyGeneral.city.cityName);
-					enemyGeneral.city.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.ATTACK, landedCity, null);
-					landedCity.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.DEFEND, null, enemyGeneral);
-					landedCity.generals.Clear ();
-					landedCity.isDead = true;
-					ConquerCity (enemyGeneral.city.kingdomTile, landedCity.visitingGenerals);
-				}
-				if(enemyGeneral.army.armyCount <= 0){
-					
+					Debug.Log (this.cityName + " IS CONQUERED BY " + enemyGeneral.city.cityName);
+					enemyGeneral.city.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.ATTACK, this, null);
+					this.kingdomTile.kingdom.lord.RemoveMilitaryData (BATTLE_MOVE.DEFEND, null, enemyGeneral);
+					this.generals.Clear ();
+					this.isDead = true;
+					this.ConquerCity (enemyGeneral.city.kingdomTile, this.visitingGenerals);
+				}else{
+					if(enemyGeneral.army.armyCount <= 0){
+						isDead = true;
+//						enemyGeneral.city.kingdomTile.kingdom.lord.UpdateSpecificOffenseMilitaryData (enemyGeneral.taskID);
+						enemyGeneral.targetCity.kingdomTile.kingdom.lord.UpdateMilitaryData ();
+						enemyGeneral.targetCity.visitingGenerals.Remove (enemyGeneral);
+						enemyGeneral.city.generals.Remove (enemyGeneral);
+					}
+					if(this.visitingGenerals.Count > 0){
+						for(int i = 0; i < this.visitingGenerals.Count; i++){
+							if (this.visitingGenerals [i].army.armyCount <= 0) {
+								this.visitingGenerals [i].city.generals.Remove (this.visitingGenerals [i]);
+							}
+						}
+					}
+
+					this.visitingGenerals.RemoveAll (x => x.army.armyCount <= 0);
+					this.generals.RemoveAll (x => x.army.armyCount <= 0);
+					this.kingdomTile.kingdom.lord.UpdateMilitaryData ();
 				}
 			}
 		}
@@ -2803,7 +2819,7 @@ public class CityTest{
 		conqueror.kingdom.AddCityToKingdom (hexTile.GetCityTileTest());
 		this.kingdomTile.kingdom.cities.Remove (hexTile.GetCityTileTest());
 
-		hexTile.GetCityTileTest ().DevelopNewCity (conqueror, visitingGenerals);
+		this.hexTile.GetCityTileTest ().DevelopNewCity (conqueror, visitingGenerals);
 
 	}
 	internal void CheckMultipleArrivals(){
@@ -3175,6 +3191,10 @@ public class CityTest{
 							milData.enemyCity.visitingGenerals.Add (general);
 							milData.enemyCity.TriggerCityDefense (general);
 							milData.yourArmyStrength += general.ArmyStrength ();
+							general.generalAvatar = GameObject.Instantiate (Resources.Load ("CitizenAvatar", typeof(GameObject)), this.hexTile.transform) as GameObject;
+							general.generalAvatar.GetComponent<CitizenAvatar>().general = general;
+							general.generalAvatar.GetComponent<CitizenAvatar>().ProcessAvatar();
+							general.generalAvatar.transform.localPosition = Vector3.zero;
 //						} 
 //						else {
 //							if(previousAttackMilData != null){
@@ -3187,7 +3207,7 @@ public class CityTest{
 //							}
 //						}
 
-							CheckBattleMidWay ();
+//							CheckBattleMidWay ();
 	
 							Debug.Log (this.cityName + " target city: " + this.targetCity.cityName);
 						}
@@ -3237,6 +3257,10 @@ public class CityTest{
 							general.roads = roads;
 							general.isOnTheWay = true;
 							militaryData.enemyGeneral.targetCity.visitingGenerals.Add (general);
+							general.generalAvatar = GameObject.Instantiate (Resources.Load ("CitizenAvatar", typeof(GameObject)), this.hexTile.transform) as GameObject;
+							general.generalAvatar.GetComponent<CitizenAvatar>().general = general;
+							general.generalAvatar.GetComponent<CitizenAvatar>().ProcessAvatar();
+							general.generalAvatar.transform.localPosition = Vector3.zero;
 						}
 
 						//				if(militaryData.enemyGeneral.targetCity.GetArmyStrength() >= militaryData.enemyGeneral.ArmyStrength()){
