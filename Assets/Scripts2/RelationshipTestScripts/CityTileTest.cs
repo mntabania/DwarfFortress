@@ -80,10 +80,21 @@ public class CityTileTest : MonoBehaviour {
 		this.cityAttributes.AdjustResourceCount (resourceToAdd, resourceAmountToAdd);
 		Debug.Log ("Adjusted " + resourceToAdd.ToString () + " by " + resourceAmountToAdd);
 	}
-
+		
 	[ContextMenu("Add General")]
 	public void AddGeneral(){
 		this.cityAttributes.CreateGeneral ();
+	}
+
+	[ContextMenu("Force Caravan")]
+	public void ForceSendMerchant(){
+		List<Citizen> merchants = cityAttributes.GetCitizensByType (JOB_TYPE.MERCHANT);
+		if (merchants.Count > 0) {
+			Merchant merchant = ((Merchant)merchants[0].job);
+			merchant.GetTradeGoods();
+		} else {
+			Debug.Log("No merchants to send!");
+		}
 	}
 
 	public void SetCityAsActiveAndSetProduction(){

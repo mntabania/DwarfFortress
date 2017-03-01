@@ -31,21 +31,23 @@ public class GridMap : MonoBehaviour {
 		GameBoard = new Tile[(int)width, (int)height];
 		for (int x = 0;  x < width; x++){
 			for(int y = 0; y < height; y++){
+				float xPosition = x * xOffset;
+
 				float yPosition = y * yOffset;
-				if (x % 2 == 1) {
-					yPosition += yOffset / 2;
+				if (y % 2 == 1) {
+					xPosition += xOffset / 2;
 				}
 				GameObject hex = GameObject.Instantiate(goHex) as GameObject;
 				hex.transform.parent = this.transform;
-				hex.transform.position = new Vector3(x * xOffset, yPosition,0f);
+				hex.transform.position = new Vector3(xPosition, yPosition,0f);
 				hex.transform.localScale = new Vector3(tileSize,tileSize,0f);
 				hex.name = x + "," + y;
 				listHexes.Add(hex);
-				if (x % 2 == 1) {
-					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)(width-1) - (y*2);
-				} else {
-					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
-				}
+//				if (x % 2 == 1) {
+//					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)(width-1) - (y*2);
+//				} else {
+//					hex.GetComponent<SpriteRenderer>().sortingOrder = (int)height - (y*2);
+//				}
 				hex.GetComponent<HexTile>().tile = new Tile (x, y, hex.GetComponent<HexTile>());
 				hex.GetComponent<HexTile>().GenerateResourceValues(); //TODO: Relocate to when biomes are chosen
 				GameBoard [x, y] = hex.GetComponent<HexTile>().tile;

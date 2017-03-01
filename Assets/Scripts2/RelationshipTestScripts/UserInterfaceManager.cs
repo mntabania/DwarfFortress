@@ -38,10 +38,14 @@ public class UserInterfaceManager : MonoBehaviour {
 	public UILabel lblMageCount;
 	public UILabel lblQuarrymanCount;
 	public UILabel lblBrawlerCount;
+	public UILabel lblMerchantCount;
 
 	public GameObject goCitizenInfo;
 	public UILabel lblCitizenCap;
 	public UILabel lblCitizenInfo;
+
+	public GameObject goSpecificCitizenInfo;
+	public UILabel lblSpecificCitizenInfo;
 
 	public UILabel lblPause;
 
@@ -108,13 +112,13 @@ public class UserInterfaceManager : MonoBehaviour {
 			lblUpgradeCityCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString() +"\n";
 		}
 
-		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
-		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
+		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.GOLD).status.ToString();
+		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.FOOD).status.ToString();
 		lblFoodStockPileCount.text = "Stock: " + cityTile.cityAttributes.foodStockpileCount.ToString();
-		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();
-		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString();
-		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString();
-		lblMetalCount.text = "Metal: " + cityTile.cityAttributes.metalCount.ToString();
+		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.LUMBER).status.ToString();
+		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.STONE).status.ToString();
+		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.MANA).status.ToString();
+		lblMetalCount.text = "Metal: " + cityTile.cityAttributes.metalCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.METAL).status.ToString();
 		if (cityTile.cityAttributes.kingdomTile) {
 			lblKingdomName.text = "Kingdom: " + cityTile.cityAttributes.kingdomTile.kingdom.kingdomRace;
 		} else {
@@ -131,10 +135,15 @@ public class UserInterfaceManager : MonoBehaviour {
 //		lblArcherCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.OFFENSE_GENERAL).ToString();
 //		lblMageCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MAGE).ToString();
 		lblQuarrymanCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.QUARRYMAN).ToString();
+		lblMerchantCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.MERCHANT).ToString();
 //		lblBrawlerCount.text = cityTile.cityAttributes.GetNumberOfCitizensPerType(JOB_TYPE.BRAWLER).ToString();
 
 		lblUnrest.text = "Unrest: " + cityTile.cityAttributes.unrest.ToString();
 		lblCitySummary.text = cityTile.cityAttributes.cityLogs;
+	}
+
+	public void ForceCaravan(){
+		this.currentDisplayingCityTile.ForceSendMerchant();
 	}
 
 
@@ -147,12 +156,14 @@ public class UserInterfaceManager : MonoBehaviour {
 				lblCitizenInfo.text += "Name: " + currentCitizen.name + "\n";
 				lblCitizenInfo.text += "Level: " + currentCitizen.level.ToString() + "\n";
 				lblCitizenInfo.text += "Assigned Tile: " + currentCitizen.assignedTile.name + "\n";
-				lblCitizenInfo.text += "Upgrade Reqs: ";
-				for (int j = 0; j < currentCitizen.GetUpgradeRequirements().resource.Count; j++) {
-					Resource currentResource = currentCitizen.GetUpgradeRequirements ().resource [j];
-					lblCitizenInfo.text += currentResource.resourceType.ToString() + " - " + currentResource.resourceQuantity.ToString() + "\n";
-				}
-				lblCitizenInfo.text += "\n";
+//				lblCitizenInfo.text += "Upgrade Reqs: ";
+//				if (jobType != JOB_TYPE.MERCHANT) {
+//					for (int j = 0; j < currentCitizen.GetUpgradeRequirements ().resource.Count; j++) {
+//						Resource currentResource = currentCitizen.GetUpgradeRequirements ().resource [j];
+//						lblCitizenInfo.text += currentResource.resourceType.ToString () + " - " + currentResource.resourceQuantity.ToString () + "\n";
+//					}
+//					lblCitizenInfo.text += "\n";
+//				}
 			}
 		}
 		goCitizenInfo.SetActive (true);
@@ -160,6 +171,38 @@ public class UserInterfaceManager : MonoBehaviour {
 
 	public void HoverOutCitizen(){
 		goCitizenInfo.SetActive (false);
+	}
+
+	public void ShowSpecificCitizenInfo(Citizen citizen){
+		lblSpecificCitizenInfo.text = "";
+		lblSpecificCitizenInfo.text += "Name: " + citizen.name + "    ";
+		lblSpecificCitizenInfo.text += "Job: " + citizen.job.jobType.ToString() + "\n";
+		lblSpecificCitizenInfo.text += "Home City: " + citizen.city.cityName + "\n";
+		if (citizen.job.jobType == JOB_TYPE.MERCHANT) {
+			Merchant merchant = (Merchant)citizen.job;
+			if (merchant.targetCity != null) {
+				if (merchant.targetCity.id == merchant.citizen.city.id) {
+					lblSpecificCitizenInfo.text += "Target City: HOME \n";
+				} else {
+					lblSpecificCitizenInfo.text += "Target City: " + merchant.targetCity.cityName + "\n";
+				}
+			}
+
+			lblSpecificCitizenInfo.text += "Current Location: " + merchant.currentTile.name + "\n";
+
+			if (merchant.tradeGoods.Count > 0) {
+				lblSpecificCitizenInfo.text += "Trade Goods: \n";
+				for (int i = 0; i < merchant.tradeGoods.Count; i++) {
+					lblSpecificCitizenInfo.text += merchant.tradeGoods[i].resourceQuantity.ToString() + " " + merchant.tradeGoods[i].resourceType.ToString() + "\n";
+				}
+			}
+		}
+		goSpecificCitizenInfo.SetActive (true);
+
+	}
+
+	public void HideSpecificCitizenInfo(){
+		goSpecificCitizenInfo.SetActive (false);
 	}
 
 	public void UpdateDayCounter(int numOfDays){

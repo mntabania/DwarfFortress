@@ -61,8 +61,8 @@ public class Lord {
 		this.skill = UnityEngine.Random.Range (0, 10);
 		this.racism = UnityEngine.Random.Range (0, 10);
 		this.religiousTolerance = UnityEngine.Random.Range (0, 10);		
-//		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
-		this.personality = LORD_PERSONALITY.TIT_FOR_TAT;
+		this.personality = (LORD_PERSONALITY)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(LORD_PERSONALITY)).Length));
+//		this.personality = LORD_PERSONALITY.TIT_FOR_TAT;
 		this.intelligence = (INTELLIGENCE)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(INTELLIGENCE)).Length));
 		this.aggressiveness = (AGGRESSIVENESS)(UnityEngine.Random.Range(0, System.Enum.GetNames(typeof(AGGRESSIVENESS)).Length));
 		this.internalPersonality = new LordInternalPersonality ("");
@@ -1831,7 +1831,7 @@ public class Lord {
 	bool IsCompetetiveSatisfied(){
 		bool result = false;
 		for (int j = 0; j < this.relationshipLords.Count; j++) {
-			Lord otherLord = this.targetableLords[j].lord;
+			Lord otherLord = this.relationshipLords[j].lord;
 			if (otherLord.kingdom.cities.Count > this.kingdom.cities.Count) {
 				result = true;
 			}

@@ -8,12 +8,12 @@ public class Biomes : MonoBehaviour {
 	public float initialTemperature;
 	public float initialTemperature2;
 	public float intervalTemperature;
-
+	[Space(10)]
 	public float temperature;
-
+	[Space(10)]
 	public int[] hexInterval;
 	public float[] temperatureInterval;
-
+	[Space(10)]
 	public Sprite forestSprite;
 	public Sprite grasslandSprite;
 	public Sprite woodlandSprite;
@@ -21,7 +21,44 @@ public class Biomes : MonoBehaviour {
 	public Sprite tundraSprite;
 	public Sprite snowSprite;
 	public Sprite waterSprite;
+	[Space(10)]
+	public Sprite forestLeft;
+	public Sprite forestRight;
+	public Sprite forestLeftCorner;
+	public Sprite forestRightCorner;
+	public Sprite forestCenter;
+	[Space(10)]
+	public Sprite grasslandLeft;
+	public Sprite grasslandRight;
+	public Sprite grasslandLeftCorner;
+	public Sprite grasslandRightCorner;
+	public Sprite grasslandCenter;
+	[Space(10)]
+	public Sprite woodlandCenter;
+	public Sprite woodlandCenter2;
+	public Sprite woodlandCenter3;
+	[Space(10)]
+	public Sprite desertLeft;
+	public Sprite desertRight;
+	public Sprite desertLeftCorner;
+	public Sprite desertRightCorner;
+	public Sprite desertCenter;
+	[Space(10)]
+	public Sprite tundraLeft;
+	public Sprite tundraRight;
+	public Sprite tundraLeftCorner;
+	public Sprite tundraRightCorner;
+	public Sprite tundraCenter;
+	[Space(10)]
+	public Sprite snowLeft;
+	public Sprite snowRight;
+	public Sprite snowLeftCorner;
+	public Sprite snowRightCorner;
+	public Sprite snowCenter;
+	[Space(10)]
+	public Sprite mountainCenter;
 
+	[Space(10)]
 	public List<HexTile> snowHexTiles;
 	public List<HexTile> tundraHexTiles;
 	public List<HexTile> grasslandHexTiles;
@@ -46,27 +83,36 @@ public class Biomes : MonoBehaviour {
 			switch(currentHexTile.biomeType){
 			case BIOMES.SNOW:
 //				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.white;
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = snowSprite;
+				currentHexTile.SetTileSprites (snowSprite, snowLeft, snowRight, snowLeftCorner, snowRightCorner, snowCenter);
 				break;
 			case BIOMES.TUNDRA:
 //				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.gray;
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = tundraSprite;
+				currentHexTile.SetTileSprites (tundraSprite, tundraLeft, tundraRight, tundraLeftCorner, tundraRightCorner, tundraCenter);
 				break;
 			case BIOMES.DESERT:
 //				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(223f/255f,152f/255f,0f/255f);
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = desertSprite;
+				currentHexTile.SetTileSprites (desertSprite, desertLeft, desertRight, desertLeftCorner, desertRightCorner, desertCenter);
 				break;
 			case BIOMES.GRASSLAND:
 //				currentHexTileGO.GetComponent<SpriteRenderer> ().color = new Color (165f / 255f, 42f / 255f, 42f / 255f);
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = grasslandSprite;
+				currentHexTile.SetTileSprites (grasslandSprite, grasslandLeft, grasslandRight, grasslandLeftCorner, grasslandRightCorner, grasslandCenter);
 				break;
 			case BIOMES.WOODLAND:
+				int chance = Random.Range (0, 3);
+				Sprite woodlandCenterSprite = null;
+				if (chance == 0) {
+					woodlandCenterSprite = woodlandCenter;
+				} else if (chance == 1) {
+					woodlandCenterSprite = woodlandCenter2;
+				} else {
+					woodlandCenterSprite = woodlandCenter3;
+				}
 //				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(194f/255f,213f/255f,168f/255f);
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = woodlandSprite;
+				currentHexTile.SetTileSprites (grasslandSprite, grasslandLeft, grasslandRight, grasslandLeftCorner, grasslandRightCorner, woodlandCenterSprite);
 				break;
 			case BIOMES.FOREST:
 //				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(156f/255f,188f/255f,167f/255f);
-				currentHexTileGO.GetComponent<SpriteRenderer> ().sprite = forestSprite;
+				currentHexTile.SetTileSprites (forestSprite, forestLeft, forestRight, forestLeftCorner, forestRightCorner, forestCenter);
 				break;
 			}
 		}
@@ -82,6 +128,7 @@ public class Biomes : MonoBehaviour {
 			switch(GridMap.Instance.listHexes[i].GetComponent<HexTile>().elevationType){
 			case ELEVATION.MOUNTAIN:
 //				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = new Color(165f/255f,42f/255f,42f/255f);
+				GridMap.Instance.listHexes[i].GetComponent<HexTile>().centerPiece.GetComponent<SpriteRenderer>().sprite = mountainCenter;
 				break;
 			case ELEVATION.PLAIN:
 //				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = Color.green;
@@ -383,6 +430,18 @@ public class Biomes : MonoBehaviour {
 			break;
 		}
 	}
+
+	public void GenerateTileDetails(){
+		HexTile currentHexTile = null;
+		for (int i = 0; i < GridMap.Instance.listHexes.Count; i++) {
+			currentHexTile = GridMap.Instance.listHexes [i].GetComponent<HexTile>();
+			if (currentHexTile.elevationType != ELEVATION.WATER) {
+				currentHexTile.GetenrateTileDetails ();
+			}
+		}
+	}
+
+
 }
 
 
