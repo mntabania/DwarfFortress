@@ -102,7 +102,7 @@ public class PathManager : MonoBehaviour {
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - tile2.tile.X, 2) + Math.Pow(t.Y - tile2.tile.Y, 2));
 
 		tile2.isRoad = true;
-		var path = GetPath (tile1.tile, tile2.tile, false);
+		var path = GetPath (tile1.tile, tile2.tile, PATHFINDING_MODE.NORMAL);
 		tile2.isRoad = false;
 
 		return path != null;
@@ -134,7 +134,7 @@ public class PathManager : MonoBehaviour {
 					break; //use the already created road between the 2 cities.
 				}
 				roadListByDistance[i].tile.canPass = true;
-				SetTilesAsRoads(GetPath(start, roadListByDistance[i].tile, true));
+				SetTilesAsRoads(GetPath(start, roadListByDistance[i].tile, PATHFINDING_MODE.ROAD_CREATION));
 				roadListByDistance[i].tile.canPass = false;
 				break;
 			}
@@ -146,10 +146,10 @@ public class PathManager : MonoBehaviour {
 	/*
 	 * Get List of tiles (Path) that will connect 2 city tiles
 	 * */
-	IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, bool forCreatingRoads){
+	IEnumerable<Tile> GetPath(Tile startingTile, Tile destinationTile, PATHFINDING_MODE pathfindingMode){
 		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 		Func<Tile, double> estimate = t => Math.Sqrt(Math.Pow(t.X - destinationTile.X, 2) + Math.Pow(t.Y - destinationTile.Y, 2));
-		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, forCreatingRoads);
+		var path = PathFind.PathFind.FindPath(startingTile, destinationTile, distance, estimate, pathfindingMode);
 		return path;
 	}
 
@@ -191,7 +191,7 @@ public class PathManager : MonoBehaviour {
 	public void ActivatePath(CityTile tile1, CityTile tile2){
 		Debug.LogWarning ("Activate Path between: " + tile1.name + " and " + tile2.name);
 		tile2.cityAttributes.hexTile.isRoad = true;
-		List<Tile> pathList = GetPath(tile1.cityAttributes.hexTile.tile, tile2.cityAttributes.hexTile.tile, false).ToList();
+		List<Tile> pathList = GetPath(tile1.cityAttributes.hexTile.tile, tile2.cityAttributes.hexTile.tile, PATHFINDING_MODE.NORMAL).ToList();
 		tile2.cityAttributes.hexTile.isRoad = false;
 		if (pathList == null) {
 			Debug.LogError ("There is no path between the 2 tiles");

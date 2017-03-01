@@ -33,6 +33,7 @@ public class Lord {
 	public MIGHT_TRAIT lordMightTrait;
 	public RELATIONSHIP_TRAIT lordRelationshipTrait;
 	public List<MilitaryData> militaryData;
+	public int daysBeforeMilitaryDataUpdate;
 
 	public int daysWithoutWar = -1;
 
@@ -79,6 +80,7 @@ public class Lord {
 		this.lordPeaceReasons = GeneratePeaceReasons();
 		this.currentWarChance = this.defaultWarChance;
 		this.militaryData = new List<MilitaryData> ();
+		this.daysBeforeMilitaryDataUpdate = UnityEngine.Random.Range (10, 21);
 		SetLastID (this.id);
 	}
 
@@ -1682,13 +1684,24 @@ public class Lord {
 		}
 
 		for(int i = 0; i < lord.kingdom.cities.Count; i++){
-			this.militaryData.Add (new MilitaryData (lord.kingdom.cities [i].cityAttributes, null, 0, BATTLE_MOVE.ATTACK));
+			if(IsCityAdjacent(lord.kingdom.cities[i].cityAttributes)){
+				this.militaryData.Add (new MilitaryData (lord.kingdom.cities [i].cityAttributes, null, 0, BATTLE_MOVE.ATTACK));
+			}
 		}
 		this.UpdateMilitaryData ();
 		GameManager.Instance.turnEnded += relOfThisLord.IncreaseWartime;
 	}
 
-
+	internal bool IsCityAdjacent(CityTest city){
+		for(int i = 0; i < this.kingdom.cities.Count; i++){
+			for(int j = 0; j < this.kingdom.cities[i].cityAttributes.connectedCities.Count; j++){
+				if(city.id == this.kingdom.cities[i].cityAttributes.connectedCities[j].cityAttributes.id){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	bool IsReasonForPeaceSatisfied(){
 		bool result = false;
@@ -2324,7 +2337,7 @@ public class Lord {
 		}
 		if (allOffense.Count > 0) {
 			allOffense.RemoveAll (x => x.enemyCity == null || x.enemyCity.isDead == true);
-			allOffense = allOffense.OrderBy (x => x.enemyCity.GetArmyStrength ()).ToList();
+			allOffense = allOffense.OrderByDescending (x => x.enemyCity.GetArmyStrength ()).ToList();
 
 		}
 
@@ -2332,6 +2345,12 @@ public class Lord {
 //		allDefense.RemoveAll (x => x.enemyGeneral.targetCity.id == 0);
 		if(allOffense.Count > 0){
 			for(int i = 0; i < allOffense.Count; i++){
+				int chanceToAttack = UnityEngine.Random.Range (0, 100);
+				if(chanceToAttack < 25){
+					allOffense [i].isAllowedAttack = true;
+				}else{
+					allOffense [i].isAllowedAttack = false;
+				}
 				allOffense [i].yourArmyStrength = 0;
 				if(this.kingdom.cities.Count > 0){
 					for(int j = 0; j < this.kingdom.cities.Count; j++){
@@ -2380,6 +2399,18 @@ public class Lord {
 		}
 		return null;
 	}
+	internal MilitaryData SearchForOffenseMilitaryData(CityTest city){
+		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.ATTACK).ToList();
+		if(milData == null){
+			return null;
+		}
+		for (int i = 0; i < milData.Count; i++) {
+			if(milData[i].enemyCity.id == city.id){
+				return milData [i];
+			}
+		}
+		return null;
+	}
 	internal MilitaryData SearchForDefenseMilitaryData(CityTest city){
 		List<MilitaryData> milData = this.militaryData.Where(x => x.battleMove == BATTLE_MOVE.DEFEND).ToList();
 		if(milData == null){
@@ -2414,5 +2445,13 @@ public class Lord {
 			}
 		}
 		return null;
+	}
+
+	internal void AutoUpdateMilitaryData(int currentDay){
+		if((GameManager.Instance.currentDay % this.daysBeforeMilitaryDataUpdate) == 0){
+			this.daysBeforeMilitaryDataUpdate = UnityEngine.Random.Range (10, 21);
+			this.UpdateMilitaryData ();
+			Debug.Log(this.name + ": AUTO UPDATE MILITARY DATA!");
+		}
 	}
 }

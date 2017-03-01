@@ -20,6 +20,7 @@ public static class Utilities {
 	public static int cooperate1Count = 0;
 	public static int cooperate2Count = 0;
 
+	public static CityTest targetCity = null;
 
 	private static System.Random rng = new System.Random();  
 
@@ -34,6 +35,32 @@ public static class Utilities {
 			list[n] = value;  
 		} 
 		return list;
+	}
+
+	public static bool IsTileIncludedInYourKingdom(HexTile hexTile){
+		if(!hexTile.isCity){
+			return true;
+		}else{
+			if(hexTile.GetComponent<CityTileTest>().cityAttributes.kingdomTile == null){
+				return true;
+			} else {
+				CityTileTest otherCity = hexTile.GetComponent<CityTileTest>();
+				if(otherCity.cityAttributes.id == targetCity.id){
+					return true;
+				}else{
+					if (targetCity.kingdomTile.kingdom.cities.Contains(otherCity)) {
+						return false;
+					} else {
+						return true;
+					}
+				}
+			}
+		} 
+		return true;
+
+			
+		
+
 	}
 
 	public static Dictionary<BIOMES, Dictionary<BIOME_PRODUCE_TYPE, int[]>> biomeResourceChances = new Dictionary<BIOMES, Dictionary<BIOME_PRODUCE_TYPE, int[]>>(){

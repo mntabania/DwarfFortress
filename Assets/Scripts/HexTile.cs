@@ -115,6 +115,15 @@ public class HexTile : MonoBehaviour {
 		tile.canPass = false;
 	}
 
+	[ContextMenu("Show Combat Tiles")]
+	public void ShowCombatTiles(){
+		Utilities.targetCity = GameManager.Instance.targetHexTile.GetComponent<CityTileTest> ().cityAttributes;
+		foreach (Tile t in tile.CombatTiles) {
+			t.hexTile.SetTileColor (Color.red);
+			Debug.Log ("Neighbours: " + t.hexTile.name);
+		}
+	}
+
 	public void ActivatePath(PATH_DIRECTION direction){
 		switch (direction) {
 		case PATH_DIRECTION.NORTH:

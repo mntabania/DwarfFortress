@@ -49,6 +49,11 @@ public class General {
 				if(this.roads.Count > 0){
 					this.location = this.roads[0].hexTile;
 					this.roads.RemoveAt (0);
+					if(this.location.isCity && this.location.isOccupied){
+						if(this.location.GetCityTileTest().cityAttributes.id != this.city.id){
+							
+						}
+					}
 				}
 //				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS MOVED TO " + this.location.name);
 			}else{

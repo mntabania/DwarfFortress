@@ -81,6 +81,11 @@ public class CityTileTest : MonoBehaviour {
 		Debug.Log ("Adjusted " + resourceToAdd.ToString () + " by " + resourceAmountToAdd);
 	}
 
+	[ContextMenu("Add General")]
+	public void AddGeneral(){
+		this.cityAttributes.CreateGeneral ();
+	}
+
 	public void SetCityAsActiveAndSetProduction(){
 		GameManager.Instance.turnEnded += TurnActions;
 		cityAttributes.GenerateInitialFood();
@@ -94,8 +99,8 @@ public class CityTileTest : MonoBehaviour {
 		cityAttributes.UpdateCityExpenses();
 //		cityAttributes.AssignNeededRole ();
 //		cityAttributes.AssignUnneededRoles ();
-		cityAttributes.AttemptToCreateNewGeneral();
-		cityAttributes.ArmyMaintenance ();
+//		cityAttributes.AttemptToCreateNewGeneral();
+//		cityAttributes.ArmyMaintenance ();
 		cityAttributes.AttemptToPurchaseTile ();
 
 		if (currentDay % 7 == 0) { 
@@ -107,7 +112,7 @@ public class CityTileTest : MonoBehaviour {
 //		cityAttributes.AttemptToUpgradeCitizen ();
 //		cityAttributes.AttemptToCreateNewCitizen ();
 //		cityAttributes.AttemptToChangeCitizenRole ();
-		cityAttributes.AttemptToIncreaseArmyCount ();
+//		cityAttributes.AttemptToIncreaseArmyCount ();
 		cityAttributes.LaunchTradeMission();
 		cityAttributes.AttemptToCreatePioneer();
 		cityAttributes.AttemptToPerformCitizenAction();
