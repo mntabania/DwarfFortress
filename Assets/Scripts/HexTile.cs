@@ -27,6 +27,19 @@ public class HexTile : MonoBehaviour {
 	public int metalValue = 0;
 	public int goldValue = 0;
 
+	public GameObject leftGround;
+	public GameObject bottomLeftGround;
+	public GameObject rightGround;
+	public GameObject bottomRightGround;
+	public GameObject centerPiece;
+
+	public GameObject leftBorder;
+	public GameObject rightBorder;
+	public GameObject topLeftBorder;
+	public GameObject topRightBorder;
+	public GameObject bottomLeftBorder;
+	public GameObject bottomRightBorder;
+
 	public BIOMES biomeType;
 	public ELEVATION elevationType;
 
@@ -113,6 +126,121 @@ public class HexTile : MonoBehaviour {
 	[ContextMenu("Set Tile as Unpassable")]
 	public void SetTileAsUnpassable(){
 		tile.canPass = false;
+	}
+
+	[ContextMenu("Get Neighbours")]
+	public void GetNeighbours(){
+		List<Tile> neighbours = tile.AllNeighbours.ToList ();
+		for (int i = 0; i < neighbours.Count; i++) {
+			neighbours [i].hexTile.SetTileColor (Color.red);
+		}
+	}
+
+	[ContextMenu("Getenrate Tile Details")]
+	public void GetenrateTileDetails(){
+		this.centerPiece.SetActive(true);
+		List<Tile> neighbours = tile.AllNeighbours.ToList ();
+		for (int i = 0; i < neighbours.Count; i++) {
+			
+			int neighbourX = neighbours [i].X;
+			int neighbourY = neighbours [i].Y;
+
+			Point difference = new Point((neighbours [i].X - this.tile.X), (neighbours [i].Y - this.tile.Y));
+			if (this.tile.Y % 2 == 0) {
+				if (difference.X == -1 && difference.Y == 1) {
+					//top left
+					if (neighbours[i].hexTile.biomeType != this.biomeType && neighbours[i].hexTile.elevationType != ELEVATION.WATER) {
+						this.topLeftBorder.SetActive (true);
+					}
+				} else if (difference.X == 0 && difference.Y == 1) {
+					//top right
+					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
+						this.topRightBorder.SetActive (true);
+					}
+				} else if (difference.X == 1 && difference.Y == 0) {
+					//right
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.rightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.rightBorder.SetActive (true);
+					}
+				} else if (difference.X == 0 && difference.Y == -1){
+					//bottom right
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.bottomRightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.bottomRightBorder.SetActive (true);
+					}
+				} else if (difference.X == -1 && difference.Y == -1){
+					//bottom left
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.bottomLeftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.bottomLeftBorder.SetActive (true);
+					}
+				} else if (difference.X == -1 && difference.Y == 0){
+					//left
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.leftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.leftBorder.SetActive (true);
+					}
+				}
+			} else {
+				if (difference.X == 0 && difference.Y == 1) {
+					//top left
+					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
+						this.topLeftBorder.SetActive (true);
+					}
+				} else if (difference.X == 1 && difference.Y == 1) {
+					//top right
+					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
+						this.topRightBorder.SetActive (true);
+					}
+				} else if (difference.X == 1 && difference.Y == 0) {
+					//right
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.rightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.rightBorder.SetActive (true);
+					}
+				} else if (difference.X == 1 && difference.Y == -1){
+					//bottom right
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.bottomRightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.bottomRightBorder.SetActive (true);
+					}
+				} else if (difference.X == 0 && difference.Y == -1){
+					//bottom left
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.bottomLeftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.bottomLeftBorder.SetActive (true);
+					}
+				} else if (difference.X == -1 && difference.Y == 0){
+					//left
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.leftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.leftBorder.SetActive (true);
+					}
+				}
+			}
+
+
+		}
+	}
+
+	public void SetTileSprites(Sprite baseSprite, Sprite leftSprite, Sprite rightSprite, Sprite leftCornerSprite, Sprite rightCornerSprite, Sprite centerSprite){
+		this.GetComponent<SpriteRenderer>().sprite = baseSprite;
+		this.leftGround.GetComponent<SpriteRenderer>().sprite = leftSprite;
+		this.rightGround.GetComponent<SpriteRenderer>().sprite = rightSprite;
+		this.bottomLeftGround.GetComponent<SpriteRenderer>().sprite = leftCornerSprite;
+		this.bottomRightGround.GetComponent<SpriteRenderer>().sprite = rightCornerSprite;
+		if (this.elevationType != ELEVATION.MOUNTAIN) {
+			this.centerPiece.GetComponent<SpriteRenderer> ().sprite = centerSprite;
+		}
 	}
 
 	public void ActivatePath(PATH_DIRECTION direction){

@@ -10,12 +10,13 @@ public class Merchant : Job {
 	internal List<Tile> pathToTargetCity;
 	internal List<Resource> tradeGoods;
 
-	protected HexTile currentTile;
+	internal HexTile currentTile;
 	protected int currentLocationIndex = 0;
 
 	protected GameObject citizenAvatar;
 
-	protected int daysWaitingForElligibleCity = 0;
+	protected int daysWaitingForTradeGoods = 0;
+	protected int numOfCitiesVisited = 0;
 
 	public bool isOutsideCity;
 
@@ -28,131 +29,97 @@ public class Merchant : Job {
 		this.isOutsideCity = false;
 	}
 
-	internal void WaitForElligibleCity(int currentDay){
-		if (daysWaitingForElligibleCity == 5) {
-			this.SetActions();
-			daysWaitingForElligibleCity = 0;
-			if (this.targetCity == null) {
-				bool areAllMerchantsIdle = true;
-				List<Citizen> merchants = this.citizen.city.GetCitizensByType (JOB_TYPE.MERCHANT);
-				for (int i = 0; i < merchants.Count; i++) {
-					if (merchants[i].id != this.citizen.id) {
-						if(((Merchant)merchants[i].job).targetCity != null){
-							areAllMerchantsIdle = false;
-						}
-					}
+	#region Trade Goods Acquisition
+	internal void GetTradeGoods(){
+		this.currentTile = this.citizen.city.hexTile;
+		List<RESOURCE> abundantResources = this.citizen.city.GetAbundantResources();
+		if (abundantResources.Count > 0) {
+			for (int i = 0; i < abundantResources.Count; i++) {
+				if (abundantResources [i] == RESOURCE.GOLD) {
+					//exclude gold
+					continue;
 				}
-				if (areAllMerchantsIdle) {
-					this.citizen.city.unneededCitizens.Add(this.citizen);
-				}
+				this.tradeGoods.Add (new Resource (abundantResources [i], this.citizen.city.GetResourceStatusByType(abundantResources[i]).amount));
+				this.citizen.city.AdjustResourceCount(abundantResources [i], (this.citizen.city.GetResourceStatusByType (abundantResources [i]).amount * -1));
 			}
-		}
-		daysWaitingForElligibleCity += 1;
-	}
 
-	internal void SetActions(){
-		CityTest otherCity = null;
-		this.tradeGoods.Clear();
-		List<CityTest> elligibleCitiesForTrade = new List<CityTest>();
-		List<RESOURCE> abundantResourcesOfThisCity = this.citizen.city.GetAbundantResources();
-		List<RESOURCE> scarceResourcesOfThisCity = this.citizen.city.GetScarceResources();
-		List<RESOURCE> abundantResourcesOfOtherCity = null;
-		List<RESOURCE> scarceResourcesOfOtherCity = null;
-
-		for (int i = 0; i < abundantResourcesOfThisCity.Count; i++) {
-			RESOURCE abundantResourceOfThisCity = abundantResourcesOfThisCity[i];
-			if (this.citizen.city.GetResourceStatusByType (abundantResourceOfThisCity).amount > 0) {
-				this.tradeGoods.Add(new Resource(abundantResourceOfThisCity, this.citizen.city.GetResourceStatusByType(abundantResourceOfThisCity).amount));
-
-				for (int j = 0; j < GameManager.Instance.cities.Count; j++) {
-					otherCity = GameManager.Instance.cities [j].GetComponent<CityTileTest> ().cityAttributes;
-
-					if (otherCity.id == this.citizen.city.id) {
-						continue;
-					}
-					if (abundantResourceOfThisCity == RESOURCE.GOLD) {
-						//buy from other city
-						abundantResourcesOfOtherCity = otherCity.GetAbundantResources ();
-						for (int k = 0; k < abundantResourcesOfOtherCity.Count; k++) {
-							if (scarceResourcesOfThisCity.Contains (abundantResourcesOfOtherCity [k])) {
-								elligibleCitiesForTrade.Add (otherCity);
-								break;
-							}
-						}
-					} else {
-						//sell resource to other city
-						scarceResourcesOfOtherCity = otherCity.GetScarceResources ();
-						if (scarceResourcesOfOtherCity.Contains (abundantResourceOfThisCity)) {
-							elligibleCitiesForTrade.Add (otherCity);
-						}
-					}
-
-				}
-			}
-		}
-
-		List<Citizen> merchants = this.citizen.city.GetCitizensByType (JOB_TYPE.MERCHANT);
-		for (int i = 0; i < merchants.Count; i++) {
-			if (merchants[i].id != this.citizen.id) {
-				Merchant otherMerchant = (Merchant)merchants[i].job;
-				if (elligibleCitiesForTrade.Contains(otherMerchant.targetCity)) {
-					elligibleCitiesForTrade.Remove(otherMerchant.targetCity);
-				}
-			}
-		}
-
-		if (elligibleCitiesForTrade.Count > 0) {
-			this.targetCity = elligibleCitiesForTrade [UnityEngine.Random.Range(0, elligibleCitiesForTrade.Count)];
-			this.pathToTargetCity = GameManager.Instance.GetPath(this.citizen.city.hexTile.tile, this.targetCity.hexTile.tile, false).ToList();
-			this.pathToTargetCity.Reverse();
-
-			this.citizenAvatar = GameObject.Instantiate(Resources.Load ("CitizenAvatar", typeof(GameObject)), this.citizen.city.hexTile.transform) as GameObject;
-			this.citizenAvatar.transform.localPosition = Vector3.zero;
-			this.citizenAvatar.GetComponent<CitizenAvatar>().citizen = this.citizen;
-
-			this.currentTile = this.citizen.city.hexTile;
-			GameManager.Instance.turnEnded -= WaitForElligibleCity;
-
-			this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString() + ": Merchant will go to: " + this.targetCity.cityName + " to trade ";
-			for (int i = 0; i < this.tradeGoods.Count; i++) {
-				this.citizen.city.cityLogs += this.tradeGoods[i].resourceQuantity.ToString() + " " + this.tradeGoods[i].resourceType.ToString() + " ";
-			}
-			this.citizen.city.cityLogs += "\n\n";
-
-			this.citizen.city.AdjustResources(this.tradeGoods);
-			GameManager.Instance.turnEnded += GoToDestination;
-			this.isOutsideCity = true;
 		} 
+
+		if (this.tradeGoods.Count > 0) {
+			this.citizenAvatar = GameObject.Instantiate (Resources.Load ("CitizenAvatar", typeof(GameObject)), this.citizen.city.hexTile.transform) as GameObject;
+			this.citizenAvatar.transform.localPosition = Vector3.zero;
+			this.citizenAvatar.GetComponent<CitizenAvatar> ().citizen = this.citizen;
+			this.ChooseTargetCity ();
+		} else {
+			GameManager.Instance.turnEnded += WaitForTradeGoods;
+		}
+
 	}
 
-	internal void GoToDestination(int currentDay){
-		if (this.currentTile == this.targetCity.hexTile) {
-			currentLocationIndex = 0;
-			GameManager.Instance.turnEnded -= GoToDestination;
+	internal void WaitForTradeGoods(int currentDay){
+		daysWaitingForTradeGoods += 1;
+		if (daysWaitingForTradeGoods == 5) {
+			daysWaitingForTradeGoods = 0;
+			GameManager.Instance.turnEnded -= WaitForTradeGoods;
+			this.GetTradeGoods();
+		}
+	}
+	#endregion
 
-			if (this.currentTile == this.citizen.city.hexTile) {
-				//merchant is back home
-				this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString() + ": Merchant has returned with ";
-				for (int i = 0; i < this.tradeGoods.Count; i++) {
-					this.citizen.city.cityLogs += this.tradeGoods[i].resourceQuantity.ToString() + " " + this.tradeGoods[i].resourceType.ToString() + " ";
+	void ChooseTargetCity(){
+		List<CityTest> elligibleCitiesForTrade = new List<CityTest>();
+		for (int i = 0; i < this.currentTile.GetCityTileTest().cityAttributes.connectedCities.Count; i++) {
+			if (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.id == this.citizen.city.id || 
+				!this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.hexTile.isOccupied) {
+				//Skip cities already in trade with or own city or unoccupiedCities
+				continue;
+			}
+			CityTest currentConnectedCity = this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes;
+			for (int j = 0; j < this.tradeGoods.Count; j++) {
+				RESOURCE currentTradeGood = this.tradeGoods[j].resourceType;
+				if (currentConnectedCity.GetResourceStatusByType(currentTradeGood).status == RESOURCE_STATUS.SCARCE) {
+					if (!elligibleCitiesForTrade.Contains(currentConnectedCity)) {
+						elligibleCitiesForTrade.Add(currentConnectedCity);
+					}
 				}
-				this.citizen.city.cityLogs += "\n\n";
+			}
+		}
 
-				this.isOutsideCity = false;
-				this.targetCity = null;
-				this.pathToTargetCity.Clear();
-				GameObject.Destroy(this.citizenAvatar);
+		if (elligibleCitiesForTrade.Count <= 0) {
+			for (int i = 0; i < this.currentTile.GetCityTileTest().cityAttributes.connectedCities.Count; i++) {
+				if (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.id == this.citizen.city.id || 
+					!this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.hexTile.isOccupied) {
+					continue;
+				}
+				elligibleCitiesForTrade.Add (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes);
+			}
+		}
+
+		elligibleCitiesForTrade.OrderByDescending(x => x.GetScarcityValue());
+
+		this.targetCity = elligibleCitiesForTrade[0];
+		this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, false).Reverse().ToList();
+		this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString() + ": Merchant will go to [FF0000]" + this.targetCity.cityName + "[-]. The Merchant been to " + this.numOfCitiesVisited.ToString() + " cities\n\n"; 
+		GameManager.Instance.turnEnded += GoToDestination;
+
+	}
+
+	void GoToDestination(int currentDay){
+		this.isOutsideCity = true;
+		if (this.currentTile == this.targetCity.hexTile) {
+			//Reached Destination
+			StartTrade();
+			currentLocationIndex = 0;
+			this.numOfCitiesVisited += 1;
+			GameManager.Instance.turnEnded -= GoToDestination;
+			if (this.numOfCitiesVisited == 3) {
+				//Destroy Trader and return all trade goods back to city
 				this.citizen.city.AdjustResources(this.tradeGoods, false);
-				GameManager.Instance.turnEnded += WaitForElligibleCity;
-
-				SetActions();
+				//TODO: Implement Object Pool for optimization
+				GameObject.Destroy (this.citizenAvatar);
+				this.citizen.city.RemoveCitizen(this.citizen);
 			} else {
-				//merchant is at city to trade to, start trade then go back home
-				this.StartTrade();
-				this.targetCity = this.citizen.city;
-				this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, false).ToList();
-				this.pathToTargetCity.Reverse();
-				GameManager.Instance.turnEnded += GoToDestination;
+				ChooseTargetCity ();
 			}
 		} else {
 			int increments = 2;
@@ -167,128 +134,67 @@ public class Merchant : Job {
 					break;
 				}
 			}
-
 		}
-
 	}
 
-
 	void StartTrade(){
-		List<Resource> soldList = new List<Resource>();
-		List<Resource> boughtList = new List<Resource>();
+		for (int i = 0; i < tradeGoods.Count; i++) {
+			Resource currentTradeGood = tradeGoods[i];
+			ResourceStatus resourceStatusOfOtherCity = this.targetCity.GetResourceStatusByType (currentTradeGood.resourceType);
+			if (resourceStatusOfOtherCity.status == RESOURCE_STATUS.SCARCE) {
+				int costPerResourceUnit = this.GetCostPerResourceUnit (currentTradeGood.resourceType);
+				int totalCostOfWholeResource = resourceStatusOfOtherCity.amount * costPerResourceUnit;
+				int numOfResourcesAfforded = (int)Math.Floor ((double)(targetCity.goldCount / costPerResourceUnit));
 
-		List<RESOURCE> scarceResourcesOfTargetCity = this.targetCity.GetScarceResources();
-		int goldTargetCityCanSpend = this.targetCity.goldCount;
-
-		List<RESOURCE> scarceResourcesOfThisCity = this.citizen.city.GetScarceResources();
-
-
-		for (int i = 0; i < this.tradeGoods.Count; i++) {
-			Resource currentResourceOnOffer = this.tradeGoods[i];
-			int costOfResourcePerUnit = GetCostPerResourceUnit (currentResourceOnOffer.resourceType);
-
-			if (currentResourceOnOffer.resourceType == RESOURCE.GOLD) {
-				//trader will buy resources from city
-				int goldThisCityCanSpend = currentResourceOnOffer.resourceQuantity;
-				for (int j = 0; j < scarceResourcesOfThisCity.Count; j++) {
-					//check all scarce resources of this city, then check if the scarce resource is abundant in target city
-					if (scarceResourcesOfThisCity [j] == RESOURCE.GOLD) {
-						continue;
-					}
-
-					if (goldThisCityCanSpend <= 0) {
-						//this city has no more budget to buy
-						break;
-					}
-					ResourceStatus resourceTargetCityIsOffering = this.targetCity.GetResourceStatusByType(scarceResourcesOfThisCity[j]);
-					if (resourceTargetCityIsOffering.status == RESOURCE_STATUS.ABUNDANT) {
-						ResourceStatus statusOfThisCityScarceResource = this.citizen.city.GetResourceStatusByType(scarceResourcesOfThisCity[j]);
-						costOfResourcePerUnit = GetCostPerResourceUnit (resourceTargetCityIsOffering.resource);
-
-						int numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldThisCityCanSpend / costOfResourcePerUnit));
-						if (numOfResourcesThatCanBuy > statusOfThisCityScarceResource.amount) {
-							numOfResourcesThatCanBuy = statusOfThisCityScarceResource.amount;
-						}
-
-						if (numOfResourcesThatCanBuy > resourceTargetCityIsOffering.amount) {
-							numOfResourcesThatCanBuy = resourceTargetCityIsOffering.amount;
-						}
-
-						if (numOfResourcesThatCanBuy > 0) {
-							int totalCostOfItem = numOfResourcesThatCanBuy * costOfResourcePerUnit;
-							goldThisCityCanSpend -= totalCostOfItem;
-							boughtList.Add (new Resource (resourceTargetCityIsOffering.resource, numOfResourcesThatCanBuy));
-						}
-					}
+				if (numOfResourcesAfforded > currentTradeGood.resourceQuantity) {
+					numOfResourcesAfforded = currentTradeGood.resourceQuantity;
 				}
-			} else {
-				//trader will sell resource
-				if (goldTargetCityCanSpend <= 0) {
-					//target city has no more budget to buy
+
+				if (numOfResourcesAfforded <= 0) {
+					//target city cannot afford to buy the offered resource
+					this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": Merchant from " + this.citizen.city.cityName + " arrived, offering " 
+						+ currentTradeGood.resourceType.ToString() + ", but rejected because the city cannot afford to buy.\n\n";
 					continue;
 				}
 
-				if (scarceResourcesOfTargetCity.Contains (currentResourceOnOffer.resourceType)) {
-					//target city is scarce on the offered resource, target city will buy
-					ResourceStatus statusOfOtherCityScarceResource = this.targetCity.GetResourceStatusByType(currentResourceOnOffer.resourceType);
-
-					int numOfResourcesThatCanBuy = (int)Math.Floor ((double)(goldTargetCityCanSpend / costOfResourcePerUnit));
-					if (numOfResourcesThatCanBuy > statusOfOtherCityScarceResource.amount) {
-						numOfResourcesThatCanBuy = statusOfOtherCityScarceResource.amount;
-					}
-
-					if (numOfResourcesThatCanBuy > currentResourceOnOffer.resourceQuantity) {
-						numOfResourcesThatCanBuy = currentResourceOnOffer.resourceQuantity;
-					}
-
-					if (numOfResourcesThatCanBuy > 0) {
-						int totalCostOfItem = numOfResourcesThatCanBuy * costOfResourcePerUnit;
-						goldTargetCityCanSpend -= totalCostOfItem;
-						soldList.Add (new Resource (currentResourceOnOffer.resourceType, numOfResourcesThatCanBuy));
-					}
+				DECISION tradeCityDecision = DECISION.NONE;
+				if (targetCity.kingdomTile.kingdom.id != this.citizen.city.id) {
+					tradeCityDecision = this.targetCity.kingdomTile.kingdom.lord.ComputeDecisionBasedOnPersonality (LORD_EVENTS.TRADE, this.citizen.city.kingdomTile.kingdom.lord);
 				}
+
+				if (tradeCityDecision == DECISION.NICE || tradeCityDecision == DECISION.NONE) {
+					this.ProcessTransaction (currentTradeGood.resourceType, numOfResourcesAfforded, numOfResourcesAfforded * costPerResourceUnit);
+					this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString () + ": Merchant has sold [FF0000]" + numOfResourcesAfforded + " " + currentTradeGood.resourceType.ToString () + "[-] in exchange for [FF0000]"
+					+ (numOfResourcesAfforded * costPerResourceUnit).ToString () + " GOLD[-].\n\n"; 
+
+					this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": City has bought [FF0000]" + numOfResourcesAfforded + " " + currentTradeGood.resourceType.ToString () + "[-] in exchange for [FF0000]"
+					+ (numOfResourcesAfforded * costPerResourceUnit).ToString () + " GOLD[-].\n\n"; 
+
+					UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.targetCity.kingdomTile.kingdom.lord.name + " ACCEPTED the trade.\n\n";
+				} else {
+					this.citizen.city.kingdomTile.kingdom.lord.AdjustLikeness (this.targetCity.kingdomTile.kingdom.lord, DECISION.NEUTRAL, DECISION.RUDE, LORD_EVENTS.TRADE, true);
+					this.targetCity.kingdomTile.kingdom.lord.AdjustLikeness (this.citizen.city.kingdomTile.kingdom.lord, DECISION.RUDE, DECISION.NEUTRAL, LORD_EVENTS.TRADE, false);
+
+					this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString () + ": Trade was rejected by lord of city [FF0000]" + this.targetCity.cityName + "[-].\n\n"; 
+					this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": Trade from " + this.citizen.city.cityName + " was rejected this city's lord.\n\n"; 
+
+					UserInterfaceManager.Instance.externalAffairsLogList [UserInterfaceManager.Instance.externalAffairsLogList.Count - 1] += GameManager.Instance.currentDay.ToString () + ": TRADE: " + this.targetCity.kingdomTile.kingdom.lord.name + " REJECTED the trade.\n\n";
+
+				}
+			} else {
+				this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": Merchant from " + this.citizen.city.cityName + " arrived, offering " 
+					+ currentTradeGood.resourceType.ToString() + ", but rejected since the city does not need more of that resource.\n\n";
 			}
 		}
-
-		this.ProcessOrders(soldList, boughtList);
 	}
 
-	void ProcessOrders(List<Resource> soldList, List<Resource> boughtList){
-		//process sold
-		if (soldList.Count > 0) {
-			this.targetCity.cityLogs += GameManager.Instance.currentDay.ToString () + ": City bought ";
-			for (int i = 0; i < soldList.Count; i++) {
-				int costPerUnit = GetCostPerResourceUnit (soldList [i].resourceType);
-				int totalCostOfItem = costPerUnit * soldList [i].resourceQuantity;
-				//Pay gold
-				this.AdjustItems (RESOURCE.GOLD, totalCostOfItem);
-				this.targetCity.AdjustResourceCount (RESOURCE.GOLD, (totalCostOfItem * -1));
-				//Get items
-				this.AdjustItems (soldList [i].resourceType, (soldList [i].resourceQuantity * -1));
-				this.targetCity.AdjustResourceCount (soldList [i].resourceType, soldList [i].resourceQuantity);
+	void ProcessTransaction(RESOURCE resourceType, int quantity, int totalCost){
+		this.targetCity.AdjustResourceCount(resourceType, quantity);
+		this.targetCity.AdjustResourceCount(RESOURCE.GOLD, (totalCost * -1));
 
-				this.targetCity.cityLogs += soldList [i].resourceQuantity.ToString () + " " + soldList [i].resourceType.ToString () + " for " + totalCostOfItem.ToString () + " GOLD\n\n";
-			}
-			this.targetCity.cityLogs += " from merchant from " + this.citizen.city.cityName + "\n\n";
-		}
+		this.AdjustItems(resourceType, (quantity * -1));
 
-		if (boughtList.Count > 0) {
-			//process bought
-			this.citizen.city.cityLogs += GameManager.Instance.currentDay.ToString () + ": City bought ";
-			for (int i = 0; i < boughtList.Count; i++) {
-				int costPerUnit = GetCostPerResourceUnit (boughtList [i].resourceType);
-				int totalCostOfItem = costPerUnit * boughtList [i].resourceQuantity;
-				//Pay gold
-				this.AdjustItems (RESOURCE.GOLD, (totalCostOfItem * -1));
-				this.targetCity.AdjustResourceCount (RESOURCE.GOLD, totalCostOfItem);
-				//Get items
-				this.AdjustItems (boughtList [i].resourceType, boughtList [i].resourceQuantity);
-				this.targetCity.AdjustResourceCount (boughtList [i].resourceType, (boughtList [i].resourceQuantity * -1));
-
-				this.citizen.city.cityLogs += boughtList [i].resourceQuantity.ToString () + " " + boughtList [i].resourceType.ToString () + " for " + totalCostOfItem.ToString () + " GOLD\n";
-			}
-			this.targetCity.cityLogs += "from " + this.targetCity.cityName + "\n\n";
-		}
+		this.citizen.city.AdjustResourceCount(RESOURCE.GOLD, totalCost);
 	}
 
 	void AdjustItems(RESOURCE resourceType, int earnings){

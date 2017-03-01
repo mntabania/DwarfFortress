@@ -112,13 +112,13 @@ public class UserInterfaceManager : MonoBehaviour {
 			lblUpgradeCityCost.text += currentResource.resourceType.ToString () + ": " + currentResource.resourceQuantity.ToString() +"\n";
 		}
 
-		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString();
-		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString();
+		lblGoldCount.text = "Gold: " + cityTile.cityAttributes.goldCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.GOLD).status.ToString();
+		lblFoodCount.text = "Food: " + cityTile.cityAttributes.foodCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.FOOD).status.ToString();
 		lblFoodStockPileCount.text = "Stock: " + cityTile.cityAttributes.foodStockpileCount.ToString();
-		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString();
-		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString();
-		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString();
-		lblMetalCount.text = "Metal: " + cityTile.cityAttributes.metalCount.ToString();
+		lblLumberCount.text = "Lumber: " + cityTile.cityAttributes.lumberCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.LUMBER).status.ToString();
+		lblStoneCount.text = "Stone: " + cityTile.cityAttributes.stoneCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.STONE).status.ToString();
+		lblManaStoneCount.text = "Mana: " + cityTile.cityAttributes.manaStoneCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.MANA).status.ToString();
+		lblMetalCount.text = "Metal: " + cityTile.cityAttributes.metalCount.ToString() + "\n" + cityTile.cityAttributes.GetResourceStatusByType(RESOURCE.METAL).status.ToString();
 		if (cityTile.cityAttributes.kingdomTile) {
 			lblKingdomName.text = "Kingdom: " + cityTile.cityAttributes.kingdomTile.kingdom.kingdomRace;
 		} else {
@@ -140,6 +140,10 @@ public class UserInterfaceManager : MonoBehaviour {
 
 		lblUnrest.text = "Unrest: " + cityTile.cityAttributes.unrest.ToString();
 		lblCitySummary.text = cityTile.cityAttributes.cityLogs;
+	}
+
+	public void ForceCaravan(){
+		this.currentDisplayingCityTile.ForceSendMerchant();
 	}
 
 
@@ -183,6 +187,8 @@ public class UserInterfaceManager : MonoBehaviour {
 					lblSpecificCitizenInfo.text += "Target City: " + merchant.targetCity.cityName + "\n";
 				}
 			}
+
+			lblSpecificCitizenInfo.text += "Current Location: " + merchant.currentTile.name + "\n";
 
 			if (merchant.tradeGoods.Count > 0) {
 				lblSpecificCitizenInfo.text += "Trade Goods: \n";

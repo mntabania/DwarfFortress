@@ -65,6 +65,7 @@ public class CityTest{
 	public HexTile targetHexTileToPurchase;
 
 	public List<Citizen> unneededCitizens;
+
 	protected int dayPioneerReachesCity = 0;
 	protected CityTileTest pioneerCityTarget = null;
 
@@ -376,7 +377,16 @@ public class CityTest{
 				if (this.citizens [russianRoulette].job.jobType == JOB_TYPE.MERCHANT) {
 					if (((Merchant)this.citizens [russianRoulette].job).isOutsideCity) {
 						return;
+					} else {
+						//remove delegated functions from merchant to be removed
+						GameManager.Instance.turnEnded -= ((Merchant)this.citizens [russianRoulette].job).WaitForTradeGoods;
 					}
+				}
+
+				if (this.citizenToChange == this.citizens [russianRoulette]) {
+					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
+					this.citizenToChange = null;
+					this.citizenActionJobType = JOB_TYPE.NONE;
 				}
 				this.citizens.Remove(this.citizens[russianRoulette]);
 				this.unrest += 10;
@@ -527,7 +537,11 @@ public class CityTest{
 						SetResourceStatus (currentResource, RESOURCE_STATUS.NORMAL, statusValue, 0);
 					}
 				} else if (isResourceNeeded && !IsProducingResource (currentResource)) {//If not producing needed resource
-					SetResourceStatus (currentResource, RESOURCE_STATUS.SCARCE, statusValue, 100000);//Set resource as scarce
+					if (GetNumberOfResourcesPerType (currentResource) > allNeededResources [i] * 1.1) {
+						SetResourceStatus (currentResource, RESOURCE_STATUS.ABUNDANT, statusValue, 0);
+					}else{
+						SetResourceStatus (currentResource, RESOURCE_STATUS.SCARCE, statusValue, 100000);//Set resource as scarce
+					}
 
 				} else if (!isResourceNeeded) {//If resource is not needed
 					SetResourceStatus (currentResource, RESOURCE_STATUS.ABUNDANT, statusValue, -1);//Set resource as abundant
@@ -1056,8 +1070,8 @@ public class CityTest{
 						"[FF0000]" + this.citizenActionHexTile.name + "[-] \n\n";
 
 					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
-						GameManager.Instance.turnEnded += ((Merchant)newCitizen.job).WaitForElligibleCity;
-						((Merchant)newCitizen.job).SetActions();
+//						((Merchant)newCitizen.job).GetTradeGoods();
+						Debug.LogError("Merchant Created! " + this.cityName);
 					}
 
 					this.citizenActionJobType = JOB_TYPE.NONE;
@@ -1077,8 +1091,8 @@ public class CityTest{
 					this.citizenToChange.ChangeJob(this.citizenActionJobType);
 
 					if (this.citizenActionJobType == JOB_TYPE.MERCHANT) {
-						GameManager.Instance.turnEnded += ((Merchant)this.citizenToChange.job).WaitForElligibleCity;
-						((Merchant)this.citizenToChange.job).SetActions();
+//						((Merchant)this.citizenToChange.job).GetTradeGoods();
+						Debug.LogError("Merchant Created! " + this.cityName);
 					}
 
 					this.nextCityCitizenAction = CITY_CITIZEN_ACTION.NONE;
@@ -3075,6 +3089,27 @@ public class CityTest{
 			}
 		}
 		return null;
+	}
+
+	internal int GetScarcityValue(){
+		int scarcityVal = 0;
+		List<RESOURCE> scarceResources = this.GetScarceResources();
+		for (int i = 0; i < scarceResources.Count; i++) {
+			if (scarceResources [i] == RESOURCE.GOLD) {
+				continue;
+			}
+			scarcityVal += this.GetResourceStatusByType(scarceResources[i]).amount;
+		}
+		return scarcityVal;
+	}
+
+	internal void RemoveCitizen(Citizen citizenToRemove){
+		for (int i = 0; i < this.citizens.Count; i++) {
+			if (this.citizens [i].id == citizenToRemove.id) {
+				this.citizens.RemoveAt (i);
+				break;
+			}
+		}
 	}
 }
 

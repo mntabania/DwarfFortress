@@ -23,11 +23,18 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
         var neighbours = new List<Tile>();
 
 		List<Point> possibleExits;
-		if ((X % 2) == 0) {
+//		if ((X % 2) == 0) {
+//			possibleExits = EvenNeighbours;
+//		} else {
+//			possibleExits = OddNeighbours;
+//		}
+
+		if ((Y % 2) == 0) {
 			possibleExits = EvenNeighbours;
 		} else {
 			possibleExits = OddNeighbours;
 		}
+
 
 		for (int i = 0; i < possibleExits.Count; i++) {
 			int neighbourCoordinateX = X + possibleExits [i].X;
@@ -40,12 +47,39 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
 		AllNeighbours = neighbours;
     }
 
+//	public static List<Point> EvenNeighbours {
+//		get {
+//			return new List<Point> {
+//				new Point(0, 1),
+//				new Point(1, 0),
+//				new Point(1, -1),
+//				new Point(0, -1),
+//				new Point(-1, -1),
+//				new Point(-1, 0),
+//
+//			};
+//		}
+//	}
+//
+//	public static List<Point> OddNeighbours {
+//		get {
+//			return new List<Point> {
+//				new Point(0, 1),
+//				new Point(1, 1),
+//				new Point(1, 0),
+//				new Point(0, -1),
+//				new Point(-1, 0),
+//				new Point(-1, 1),
+//			};
+//		}
+//	}
+
     public static List<Point> EvenNeighbours {
         get {
             return new List<Point> {
+				new Point(-1, 1),
 				new Point(0, 1),
 				new Point(1, 0),
-				new Point(1, -1),
 				new Point(0, -1),
 				new Point(-1, -1),
 				new Point(-1, 0),
@@ -60,9 +94,9 @@ public class Tile : SpacialObject, IHasNeighbours<Tile> {
 				new Point(0, 1),
 				new Point(1, 1),
 				new Point(1, 0),
+				new Point(1, -1),
 				new Point(0, -1),
 				new Point(-1, 0),
-				new Point(-1, 1),
             };
         }
     }
