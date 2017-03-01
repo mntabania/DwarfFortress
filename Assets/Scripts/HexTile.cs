@@ -138,7 +138,6 @@ public class HexTile : MonoBehaviour {
 
 	[ContextMenu("Getenrate Tile Details")]
 	public void GetenrateTileDetails(){
-		this.centerPiece.SetActive(true);
 		List<Tile> neighbours = tile.AllNeighbours.ToList ();
 		for (int i = 0; i < neighbours.Count; i++) {
 			
@@ -232,14 +231,43 @@ public class HexTile : MonoBehaviour {
 		}
 	}
 
-	public void SetTileSprites(Sprite baseSprite, Sprite leftSprite, Sprite rightSprite, Sprite leftCornerSprite, Sprite rightCornerSprite, Sprite centerSprite){
+	public void SetTileSprites(Sprite baseSprite, Sprite leftSprite, Sprite rightSprite, Sprite leftCornerSprite, Sprite rightCornerSprite, Sprite[] centerSprite){
 		this.GetComponent<SpriteRenderer>().sprite = baseSprite;
 		this.leftGround.GetComponent<SpriteRenderer>().sprite = leftSprite;
 		this.rightGround.GetComponent<SpriteRenderer>().sprite = rightSprite;
 		this.bottomLeftGround.GetComponent<SpriteRenderer>().sprite = leftCornerSprite;
 		this.bottomRightGround.GetComponent<SpriteRenderer>().sprite = rightCornerSprite;
-		if (this.elevationType != ELEVATION.MOUNTAIN) {
-			this.centerPiece.GetComponent<SpriteRenderer> ().sprite = centerSprite;
+		if (this.elevationType == ELEVATION.MOUNTAIN) {
+			this.centerPiece.SetActive(true);
+		} else {
+			if (this.biomeType == BIOMES.GRASSLAND) {
+				return;
+			} else if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST) {
+				this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
+				this.centerPiece.SetActive(true);
+			} else {
+				int chanceForDetail = Random.Range (0, 100);
+				if (chanceForDetail < 25) {
+					this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
+					this.centerPiece.SetActive(true);
+					float randomXPosition = Random.Range(-1.30f, 1.30f);
+					float randomYPosition = Random.Range(-0.40f, 0.70f);
+					if (randomXPosition <= 0.45f && randomXPosition >= -0.45f) {
+						int chanceToModify = Random.Range(0, 100);
+						if (chanceToModify < 25) {
+							if (Mathf.Sign (randomYPosition) == 0) {
+								//negative
+								randomYPosition -= Random.Range(0.20f,0.40f);
+							} else {
+								//positive
+								randomYPosition += Random.Range(0.20f,0.40f);
+							}
+						}
+					}
+					this.centerPiece.transform.localPosition = new Vector3(randomXPosition, randomYPosition, 0f);
+				}
+			}
+
 		}
 	}
 
