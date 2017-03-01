@@ -27,13 +27,20 @@ public class Biomes : MonoBehaviour {
 	public Sprite forestLeftCorner;
 	public Sprite forestRightCorner;
 	public Sprite forestCenter;
+	public Sprite forestCenter2;
+	public Sprite forestCenter3;
 	[Space(10)]
 	public Sprite grasslandLeft;
 	public Sprite grasslandRight;
 	public Sprite grasslandLeftCorner;
 	public Sprite grasslandRightCorner;
 	public Sprite grasslandCenter;
+	public Sprite grasslandCenter2;
 	[Space(10)]
+	public Sprite woodlandLeft;
+	public Sprite woodlandRight;
+	public Sprite woodlandLeftCorner;
+	public Sprite woodlandRightCorner;
 	public Sprite woodlandCenter;
 	public Sprite woodlandCenter2;
 	public Sprite woodlandCenter3;
@@ -43,6 +50,9 @@ public class Biomes : MonoBehaviour {
 	public Sprite desertLeftCorner;
 	public Sprite desertRightCorner;
 	public Sprite desertCenter;
+	public Sprite desertCenter2;
+	public Sprite desertCenter3;
+	public Sprite desertCenter4;
 	[Space(10)]
 	public Sprite tundraLeft;
 	public Sprite tundraRight;
@@ -55,6 +65,7 @@ public class Biomes : MonoBehaviour {
 	public Sprite snowLeftCorner;
 	public Sprite snowRightCorner;
 	public Sprite snowCenter;
+	public Sprite snowCenter2;
 	[Space(10)]
 	public Sprite mountainCenter;
 
@@ -82,37 +93,22 @@ public class Biomes : MonoBehaviour {
 			AssignHexTileToList (currentHexTile);
 			switch(currentHexTile.biomeType){
 			case BIOMES.SNOW:
-//				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.white;
-				currentHexTile.SetTileSprites (snowSprite, snowLeft, snowRight, snowLeftCorner, snowRightCorner, snowCenter);
+				currentHexTile.SetTileSprites (snowSprite, snowLeft, snowRight, snowLeftCorner, snowRightCorner, new Sprite[]{snowCenter, snowCenter2});
 				break;
 			case BIOMES.TUNDRA:
-//				currentHexTileGO.GetComponent<SpriteRenderer>().color = Color.gray;
-				currentHexTile.SetTileSprites (tundraSprite, tundraLeft, tundraRight, tundraLeftCorner, tundraRightCorner, tundraCenter);
+				currentHexTile.SetTileSprites (tundraSprite, tundraLeft, tundraRight, tundraLeftCorner, tundraRightCorner,  new Sprite[]{tundraCenter});
 				break;
 			case BIOMES.DESERT:
-//				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(223f/255f,152f/255f,0f/255f);
-				currentHexTile.SetTileSprites (desertSprite, desertLeft, desertRight, desertLeftCorner, desertRightCorner, desertCenter);
+				currentHexTile.SetTileSprites (desertSprite, desertLeft, desertRight, desertLeftCorner, desertRightCorner,  new Sprite[]{desertCenter, desertCenter2, desertCenter3, desertCenter4});
 				break;
 			case BIOMES.GRASSLAND:
-//				currentHexTileGO.GetComponent<SpriteRenderer> ().color = new Color (165f / 255f, 42f / 255f, 42f / 255f);
-				currentHexTile.SetTileSprites (grasslandSprite, grasslandLeft, grasslandRight, grasslandLeftCorner, grasslandRightCorner, grasslandCenter);
+				currentHexTile.SetTileSprites (grasslandSprite, grasslandLeft, grasslandRight, grasslandLeftCorner, grasslandRightCorner, new Sprite[]{grasslandCenter, grasslandCenter2});
 				break;
 			case BIOMES.WOODLAND:
-				int chance = Random.Range (0, 3);
-				Sprite woodlandCenterSprite = null;
-				if (chance == 0) {
-					woodlandCenterSprite = woodlandCenter;
-				} else if (chance == 1) {
-					woodlandCenterSprite = woodlandCenter2;
-				} else {
-					woodlandCenterSprite = woodlandCenter3;
-				}
-//				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(194f/255f,213f/255f,168f/255f);
-				currentHexTile.SetTileSprites (grasslandSprite, grasslandLeft, grasslandRight, grasslandLeftCorner, grasslandRightCorner, woodlandCenterSprite);
+				currentHexTile.SetTileSprites (woodlandSprite, woodlandLeft, woodlandRight, woodlandLeftCorner, woodlandRightCorner, new Sprite[]{woodlandCenter, woodlandCenter2, woodlandCenter3});
 				break;
 			case BIOMES.FOREST:
-//				currentHexTileGO.GetComponent<SpriteRenderer>().color = new Color(156f/255f,188f/255f,167f/255f);
-				currentHexTile.SetTileSprites (forestSprite, forestLeft, forestRight, forestLeftCorner, forestRightCorner, forestCenter);
+				currentHexTile.SetTileSprites (forestSprite, forestLeft, forestRight, forestLeftCorner, forestRightCorner, new Sprite[]{forestCenter, forestCenter2, forestCenter3});
 				break;
 			}
 		}

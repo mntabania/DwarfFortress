@@ -18,6 +18,8 @@ public class Merchant : Job {
 	protected int daysWaitingForTradeGoods = 0;
 	protected int numOfCitiesVisited = 0;
 
+	protected int cityQuota = 3;
+
 	public bool isOutsideCity;
 
 	public Merchant(){
@@ -119,7 +121,7 @@ public class Merchant : Job {
 			currentLocationIndex = 0;
 			this.numOfCitiesVisited += 1;
 			GameManager.Instance.turnEnded -= GoToDestination;
-			if (this.numOfCitiesVisited == 3) {
+			if (this.numOfCitiesVisited == this.cityQuota) {
 				//Destroy Trader and return all trade goods back to city
 				this.citizen.city.AdjustResources(this.tradeGoods, false);
 				//TODO: Implement Object Pool for optimization

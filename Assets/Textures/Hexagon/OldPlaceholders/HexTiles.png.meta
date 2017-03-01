@@ -1,0 +1,652 @@
+fileFormatVersion: 2
+guid: db3f6afdf82ac05489c15722d3a3810a
+timeCreated: 1488166407
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: woodlands_center
+    21300002: forest_center
+    21300004: snow_center
+    21300006: tundra_center
+    21300008: CutTiles_resized_7
+    21300010: mountain_center
+    21300012: forest_left
+    21300014: forest_right
+    21300016: snow_left
+    21300018: snow_right
+    21300020: desert_left
+    21300022: desert_right
+    21300024: tundra_left
+    21300026: tundra_right
+    21300028: CutTiles_resized_17
+    21300030: CutTiles_resized_18
+    21300032: forest_left_corner
+    21300034: forest_right_corner
+    21300036: snow_left_corner
+    21300038: snow_right_corner
+    21300040: desert_left_corner
+    21300042: desert_right_corner
+    21300044: tundra_left_corner
+    21300046: tundra_right_corner
+    21300048: forest_base
+    21300050: snow_base
+    21300052: desert_base
+    21300054: tundra_base
+    21300056: CutTiles_resized_68
+    21300058: CutTiles_resized_69
+    21300060: CutTiles_resized_70
+    21300062: CutTiles_resized_71
+    21300064: water_base
+    21300066: grassland_left
+    21300068: grassland_right
+    21300070: grassland_left_corner
+    21300072: grassland_right_corner
+    21300074: grassland_base
+    21300076: CutTiles_resized_93
+    21300078: grassland_center
+    21300080: grassland_center_2
+    21300082: desert_center
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings:
+  - buildTarget: Standalone
+    maxTextureSize: 4096
+    textureFormat: -3
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: woodlands_center
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 3720
+        width: 302
+        height: 184
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_center
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 3704
+        width: 313
+        height: 215
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_center
+      rect:
+        serializedVersion: 2
+        x: 1748
+        y: 3772
+        width: 209
+        height: 78
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_center
+      rect:
+        serializedVersion: 2
+        x: 3035
+        y: 3690
+        width: 348
+        height: 246
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_7
+      rect:
+        serializedVersion: 2
+        x: 3038
+        y: 3686
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: mountain_center
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 3308
+        width: 292
+        height: 293
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_left
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 3369
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_right
+      rect:
+        serializedVersion: 2
+        x: 1307
+        y: 3369
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_left
+      rect:
+        serializedVersion: 2
+        x: 1648
+        y: 3369
+        width: 19
+        height: 151
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_right
+      rect:
+        serializedVersion: 2
+        x: 2031
+        y: 3369
+        width: 19
+        height: 151
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_left
+      rect:
+        serializedVersion: 2
+        x: 2353
+        y: 3374
+        width: 19
+        height: 151
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_right
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 3374
+        width: 19
+        height: 151
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_left
+      rect:
+        serializedVersion: 2
+        x: 3037
+        y: 3369
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_right
+      rect:
+        serializedVersion: 2
+        x: 3418
+        y: 3369
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_17
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 3080
+        width: 122
+        height: 106
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_18
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 2685
+        width: 325
+        height: 263
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_left_corner
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 2854
+        width: 204
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_right_corner
+      rect:
+        serializedVersion: 2
+        x: 1169
+        y: 2854
+        width: 202
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_left_corner
+      rect:
+        serializedVersion: 2
+        x: 1601
+        y: 2854
+        width: 204
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_right_corner
+      rect:
+        serializedVersion: 2
+        x: 1897
+        y: 2854
+        width: 202
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_left_corner
+      rect:
+        serializedVersion: 2
+        x: 2306
+        y: 2854
+        width: 204
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_right_corner
+      rect:
+        serializedVersion: 2
+        x: 2604
+        y: 2854
+        width: 203
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_left_corner
+      rect:
+        serializedVersion: 2
+        x: 3001
+        y: 2852
+        width: 204
+        height: 133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_right_corner
+      rect:
+        serializedVersion: 2
+        x: 3286
+        y: 2853
+        width: 204
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_base
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 2302
+        width: 400
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_base
+      rect:
+        serializedVersion: 2
+        x: 1648
+        y: 2302
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_base
+      rect:
+        serializedVersion: 2
+        x: 2353
+        y: 2302
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_base
+      rect:
+        serializedVersion: 2
+        x: 3037
+        y: 2302
+        width: 400
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_68
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 1750
+        width: 400
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_69
+      rect:
+        serializedVersion: 2
+        x: 1648
+        y: 1750
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_70
+      rect:
+        serializedVersion: 2
+        x: 2353
+        y: 1750
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_71
+      rect:
+        serializedVersion: 2
+        x: 3037
+        y: 1757
+        width: 400
+        height: 360
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: water_base
+      rect:
+        serializedVersion: 2
+        x: 3732
+        y: 1757
+        width: 402
+        height: 360
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_left
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 1605
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_right
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 1605
+        width: 19
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_left_corner
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 1103
+        width: 204
+        height: 133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_right_corner
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 1104
+        width: 204
+        height: 132
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_base
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 600
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: CutTiles_resized_93
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 114
+        width: 402
+        height: 362
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_center
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 2319
+        width: 419
+        height: 298
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_center_2
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 1937
+        width: 437
+        height: 317
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_center
+      rect:
+        serializedVersion: 2
+        x: 2431
+        y: 3783
+        width: 232
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

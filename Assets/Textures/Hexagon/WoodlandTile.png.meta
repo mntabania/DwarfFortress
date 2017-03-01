@@ -1,14 +1,14 @@
 fileFormatVersion: 2
 guid: b4a478b9878992e4e924077fad08764f
-timeCreated: 1488187553
+timeCreated: 1488337300
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: grassland_base
-    21300002: grassland_left_corner
-    21300004: grassland_right_corner
-    21300006: grassland_left
-    21300008: grassland_right
+    21300000: woodland_base
+    21300002: woodland_left_corner
+    21300004: woodland_right_corner
+    21300006: woodland_left
+    21300008: woodland_right
     21300010: woodland_center_1
     21300012: woodland_center_2
     21300014: woodland_center_3
@@ -61,7 +61,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: grassland_base
+      name: woodland_base
       rect:
         serializedVersion: 2
         x: 4
@@ -74,7 +74,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_left_corner
+      name: woodland_left_corner
       rect:
         serializedVersion: 2
         x: 4
@@ -87,7 +87,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_right_corner
+      name: woodland_right_corner
       rect:
         serializedVersion: 2
         x: 211
@@ -100,7 +100,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_left
+      name: woodland_left
       rect:
         serializedVersion: 2
         x: 4
@@ -113,7 +113,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_right
+      name: woodland_right
       rect:
         serializedVersion: 2
         x: 33
