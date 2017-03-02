@@ -151,9 +151,7 @@ public class Merchant : Job {
 			for (int i = 0; i < increments; i++) {
 				currentLocationIndex += 1;
 				Tile nextTile = this.pathToTargetCity [currentLocationIndex];
-				while (this.citizenAvatar.transform.position != nextTile.hexTile.transform.position) {
-					this.citizenAvatar.transform.position = Vector3.Lerp (this.citizenAvatar.transform.position, nextTile.hexTile.transform.position, 0.5f);
-				}
+				this.citizenAvatar.GetComponent<CitizenAvatar>().MakeCitizenMove(this.currentTile, nextTile.hexTile);
 				this.currentTile = nextTile.hexTile;
 				if (this.currentTile == this.targetCity.hexTile) {
 					break;

@@ -17,6 +17,7 @@ public class General {
 	public int daysBeforeArrival;
 	public int daysBeforeReleaseTask;
 	public bool isOnTheWay;
+	public GameObject generalAvatar;
 
 	public General(CityTest city){
 		this.id = GetID() + 1;
@@ -47,11 +48,17 @@ public class General {
 					this.daysBeforeArrival = 0;
 				}
 				if(this.roads.Count > 0){
+					this.generalAvatar.GetComponent<CitizenAvatar>().MakeCitizenMove (this.location, this.roads [0].hexTile);
 					this.location = this.roads[0].hexTile;
 					this.roads.RemoveAt (0);
 					if(this.location.isCity && this.location.isOccupied){
 						if(this.location.GetCityTileTest().cityAttributes.id != this.city.id){
-							
+							bool isDead = false;
+							int armyNumber = this.army.armyCount;
+							this.location.GetCityTileTest ().cityAttributes.CheckBattleMidwayCity (this, ref armyNumber, ref isDead);
+							if(!isDead){
+								this.army.armyCount = armyNumber;
+							}
 						}
 					}
 				}
@@ -60,6 +67,7 @@ public class General {
 				Debug.Log (GameManager.Instance.currentDay + ": " + this.name + " HAS ARRIVED AT " + this.targetLocation.name);
 				this.isOnTheWay = false;
 				this.targetLocation = null;
+				GameObject.Destroy(this.generalAvatar);
 			}
 //			if (this.location == this.targetLocation) {
 //				if (this.location != this.city.hexTile) {
