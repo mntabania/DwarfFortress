@@ -15,14 +15,14 @@ public class KingdomTileTest : MonoBehaviour {
 	//	public List<CityTile> cities;
 
 	void Start(){
-		GameManager.Instance.turnEnded += TurnActions;
+//		GameManager.Instance.turnEnded += TurnActions;
 	}
 
 	public void CreateKingdom(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
 		this.kingdom = new KingdomTest (populationGrowth, race, cities, tileColor);
 		for (int i = 0; i < this.kingdom.cities.Count; i++) {
 			this.kingdom.cities [i].cityAttributes = new CityTest (this.kingdom.cities[i].hexTile, this);
-			this.kingdom.cities [i].cityAttributes.OccupyCity();
+//			this.kingdom.cities [i].cityAttributes.OccupyCity();
 //			this.kingdom.cities [i].cityAttributes.kingdomTile = this;
 //			this.kingdom.cities [i].cityAttributes.cityLord = new Lord (this.kingdom.cities [i].cityAttributes);
 			this.kingdom.cities [i].GetComponent<SpriteRenderer> ().color = this.kingdom.cities [i].cityAttributes.kingdomTile.kingdom.tileColor;
