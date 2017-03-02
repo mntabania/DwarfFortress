@@ -230,57 +230,57 @@ public class PathManager : MonoBehaviour {
 		Point difference = new Point((nextTile.X -currentTile.X), (nextTile.Y - currentTile.Y));
 		HexTile currentHexTile = currentTile.hexTile;
 		HexTile nextHexTile = nextTile.hexTile;
-		if (currentTile.X % 2 == 0) {
-			if (difference.X == 0 && difference.Y == 1) {
-				//NORTH
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH);
+		if (currentTile.Y % 2 == 0) {
+			if (difference.X == -1 && difference.Y == 1) {
+				//TOP LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.TOP_LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_RIGHT);
+			} else if (difference.X == 0 && difference.Y == 1) {
+				//TOP RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.TOP_RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_LEFT);
 			} else if (difference.X == 1 && difference.Y == 0) {
-				//NORTH EAST
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH_EAST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH_WEST);
-			} else if (difference.X == 1 && difference.Y == -1) {
-				//SOUTH EAST
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH_EAST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH_WEST);
+				//RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.LEFT);
 			} else if (difference.X == 0 && difference.Y == -1) {
-				//SOUTH
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH);
+				//BOTTOM RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.TOP_LEFT);
 			} else if (difference.X == -1 && difference.Y == -1) {
-				//SOUTH WEST
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH_WEST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH_EAST);
+				//BOTTOM LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.TOP_RIGHT);
 			} else if (difference.X == -1 && difference.Y == 0) {
-				//NORTH WEST
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH_WEST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH_EAST);
+				//LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.RIGHT);
 			}
 		} else {
 			if (difference.X == 0 && difference.Y == 1) {
-				//NORTH
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH);
+				//TOP LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.TOP_LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_RIGHT);
 			} else if (difference.X == 1 && difference.Y == 1) {
-				//NORTH EAST
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH_EAST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH_WEST);
+				//TOP RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.TOP_RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_LEFT);
 			} else if (difference.X == 1 && difference.Y == 0) {
-				//SOUTH EAST
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH_EAST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH_WEST);
+				//RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.LEFT);
+			} else if (difference.X == 1 && difference.Y == -1) {
+				//BOTTOM RIGHT
+				currentHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_RIGHT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.TOP_LEFT);
 			} else if (difference.X == 0 && difference.Y == -1) {
-				//SOUTH
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH);
+				//BOTTOM LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.BOTTOM_LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.TOP_RIGHT);
 			} else if (difference.X == -1 && difference.Y == 0) {
-				//SOUTH WEST
-				currentHexTile.ActivatePath(PATH_DIRECTION.SOUTH_WEST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.NORTH_EAST);
-			} else if (difference.X == -1 && difference.Y == 1) {
-				//NORTH WEST
-				currentHexTile.ActivatePath(PATH_DIRECTION.NORTH_WEST);
-				nextHexTile.ActivatePath(PATH_DIRECTION.SOUTH_EAST);
+				//LEFT
+				currentHexTile.ActivatePath(PATH_DIRECTION.LEFT);
+				nextHexTile.ActivatePath(PATH_DIRECTION.RIGHT);
 			}
 		}
 //		currentHexTile.path.SetActive(true);
@@ -291,9 +291,16 @@ public class PathManager : MonoBehaviour {
 	#endregion
 
 	#region Debugging Methods
-	[ContextMenu("Activate Path Between 2 Cities")]
-	public void ActivatePathBetween2Cities(){
-		ActivatePath (CityGenerator.Instance.cities[0].GetCityTile(), CityGenerator.Instance.cities[0].GetCityTile().cityAttributes.connectedCities[0]);
+	[ContextMenu("Activate Path Between Cities")]
+	public void ActivatePathBetweenCities(){
+		for (int i = 0; i < CityGenerator.Instance.cities.Count; i++) {
+			City currentCity = CityGenerator.Instance.cities [i].GetCityTile().cityAttributes;
+			for (int j = 0; j < currentCity.connectedCities.Count; j++) {
+				ActivatePath (currentCity.hexTile.GetCityTile(), currentCity.connectedCities[j]);
+			}
+		}
+
+
 	}
 
 	[ContextMenu("Toggle Road Highlight")]
