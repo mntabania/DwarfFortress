@@ -45,7 +45,8 @@ public class CitizenAvatar : MonoBehaviour {
 
 	internal void ProcessAvatar(){
 		if(citizen != null){
-			//TODO: change the fucking image
+			//TODO: Add handler for other citizens if needed
+			this.GetComponent<SpriteRenderer> ().sprite = avatars [1];
 		}
 		if(general != null){
 			switch(general.city.kingdomTile.kingdom.kingdomRace){
@@ -66,7 +67,7 @@ public class CitizenAvatar : MonoBehaviour {
 	}
 
 	internal void MakeCitizenMove(HexTile startTile, HexTile targetTile){
-		this.transform.position = Vector3.Lerp (startTile.transform.position, targetTile.transform.position, 0.5f);
+		this.transform.position = Vector3.MoveTowards (startTile.transform.position, targetTile.transform.position, 0.5f);
 	}
 
 	void OnTriggerEnter2D(Collider2D other){

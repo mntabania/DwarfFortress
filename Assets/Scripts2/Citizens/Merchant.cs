@@ -96,8 +96,7 @@ public class Merchant : Job {
 //			this.citizenAvatar.transform.localPosition = Vector3.zero;
 		if (elligibleCitiesForTrade.Count <= 0) {
 			for (int i = 0; i < this.currentTile.GetCityTileTest().cityAttributes.connectedCities.Count; i++) {
-				if (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.id == this.citizen.city.id || 
-					!this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.hexTile.isOccupied) {
+				if (!this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes.hexTile.isOccupied) {
 					continue;
 				}
 				elligibleCitiesForTrade.Add (this.currentTile.GetCityTileTest().cityAttributes.connectedCities[i].cityAttributes);
@@ -105,6 +104,17 @@ public class Merchant : Job {
 		}
 
 		elligibleCitiesForTrade.OrderByDescending(x => x.GetScarcityValue());
+
+		if (elligibleCitiesForTrade [0].id == this.citizen.city.id) {
+			elligibleCitiesForTrade.RemoveAt(0);
+			List<CityTileTest> connectedCities = elligibleCitiesForTrade [0].connectedCities;
+			for (int i = 0; i < connectedCities.Count; i++) {
+				if (!this.currentTile.GetCityTileTest ().cityAttributes.connectedCities [i].cityAttributes.hexTile.isOccupied) {
+					continue;
+				}
+				elligibleCitiesForTrade.Add (connectedCities[i].cityAttributes);
+			}
+		}
 
 		this.targetCity = elligibleCitiesForTrade[0];
 		this.pathToTargetCity = GameManager.Instance.GetPath(this.currentTile.tile, this.targetCity.hexTile.tile, PATHFINDING_MODE.NORMAL).Reverse().ToList();

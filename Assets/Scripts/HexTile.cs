@@ -8,12 +8,8 @@ public class HexTile : MonoBehaviour {
 	public Tile tile;
 
 	public GameObject path;
-	public GameObject northPath;
-	public GameObject northEastPath;
-	public GameObject southEastPath;
-	public GameObject southPath;
-	public GameObject southWestPath;
-	public GameObject northWestPath;
+
+	public GameObject topLeft, topRight, right, bottomRight, bottomLeft, left;
 
 	public float elevationNoise;
 	public float moistureNoise;
@@ -282,23 +278,23 @@ public class HexTile : MonoBehaviour {
 
 	public void ActivatePath(PATH_DIRECTION direction){
 		switch (direction) {
-		case PATH_DIRECTION.NORTH:
-			northPath.SetActive (true);
+		case PATH_DIRECTION.TOP_LEFT:
+			topLeft.SetActive (true);
 			break;
-		case PATH_DIRECTION.NORTH_EAST:
-			northEastPath.SetActive (true);
+		case PATH_DIRECTION.TOP_RIGHT:
+			topRight.SetActive (true);
 			break;
-		case PATH_DIRECTION.NORTH_WEST:
-			northWestPath.SetActive (true);
+		case PATH_DIRECTION.RIGHT:
+			right.SetActive (true);
 			break;
-		case PATH_DIRECTION.SOUTH:
-			southPath.SetActive (true);
+		case PATH_DIRECTION.BOTTOM_RIGHT:
+			bottomRight.SetActive (true);
 			break;
-		case PATH_DIRECTION.SOUTH_EAST:
-			southEastPath.SetActive (true);
+		case PATH_DIRECTION.BOTTOM_LEFT:
+			bottomLeft.SetActive (true);
 			break;
-		case PATH_DIRECTION.SOUTH_WEST:
-			southWestPath.SetActive (true);
+		case PATH_DIRECTION.LEFT:
+			left.SetActive (true);
 			break;
 		}
 	}
