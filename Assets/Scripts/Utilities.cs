@@ -12,6 +12,7 @@ public static class Utilities {
 	public static int lastCityId = 0;
 	public static int lastGeneralId = 0;
 	public static int lastMilitaryDataId = 0;
+	public static int lastRoyaltyId = 0;
 	public static float defenseBuff = 1.25f;
 
 	public static int tradeCount = 0;

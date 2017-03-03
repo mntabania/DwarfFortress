@@ -9,6 +9,9 @@ public class KingdomTest{
 	public int id;
 	public string kingdomName;
 	public Lord lord;
+	public Royalty assignedLord;
+	public RoyaltyList royaltyList;
+
 	public List<CityTileTest> cities;
 	public RACE kingdomRace;
 	public bool isDead;
@@ -37,6 +40,7 @@ public class KingdomTest{
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
 		this.lord = new Lord(this);
+//		this.assignedLord = new Royalty (this, true);
 		this.cities = cities;
 		this.kingdomRace = race;
 		this.isDead = false;
@@ -48,9 +52,11 @@ public class KingdomTest{
 		this.armyBaseStats = GetArmyBaseStats ();
 		this.armyIncreaseStats = GetArmyIncreaseStats ();
 		this.armyIncreaseUnitResource = GetArmyIncreaseUnitResource ();
+		this.royaltyList = new RoyaltyList ();
 
 		SetLastID (this.id);
 		DetermineCityUpgradeResourceType();
+		CreateInitialRoyalties ();
 	}
 
 	private int GetID(){
@@ -58,6 +64,97 @@ public class KingdomTest{
 	}
 	private void SetLastID(int id){
 		Utilities.lastkingdomid = id;
+	}
+
+	internal void CreateInitialRoyalties(){
+		GENDER gender = GENDER.MALE;
+		int randomGender = UnityEngine.Random.Range (0, 100);
+		if(randomGender < 20){
+			gender = GENDER.FEMALE;
+		}
+		this.assignedLord = new Royalty (this, UnityEngine.Random.Range (16, 36), gender, 2);
+		Royalty father = new Royalty (this, UnityEngine.Random.Range (60, 81), GENDER.MALE, 1);
+		Royalty mother = new Royalty (this, UnityEngine.Random.Range (60, 81), GENDER.FEMALE, 1);
+
+		father.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), father.age);
+		mother.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), mother.age);
+		this.assignedLord.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + this.assignedLord.age));
+
+		father.AddChild (this.assignedLord);
+		mother.AddChild (this.assignedLord);
+		this.assignedLord.AddParents(father, mother);
+		MarriageManager.Instance.MarrySpouse (father, mother);
+
+
+		int siblingsChance = UnityEngine.Random.Range (0, 100);
+		if(siblingsChance < 50){
+			Royalty sibling = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
+			Royalty sibling2 = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
+
+			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling.age));
+			sibling2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling2.age));
+
+		}else if(siblingsChance >= 50 && siblingsChance < 75){
+			Royalty sibling = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
+			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling.age));
+		}
+
+		int spouseChance = UnityEngine.Random.Range (0, 100);
+		if (spouseChance < 80) {
+			Royalty spouse = MarriageManager.Instance.CreateSpouse (this.assignedLord);
+			spouse.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + spouse.age));
+
+			int childChance = UnityEngine.Random.Range (0, 100);
+			if (childChance < 50) {
+				if(this.assignedLord.spouse.age == 16){
+					//NO CHILD
+				}else if(this.assignedLord.spouse.age == 17){
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+
+				}else if(this.assignedLord.spouse.age == 18){
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
+
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
+
+				}else{
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
+					Royalty child3 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 2, false);
+
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
+					child3.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child3.age));
+
+				}
+
+			} else if (childChance >= 50 && childChance < 70) {
+				if(this.assignedLord.spouse.age == 16){
+					//NO CHILD
+				}else if(this.assignedLord.spouse.age == 17){
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+
+				}else{
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
+
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
+				}
+
+			} else if (childChance >= 70 && childChance < 90) {
+				if(this.assignedLord.spouse.age == 16){
+					//NO CHILD
+				}else{
+					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+
+				}
+			}
+		}
 	}
 
 	internal void AddCityToKingdom(CityTileTest city){

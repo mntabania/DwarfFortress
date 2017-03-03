@@ -49,7 +49,7 @@ public class KingdomTileTest : MonoBehaviour {
 		this.kingdom.lord.GoToWarWith(GameManager.Instance.kingdoms[1].kingdom.lord);
 		GameManager.Instance.kingdoms [1].kingdom.lord.GoToWarWith (this.kingdom.lord);
 	}
-
+		
 	public void AddCityToKingdom(CityTileTest city){
 		this.kingdom.AddCityToKingdom (city);
 //		city.cityAttributes = new CityTest (city.GetComponent<HexTile>(), this);

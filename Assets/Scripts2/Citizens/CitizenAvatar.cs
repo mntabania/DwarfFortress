@@ -69,4 +69,7 @@ public class CitizenAvatar : MonoBehaviour {
 		this.transform.position = Vector3.Lerp (startTile.transform.position, targetTile.transform.position, 0.5f);
 	}
 
+	void OnTriggerEnter2D(Collider2D other){
+		
+	}
 }

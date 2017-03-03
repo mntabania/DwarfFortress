@@ -299,3 +299,28 @@ public enum PATHFINDING_MODE{
 	ROAD_CREATION,
 	COMBAT
 }
+
+public enum GENDER{
+	MALE,
+	FEMALE,
+}
+
+public enum MONTH{
+	JANUARY,
+	FEBRUARY,
+	MARCH,
+	APRIL,
+	MAY,
+	JUNE,
+	JULY,
+	AUGUST,
+	SEPTEMBER,
+	OCTOBER,
+	NOVEMBER,
+	DECEMBER,
+}
+
+public enum TRAIT{
+	VICIOUS,
+	NAIVE,
+}
