@@ -5,9 +5,14 @@ using System.Collections.Generic;
 public class PoliticsPrototypeManager : MonoBehaviour {
 
 	public static PoliticsPrototypeManager Instance = null;
-	public MONTH month;
-	public int week;
-	public int year;
+
+	public delegate void TurnEndedDelegate();
+	public TurnEndedDelegate turnEnded;
+
+	public int month = 1;
+	public int week = 1;
+	public int year = 1997;
+
 	public GameObject kingdomTilePrefab;
 	public GameObject kingdomsParent;
 	public List<KingdomTileTest> kingdoms;
@@ -31,6 +36,26 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		}
 
 		this.GenerateKingdoms();
+		StartWeekProgression();
+	}
+
+	void StartWeekProgression(){
+		InvokeRepeating("StartTime", 0f, 1f);
+	}
+
+	void StartTime(){
+		this.week += 1;
+		if (week > 4) {
+			this.week = 1;
+			this.month += 1;
+			if (this.month > 12) {
+				this.month = 1;
+				this.year += 1;
+			}
+		}
+		if (turnEnded != null) {
+			turnEnded ();
+		}
 	}
 
 	void GenerateKingdoms(){

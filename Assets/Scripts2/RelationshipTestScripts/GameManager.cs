@@ -24,9 +24,6 @@ public class GameManager : MonoBehaviour {
 
 	public List<CooperateEvents> pendingCooperateEvents = new List<CooperateEvents>();
 
-	public MONTH month;
-	public int week = 1;
-	public int year = 1;
 	public int currentDay = 1;
 
 	public bool isDayPaused = false;
