@@ -47,10 +47,15 @@ public class Royalty {
 		this.isIndependent = false;
 		this.isMarried = false;
 		this.isDead = false;
-		SetLastID (this.id);
 		this.kingdom.royaltyList.allRoyalties.Add (this);
 		ChangeLoyalty (this.kingdom.assignedLord);
 		ChangeHatred ();
+
+
+		SetLastID (this.id);
+
+		RoyaltyEventDelegate.onIncreaseIllnessAndAccidentChance += IncreaseIllnessAndAccidentChance;
+		PoliticsPrototypeManager.Instance.turnEnded += DeathReasons;
 	}
 
 	private int GetID(){
@@ -119,7 +124,10 @@ public class Royalty {
 		this.royaltyChances.illnessChance += 0.01f;
 		this.royaltyChances.accidentChance += 0.01f;
 	}
-	internal void IllnessAndAccidents(){
+	internal void DeathReasons(){
+		if(isDead){
+			return;
+		}
 		float illness = UnityEngine.Random.Range (0f, 99f);
 		if(illness <= this.royaltyChances.illnessChance){
 			this.isDead = true;
@@ -131,19 +139,17 @@ public class Royalty {
 				this.isDead = true;
 				Death ();
 				Debug.Log (this.name + " DIED OF ACCIDENT!");
-			}
-		}
-	}
-
-	internal void OldAge(){
-		if(this.age >= 60){
-			float oldAge = UnityEngine.Random.Range (0f, 99f);
-			if(oldAge <= this.royaltyChances.oldAgeChance){
-				this.isDead = true;
-				Death ();
-				Debug.Log (this.name + " DIED OF OLD AGE!");
 			}else{
-				this.royaltyChances.oldAgeChance += 0.05f;
+				if(this.age >= 60){
+					float oldAge = UnityEngine.Random.Range (0f, 99f);
+					if(oldAge <= this.royaltyChances.oldAgeChance){
+						this.isDead = true;
+						Death ();
+						Debug.Log (this.name + " DIED OF OLD AGE!");
+					}else{
+						this.royaltyChances.oldAgeChance += 0.05f;
+					}
+				}
 			}
 		}
 	}
@@ -151,7 +157,6 @@ public class Royalty {
 		if(this.id == this.kingdom.assignedLord.id){
 			//ASSIGN NEW LORD, SUCCESSION
 			this.kingdom.royaltyList.allRoyalties.Remove (this);
-
 		}else{
 			this.kingdom.royaltyList.allRoyalties.Remove (this);
 		}

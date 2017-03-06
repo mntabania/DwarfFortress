@@ -51,6 +51,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			if (this.month > 12) {
 				this.month = 1;
 				this.year += 1;
+				RoyaltyEventDelegate.TriggerIncreaseIllnessAndAccidentChance ();
 			}
 		}
 		if (turnEnded != null) {
