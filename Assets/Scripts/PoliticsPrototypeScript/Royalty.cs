@@ -18,6 +18,7 @@ public class Royalty {
 	public Royalty mother;
 	public Royalty spouse;
 	public List<Royalty> children;
+	public RoyaltyChances royaltyChances;
 	public MONTH birthMonth;
 	public int birthWeek;
 	public int birthYear;
@@ -39,6 +40,7 @@ public class Royalty {
 		this.mother = null;
 		this.spouse = null;
 		this.children = new List<Royalty> ();
+		this.royaltyChances = new RoyaltyChances ();
 		this.birthMonth = PoliticsPrototypeManager.Instance.month;
 		this.birthWeek = PoliticsPrototypeManager.Instance.week;
 		this.birthYear = PoliticsPrototypeManager.Instance.year;
@@ -112,5 +114,46 @@ public class Royalty {
 		this.birthMonth = month;
 		this.birthWeek = week;
 		this.birthYear = year;
+	}
+	internal void IncreaseIllnessAndAccidentChance(){
+		this.royaltyChances.illnessChance += 0.01f;
+		this.royaltyChances.accidentChance += 0.01f;
+	}
+	internal void IllnessAndAccidents(){
+		float illness = UnityEngine.Random.Range (0f, 99f);
+		if(illness <= this.royaltyChances.illnessChance){
+			this.isDead = true;
+			Death ();
+			Debug.Log (this.name + " DIED OF ILLNESS!");
+		}else{
+			float accidents = UnityEngine.Random.Range (0f, 99f);
+			if(accidents <= this.royaltyChances.accidentChance){
+				this.isDead = true;
+				Death ();
+				Debug.Log (this.name + " DIED OF ACCIDENT!");
+			}
+		}
+	}
+
+	internal void OldAge(){
+		if(this.age >= 60){
+			float oldAge = UnityEngine.Random.Range (0f, 99f);
+			if(oldAge <= this.royaltyChances.oldAgeChance){
+				this.isDead = true;
+				Death ();
+				Debug.Log (this.name + " DIED OF OLD AGE!");
+			}else{
+				this.royaltyChances.oldAgeChance += 0.05f;
+			}
+		}
+	}
+	internal void Death(){
+		if(this.id == this.kingdom.assignedLord.id){
+			//ASSIGN NEW LORD, SUCCESSION
+			this.kingdom.royaltyList.allRoyalties.Remove (this);
+
+		}else{
+			this.kingdom.royaltyList.allRoyalties.Remove (this);
+		}
 	}
 }
