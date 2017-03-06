@@ -321,6 +321,9 @@ public enum MONTH{
 }
 
 public enum TRAIT{
+	NONE,
 	VICIOUS,
 	NAIVE,
+	LOYAL,
+	TRAITOR,
 }

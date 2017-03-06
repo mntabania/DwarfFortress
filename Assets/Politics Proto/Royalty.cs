@@ -11,7 +11,7 @@ public class Royalty {
 	public int age;
 	public int generation;
 	public KingdomTest kingdom;
-	public TRAIT trait;
+	public TRAIT[] trait;
 	public Royalty loyalLord;
 	public Royalty hatedLord;
 	public Royalty father;
@@ -39,9 +39,9 @@ public class Royalty {
 		this.mother = null;
 		this.spouse = null;
 		this.children = new List<Royalty> ();
-		this.birthMonth = GameManager.Instance.month;
-		this.birthWeek = GameManager.Instance.week;
-		this.birthYear = GameManager.Instance.year;
+		this.birthMonth = PoliticsPrototypeManager.Instance.month;
+		this.birthWeek = PoliticsPrototypeManager.Instance.week;
+		this.birthYear = PoliticsPrototypeManager.Instance.year;
 		this.isIndependent = false;
 		this.isMarried = false;
 		this.isDead = false;
@@ -58,12 +58,26 @@ public class Royalty {
 	private void SetLastID(int id){
 		Utilities.lastRoyaltyId = id;
 	}
-	internal TRAIT GetTrait(){
-		int traitChance = UnityEngine.Random.Range (0, 100);
-		if(traitChance < 40){
-			return TRAIT.VICIOUS;
+	internal TRAIT[] GetTrait(){
+		TRAIT[] traits = new TRAIT[2];
+		int trait1Chance = UnityEngine.Random.Range (0, 100);
+		if(trait1Chance < 40){
+			traits[0] = TRAIT.VICIOUS;
+		}else{
+			traits[0] = TRAIT.NAIVE;
 		}
-		return TRAIT.NAIVE;
+
+		int trait2Chance = UnityEngine.Random.Range (0, 100);
+		if(trait2Chance < 20){
+			traits[1] = TRAIT.LOYAL;
+		}else{
+			int trait3Chance = UnityEngine.Random.Range (0, 100);
+			if (trait3Chance < 20) {
+				traits [1] = TRAIT.TRAITOR;
+			}
+		}
+
+		return traits;
 	}
 	internal void AddParents(Royalty father, Royalty mother){
 		this.father = father;
@@ -84,9 +98,9 @@ public class Royalty {
 
 	internal void ChangeHatred(){
 		List<Royalty> hatedRoyaltyPool = new List<Royalty> ();
-		for(int i = 0; i < GameManager.Instance.kingdoms.Count; i++){
-			if(GameManager.Instance.kingdoms[i].kingdom.id != this.kingdom.id){
-				hatedRoyaltyPool.Add (GameManager.Instance.kingdoms [i].kingdom.assignedLord);
+		for(int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++){
+			if(PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.id != this.kingdom.id){
+				hatedRoyaltyPool.Add (PoliticsPrototypeManager.Instance.kingdoms [i].kingdom.assignedLord);
 			}
 		}
 		if(hatedRoyaltyPool.Count > 0){

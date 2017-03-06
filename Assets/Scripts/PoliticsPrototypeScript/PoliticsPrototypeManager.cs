@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class PoliticsPrototypeManager : MonoBehaviour {
 
 	public static PoliticsPrototypeManager Instance = null;
-
+	public MONTH month;
+	public int week;
+	public int year;
 	public GameObject kingdomTilePrefab;
 	public GameObject kingdomsParent;
 	public List<KingdomTileTest> kingdoms;
