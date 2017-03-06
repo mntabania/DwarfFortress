@@ -24,6 +24,7 @@ public class Royalty {
 	public int birthYear;
 	public bool isIndependent;
 	public bool isMarried;
+	public bool isDirectDescendant;
 	public bool isDead;
 
 	public Royalty(KingdomTest kingdom, int age, GENDER gender, int generation){
@@ -46,16 +47,16 @@ public class Royalty {
 		this.birthYear = PoliticsPrototypeManager.Instance.year;
 		this.isIndependent = false;
 		this.isMarried = false;
+		this.isDirectDescendant = false;
 		this.isDead = false;
 		this.kingdom.royaltyList.allRoyalties.Add (this);
 		ChangeLoyalty (this.kingdom.assignedLord);
-		ChangeHatred ();
-
 
 		SetLastID (this.id);
 
 		RoyaltyEventDelegate.onIncreaseIllnessAndAccidentChance += IncreaseIllnessAndAccidentChance;
-		PoliticsPrototypeManager.Instance.turnEnded += DeathReasons;
+		RoyaltyEventDelegate.onChangeIsDirectDescendant += ChangeIsDirectDescendant;
+		PoliticsPrototypeManager.Instance.turnEnded += TurnActions;
 	}
 
 	private int GetID(){
@@ -120,9 +121,24 @@ public class Royalty {
 		this.birthWeek = week;
 		this.birthYear = year;
 	}
+
+	internal void ChangeIsDirectDescendant(bool status){
+		this.isDirectDescendant = status;
+	}
+
 	internal void IncreaseIllnessAndAccidentChance(){
 		this.royaltyChances.illnessChance += 0.01f;
 		this.royaltyChances.accidentChance += 0.01f;
+	}
+	internal void TurnActions(){
+		CheckAge ();
+		DeathReasons ();
+	}
+	internal void CheckAge(){
+		if((MONTH)PoliticsPrototypeManager.Instance.month == this.birthMonth && PoliticsPrototypeManager.Instance.week == this.birthWeek && PoliticsPrototypeManager.Instance.year > this.birthYear){
+			this.age += 1;
+			Debug.Log ("HAPPY BIRTHDAY " + this.name + "!!");
+		}
 	}
 	internal void DeathReasons(){
 		if(isDead){
@@ -154,11 +170,11 @@ public class Royalty {
 		}
 	}
 	internal void Death(){
+		this.kingdom.royaltyList.allRoyalties.Remove (this);
+		this.kingdom.royaltyList.successionRoyalties.Remove (this);
 		if(this.id == this.kingdom.assignedLord.id){
 			//ASSIGN NEW LORD, SUCCESSION
-			this.kingdom.royaltyList.allRoyalties.Remove (this);
-		}else{
-			this.kingdom.royaltyList.allRoyalties.Remove (this);
+			this.kingdom.AssignNewLord(this.kingdom.royaltyList.successionRoyalties[0]);
 		}
 	}
 }

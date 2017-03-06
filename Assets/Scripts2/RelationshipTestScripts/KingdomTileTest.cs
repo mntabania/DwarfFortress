@@ -19,7 +19,7 @@ public class KingdomTileTest : MonoBehaviour {
 	}
 
 	public void CreateKingdom(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
-		this.kingdom = new KingdomTest (populationGrowth, race, cities, tileColor);
+		this.kingdom = new KingdomTest (populationGrowth, race, cities, tileColor, this);
 		for (int i = 0; i < this.kingdom.cities.Count; i++) {
 			this.kingdom.cities [i].cityAttributes = new CityTest (this.kingdom.cities[i].hexTile, this);
 //			this.kingdom.cities [i].cityAttributes.OccupyCity();
@@ -50,11 +50,12 @@ public class KingdomTileTest : MonoBehaviour {
 		GameManager.Instance.kingdoms [1].kingdom.lord.GoToWarWith (this.kingdom.lord);
 	}
 		
+		
 	public void AddCityToKingdom(CityTileTest city){
-		this.kingdom.AddCityToKingdom (city);
+		this.kingdom.AddCityToKingdom(city);
 //		city.cityAttributes = new CityTest (city.GetComponent<HexTile>(), this);
-		city.cityAttributes.kingdomTile = this;
-		city.GetComponent<HexTile> ().SetTileColor (kingdom.tileColor);
+//		city.cityAttributes.kingdomTile = this;
+//		city.GetComponent<HexTile> ().SetTileColor (kingdom.tileColor);
 	}
 
 	internal void TurnActions(int currentDay){

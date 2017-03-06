@@ -8,7 +8,8 @@ public class KingdomTest{
 
 	public int id;
 	public string kingdomName;
-	public Lord lord;
+	public KingdomTileTest kingdomTile;
+	internal Lord lord;
 	public Royalty assignedLord;
 	public RoyaltyList royaltyList;
 
@@ -36,10 +37,12 @@ public class KingdomTest{
 		get{ return cities.OrderByDescending(x => x.cityAttributes.unrest).ToList(); }
 	}
 
-	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor){
+	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor, KingdomTileTest kingdomTile){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
-		this.lord = new Lord(this);
+		this.kingdomTile = kingdomTile;
+		this.lord = null;
+//		this.lord = new Lord(this);
 //		this.assignedLord = new Royalty (this, true);
 		this.cities = cities;
 		this.kingdomRace = race;
@@ -75,6 +78,8 @@ public class KingdomTest{
 		this.assignedLord = new Royalty (this, UnityEngine.Random.Range (16, 36), gender, 2);
 		Royalty father = new Royalty (this, UnityEngine.Random.Range (60, 81), GENDER.MALE, 1);
 		Royalty mother = new Royalty (this, UnityEngine.Random.Range (60, 81), GENDER.FEMALE, 1);
+
+		this.assignedLord.isDirectDescendant = true;
 
 		father.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), father.age);
 		mother.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), mother.age);
@@ -157,9 +162,52 @@ public class KingdomTest{
 		}
 	}
 
+	internal void UpdateLordSuccession(){
+		List<Royalty> orderedMaleRoyalties = this.royaltyList.allRoyalties.Where (x => x.gender == GENDER.MALE && x.generation > this.assignedLord.generation && x.isDirectDescendant == true).OrderBy(x => x.generation).ThenByDescending(x => x.age).ToList();
+		List<Royalty> orderedFemaleRoyalties = this.royaltyList.allRoyalties.Where (x => x.gender == GENDER.FEMALE && x.generation > this.assignedLord.generation && x.isDirectDescendant == true).OrderBy(x => x.generation).ThenByDescending(x => x.age).ToList();
+		List<Royalty> orderedBrotherRoyalties = this.royaltyList.allRoyalties.Where (x => x.gender == GENDER.MALE && x.father == this.assignedLord.father && x.id != this.assignedLord.id).OrderByDescending(x => x.age).ToList();
+		List<Royalty> orderedSisterRoyalties = this.royaltyList.allRoyalties.Where (x => x.gender == GENDER.FEMALE && x.father == this.assignedLord.father && x.id != this.assignedLord.id).OrderByDescending(x => x.age).ToList();
+
+		List<Royalty> orderedRoyalties = orderedMaleRoyalties.Concat (orderedFemaleRoyalties).Concat(orderedBrotherRoyalties).Concat(orderedSisterRoyalties).ToList();
+
+		this.royaltyList.successionRoyalties.Clear ();
+		this.royaltyList.successionRoyalties = orderedRoyalties;
+	}
+
+	internal void AssignNewLord(Royalty newLord){
+		if(newLord.loyalLord.id != this.assignedLord.id){
+			int assimilateChance = UnityEngine.Random.Range (0, 100);
+			if(assimilateChance < 35){
+				AssimilateKingdom (newLord.loyalLord.kingdom);
+				return;
+			}
+		}
+		this.assignedLord = newLord;
+		if(!this.assignedLord.isDirectDescendant){
+			RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
+			Utilities.ChangeDescendantsRecursively (this.assignedLord, true);
+		}
+		UpdateLordSuccession ();
+	}
+
+	internal void AssimilateKingdom(KingdomTest newKingdom){
+		for(int i = 0; i < this.cities.Count; i++){
+			newKingdom.AddCityToKingdom (this.cities [i]);
+		}
+		for (int i = 0; i < this.royaltyList.allRoyalties.Count; i++) {
+			newKingdom.AddRoyaltyToKingdom (this.royaltyList.allRoyalties [i]);
+		}
+		PoliticsPrototypeManager.Instance.kingdoms.Remove (this.kingdomTile);
+	}
+	internal void AddRoyaltyToKingdom(Royalty royalty){
+		this.royaltyList.allRoyalties.Add (royalty);
+		royalty.kingdom = this;
+	}
+//-----------------------------------------------------------------------------------------------
 	internal void AddCityToKingdom(CityTileTest city){
-		cities.Add (city);
-		city.GetComponent<HexTile> ().SetTileColor (tileColor);
+		this.cities.Add (city);
+		city.cityAttributes.kingdomTile = this.kingdomTile;
+		city.GetComponent<HexTile> ().SetTileColor (this.tileColor);
 	}
 
 	internal void CheckForExpansion(){

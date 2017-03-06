@@ -11,7 +11,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 
 	public int month = 1;
 	public int week = 1;
-	public int year = 1997;
+	public int year = 0;
 
 	public GameObject kingdomTilePrefab;
 	public GameObject kingdomsParent;
@@ -57,6 +57,27 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		if (turnEnded != null) {
 			turnEnded ();
 		}
+
+		if(this.kingdoms.Count > 0){
+//			for (int i = 0; i < this.kingdoms.Count; i++) {
+//				for (int j = 0; j < this.kingdoms[i].kingdom.lord.relationshipLords.Count; j++) {
+//					if(this.kingdoms[i].kingdom.lord.relationshipLords[j].lord.kingdom.cities.Count <= 0){
+//						this.kingdoms [i].kingdom.lord.relationshipLords.RemoveAt (j);
+//						j--;
+//					}	
+//				}
+//			}
+			for (int i = 0; i < this.kingdoms.Count; i++) {
+				if(this.kingdoms[i].kingdom.cities.Count <= 0){
+					this.kingdoms [i].kingdom.isDead = true;
+//					turnEnded -= this.kingdoms [i].TurnActions;
+//					Destroy (this.kingdoms [i].gameObject);
+					this.kingdoms.RemoveAt (i);
+					i--;
+				}
+			}
+		}
+
 	}
 
 	void GenerateKingdoms(){
@@ -85,6 +106,14 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, citiesForKingdom, kingdomColor);
 			goKingdom.name = goKingdom.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
 			this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
+		}
+	}
+
+	internal void CreateInitialHatred(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.royaltyList.allRoyalties.Count; j++){
+				this.kingdoms [i].kingdom.royaltyList.allRoyalties [j].ChangeHatred ();
+			}
 		}
 	}
 
