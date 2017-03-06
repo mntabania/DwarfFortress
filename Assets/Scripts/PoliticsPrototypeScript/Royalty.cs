@@ -41,7 +41,7 @@ public class Royalty {
 		this.spouse = null;
 		this.children = new List<Royalty> ();
 		this.royaltyChances = new RoyaltyChances ();
-		this.birthMonth = PoliticsPrototypeManager.Instance.month;
+		this.birthMonth = (MONTH) PoliticsPrototypeManager.Instance.month;
 		this.birthWeek = PoliticsPrototypeManager.Instance.week;
 		this.birthYear = PoliticsPrototypeManager.Instance.year;
 		this.isIndependent = false;
