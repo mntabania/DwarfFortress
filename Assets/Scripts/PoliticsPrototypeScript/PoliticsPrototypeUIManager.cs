@@ -7,6 +7,8 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 	public static PoliticsPrototypeUIManager Instance = null;
 
+	public UILabel lblDate;
+	[Space(10)]
 	public GameObject kingdomListGO;
 	public UILabel hideShowLbl;
 	public GameObject kingdomListGrid;
@@ -14,6 +16,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	[Space(10)]
 	public GameObject kingdomInfoWindowGO;
 	public UILabel lblKingdomName;
+	public UILabel lblKingdomInfo;
 	public UIGrid royaltyGrid;
 	public GameObject royaltyPrefab;
 	[Space(10)]
@@ -24,6 +27,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	public UIGrid siblingsGrid;
 	public UIGrid childrenGrid;
 	public Transform currentRoyaltyParent;
+	public UILabel lblCurrentLordInfo;
 
 	private Royalty currentlySelectedRoyalty;
 
@@ -53,7 +57,18 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	}
 
 	public void ShowKingdomInfo(KingdomTest kingdom){
+		lblKingdomInfo.text = "";
 		lblKingdomName.text = kingdom.kingdomName;
+		lblKingdomInfo.text += "Current Lord: " + kingdom.assignedLord.name + "\n\n";
+		lblKingdomInfo.text += "Next in line: \n";
+		int succession = 5;
+		if (kingdom.royaltyList.successionRoyalties.Count < succession) {
+			succession = kingdom.royaltyList.successionRoyalties.Count;
+		}
+
+		for (int i = 0; i < succession; i++) {
+			lblKingdomInfo.text += (i + 1).ToString () + ". " + kingdom.royaltyList.successionRoyalties [i].name + "\n";
+		}
 		RoyaltyListItem[] children = royaltyGrid.GetComponentsInChildren<RoyaltyListItem>();
 		for (int i = 0; i < children.Length; i++) {
 			Destroy(children[i].gameObject);
@@ -76,6 +91,15 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	}
 
 	public void ShowRoyaltyInfo(Royalty royalty){
+		lblCurrentLordInfo.text = "";
+		lblCurrentLordInfo.text += "Age: " + royalty.age.ToString () + "\t Gender: " + royalty.gender.ToString () + "\n";
+		lblCurrentLordInfo.text += "Birthweek (WW/MM/YYYY): " + royalty.birthWeek.ToString() + "/" + royalty.birthMonth.ToString () + "/" + royalty.birthYear.ToString () + "\n";
+		if (royalty.loyalLord != null) {
+			lblCurrentLordInfo.text += "Loyal to: " + royalty.loyalLord.name + "\t";
+		}
+		if (royalty.hatedLord != null) {
+			lblCurrentLordInfo.text += "Hates lord: " + royalty.hatedLord.name;
+		}
 		currentlySelectedRoyalty = royalty;
 		HideKingdomInfo();
 		List<RoyaltyListItem> objectsToDestroy = royaltyInfoWindowGO.GetComponentsInChildren<RoyaltyListItem>(true).ToList();
@@ -128,6 +152,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 			currentRoyaltyGO.transform.localScale = Vector3.one;
 			currentRoyaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(royalty.children[i]);
 		}
+		siblingsGrid.enabled = true;
 		childrenGrid.enabled = true;
 		royaltyInfoWindowGO.SetActive(true);
 	}
@@ -145,4 +170,13 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		}
 	}
 
+	void UpdateDate(){
+		lblDate.text = ((MONTH)PoliticsPrototypeManager.Instance.month).ToString() + " " + PoliticsPrototypeManager.Instance.year.ToString() + "\n Week# " 
+			+ PoliticsPrototypeManager.Instance.week.ToString();
+	}
+
+
+	void Update(){
+		UpdateDate();
+	}
 }
