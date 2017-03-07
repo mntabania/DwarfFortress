@@ -36,6 +36,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		}
 
 		this.GenerateKingdoms();
+		CreateInitialRelationshipsToKingdoms ();
 		StartWeekProgression();
 	}
 
@@ -116,5 +117,17 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			}
 		}
 	}
+	public void AddRelationshipToOtherKingdoms(KingdomTest newKingdom){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			if (this.kingdoms[i].kingdom.id != newKingdom.id) {
+				this.kingdoms[i].kingdom.relationshipKingdoms.Add (new RelationshipKingdoms(newKingdom, DECISION.NEUTRAL, 0));
+			}
+		}
+	}
 
+	internal void CreateInitialRelationshipsToKingdoms(){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			this.kingdoms [i].kingdom.CreateInitialRelationshipsToKingdoms ();
+		}
+	}
 }

@@ -17,7 +17,7 @@ public class KingdomTest{
 	public RACE kingdomRace;
 	public bool isDead;
 	public Color tileColor;
-	public List<Relationship> relationshipKingdoms;
+	public List<RelationshipKingdoms> relationshipKingdoms;
 
 	public RESOURCE primaryRaceResource;
 	public RESOURCE secondaryRaceResource;
@@ -48,7 +48,7 @@ public class KingdomTest{
 		this.kingdomRace = race;
 		this.isDead = false;
 		this.tileColor = tileColor;
-		this.relationshipKingdoms = new List<Relationship>();
+		this.relationshipKingdoms = new List<RelationshipKingdoms>();
 		this.expansionChance = defaultExpansionChance;
 		this.armyBaseUnits = GetArmyBaseUnits ();
 		this.armyIncreaseUnits = GetArmyIncreaseUnits ();
@@ -202,6 +202,14 @@ public class KingdomTest{
 	internal void AddRoyaltyToKingdom(Royalty royalty){
 		this.royaltyList.allRoyalties.Add (royalty);
 		royalty.kingdom = this;
+	}
+	internal void CreateInitialRelationshipsToKingdoms(){
+		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
+			KingdomTest otherKingdom = PoliticsPrototypeManager.Instance.kingdoms[i].kingdom;
+			if (otherKingdom.id != this.id) {
+				this.relationshipKingdoms.Add (new RelationshipKingdoms (otherKingdom, DECISION.NEUTRAL, 0));
+			}
+		}
 	}
 //-----------------------------------------------------------------------------------------------
 	internal void AddCityToKingdom(CityTileTest city){
