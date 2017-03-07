@@ -18,11 +18,13 @@ public class Royalty {
 	public Royalty mother;
 	public Royalty spouse;
 	public List<Royalty> children;
+	public RoyaltyChances royaltyChances;
 	public MONTH birthMonth;
 	public int birthWeek;
 	public int birthYear;
 	public bool isIndependent;
 	public bool isMarried;
+	public bool isDirectDescendant;
 	public bool isDead;
 
 	public Royalty(KingdomTest kingdom, int age, GENDER gender, int generation){
@@ -39,17 +41,23 @@ public class Royalty {
 		this.mother = null;
 		this.spouse = null;
 		this.children = new List<Royalty> ();
+		this.royaltyChances = new RoyaltyChances ();
 		this.birthMonth = (MONTH) PoliticsPrototypeManager.Instance.month;
 		this.birthWeek = PoliticsPrototypeManager.Instance.week;
 		this.birthYear = PoliticsPrototypeManager.Instance.year;
 		this.isIndependent = false;
 		this.isMarried = false;
+		this.isDirectDescendant = false;
 		this.isDead = false;
-		SetLastID (this.id);
 		this.kingdom.royaltyList.allRoyalties.Add (this);
 		ChangeLoyalty (this.kingdom.assignedLord);
-		ChangeHatred ();
+
 		PoliticsPrototypeManager.Instance.RegisterRoyalty(this);
+		SetLastID (this.id);
+
+		RoyaltyEventDelegate.onIncreaseIllnessAndAccidentChance += IncreaseIllnessAndAccidentChance;
+		RoyaltyEventDelegate.onChangeIsDirectDescendant += ChangeIsDirectDescendant;
+		PoliticsPrototypeManager.Instance.turnEnded += TurnActions;
 	}
 
 	private int GetID(){
@@ -114,6 +122,63 @@ public class Royalty {
 		this.birthWeek = week;
 		this.birthYear = year;
 	}
+	
+	internal void ChangeIsDirectDescendant(bool status){
+		this.isDirectDescendant = status;
+	}
+
+	internal void IncreaseIllnessAndAccidentChance(){
+		this.royaltyChances.illnessChance += 0.01f;
+		this.royaltyChances.accidentChance += 0.01f;
+	}
+	internal void TurnActions(){
+		CheckAge ();
+		DeathReasons ();
+	}
+	internal void CheckAge(){
+		if((MONTH)PoliticsPrototypeManager.Instance.month == this.birthMonth && PoliticsPrototypeManager.Instance.week == this.birthWeek && PoliticsPrototypeManager.Instance.year > this.birthYear){
+			this.age += 1;
+			Debug.Log ("HAPPY BIRTHDAY " + this.name + "!!");
+		}
+	}
+	internal void DeathReasons(){
+		if(isDead){
+			return;
+		}
+		float illness = UnityEngine.Random.Range (0f, 99f);
+		if(illness <= this.royaltyChances.illnessChance){
+			this.isDead = true;
+			Death ();
+			Debug.Log (this.name + " DIED OF ILLNESS!");
+		}else{
+			float accidents = UnityEngine.Random.Range (0f, 99f);
+			if(accidents <= this.royaltyChances.accidentChance){
+				this.isDead = true;
+				Death ();
+				Debug.Log (this.name + " DIED OF ACCIDENT!");
+			}else{
+				if(this.age >= 60){
+					float oldAge = UnityEngine.Random.Range (0f, 99f);
+					if(oldAge <= this.royaltyChances.oldAgeChance){
+						this.isDead = true;
+						Death ();
+						Debug.Log (this.name + " DIED OF OLD AGE!");
+					}else{
+						this.royaltyChances.oldAgeChance += 0.05f;
+					}
+				}
+			}
+		}
+	}
+	internal void Death(){
+		this.kingdom.royaltyList.allRoyalties.Remove (this);
+		this.kingdom.royaltyList.successionRoyalties.Remove (this);
+		if(this.id == this.kingdom.assignedLord.id){
+			//ASSIGN NEW LORD, SUCCESSION
+			this.kingdom.AssignNewLord(this.kingdom.royaltyList.successionRoyalties[0]);
+		}
+	}
+
 
 	internal bool IsRoyaltyCloseRelative(Royalty royalty){
 		if (royalty.id == this.father.id || royalty.id == this.mother.id) {

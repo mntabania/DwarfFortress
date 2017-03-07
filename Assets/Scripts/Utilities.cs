@@ -267,5 +267,16 @@ public static class Utilities {
 		},
 	};
 
+	public static void ChangeDescendantsRecursively(Royalty royalty, bool isDescendant){
+		royalty.isDirectDescendant = isDescendant;
+
+		if(royalty.children.Count > 0){
+			for(int i = 0; i < royalty.children.Count; i++){
+				if(royalty.children[i] != null){
+					ChangeDescendantsRecursively (royalty.children [i], isDescendant);
+				}
+			}
+		}
+	}
 
 }

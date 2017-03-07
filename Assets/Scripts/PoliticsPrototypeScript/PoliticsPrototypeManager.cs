@@ -11,7 +11,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 
 	public int month = 1;
 	public int week = 1;
-	public int year = 1997;
+	public int year = 0;
 
 	public GameObject kingdomTilePrefab;
 	public GameObject kingdomsParent;
@@ -41,6 +41,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		}
 
 		this.GenerateKingdoms();
+		CreateInitialRelationshipsToKingdoms ();
 		PoliticsPrototypeUIManager.Instance.LoadKingdoms();
 		StartWeekProgression();
 	}
@@ -57,11 +58,33 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			if (this.month > 12) {
 				this.month = 1;
 				this.year += 1;
+				RoyaltyEventDelegate.TriggerIncreaseIllnessAndAccidentChance ();
 			}
 		}
 		if (turnEnded != null) {
 			turnEnded ();
 		}
+
+		if(this.kingdoms.Count > 0){
+//			for (int i = 0; i < this.kingdoms.Count; i++) {
+//				for (int j = 0; j < this.kingdoms[i].kingdom.lord.relationshipLords.Count; j++) {
+//					if(this.kingdoms[i].kingdom.lord.relationshipLords[j].lord.kingdom.cities.Count <= 0){
+//						this.kingdoms [i].kingdom.lord.relationshipLords.RemoveAt (j);
+//						j--;
+//					}	
+//				}
+//			}
+			for (int i = 0; i < this.kingdoms.Count; i++) {
+				if(this.kingdoms[i].kingdom.cities.Count <= 0){
+					this.kingdoms [i].kingdom.isDead = true;
+//					turnEnded -= this.kingdoms [i].TurnActions;
+//					Destroy (this.kingdoms [i].gameObject);
+					this.kingdoms.RemoveAt (i);
+					i--;
+				}
+			}
+		}
+
 	}
 
 	void GenerateKingdoms(){
@@ -104,4 +127,24 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 	}
 	#endregion
 
+	internal void CreateInitialHatred(){
+		for(int i = 0; i < this.kingdoms.Count; i++){
+			for(int j = 0; j < this.kingdoms[i].kingdom.royaltyList.allRoyalties.Count; j++){
+				this.kingdoms [i].kingdom.royaltyList.allRoyalties [j].ChangeHatred ();
+			}
+		}
+	}
+	public void AddRelationshipToOtherKingdoms(KingdomTest newKingdom){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			if (this.kingdoms[i].kingdom.id != newKingdom.id) {
+				this.kingdoms[i].kingdom.relationshipKingdoms.Add (new RelationshipKingdoms(newKingdom, DECISION.NEUTRAL, 0));
+			}
+		}
+	}
+
+	internal void CreateInitialRelationshipsToKingdoms(){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			this.kingdoms [i].kingdom.CreateInitialRelationshipsToKingdoms ();
+		}
+	}
 }

@@ -128,10 +128,15 @@ public class MarriageManager : MonoBehaviour {
 //			age = UnityEngine.Random.Range (16, 36);
 		}
 		Royalty child = new Royalty(father.kingdom, age, gender, father.generation + 1);
-
+		if(father.isDirectDescendant || mother.isDirectDescendant){
+			child.isDirectDescendant = true;
+		}
 		father.AddChild (child);
 		mother.AddChild (child);
 		Debug.Log (father.name + " and " + mother.name + " had a baby, and named it :" + child.name);
+		if(child.isDirectDescendant){
+			child.kingdom.UpdateLordSuccession ();
+		}
 //		father.kingdom.royaltyList.allRoyalties.Add (child);
 
 		return child;
