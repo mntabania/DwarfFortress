@@ -29,6 +29,15 @@ public class KingdomTest{
 
 	public List<Resource> armyIncreaseUnitResource;
 
+	public List<MarriedCouple> marriedCouples;
+
+	public List<Royalty> elligibleBachelors{
+		get{ return this.royaltyList.allRoyalties.Where(x => x.age >= 16 && x.gender == GENDER.MALE && !x.isMarried).ToList();}
+	}
+	public List<Royalty> elligibleBachelorettes{
+		get{ return this.royaltyList.allRoyalties.Where(x => x.age >= 16 && x.gender == GENDER.FEMALE && !x.isMarried).ToList();}
+	}
+
 	protected int expansionChance;
 	protected const int defaultExpansionChance = 4;
 
@@ -53,6 +62,7 @@ public class KingdomTest{
 		this.armyIncreaseStats = GetArmyIncreaseStats ();
 		this.armyIncreaseUnitResource = GetArmyIncreaseUnitResource ();
 		this.royaltyList = new RoyaltyList ();
+		this.marriedCouples = new List<MarriedCouple>();
 
 		SetLastID (this.id);
 		DetermineCityUpgradeResourceType();
@@ -83,7 +93,7 @@ public class KingdomTest{
 		father.AddChild (this.assignedLord);
 		mother.AddChild (this.assignedLord);
 		this.assignedLord.AddParents(father, mother);
-		MarriageManager.Instance.MarrySpouse (father, mother);
+		MarriageManager.Instance.Marry(father, mother);
 
 
 		int siblingsChance = UnityEngine.Random.Range (0, 100);

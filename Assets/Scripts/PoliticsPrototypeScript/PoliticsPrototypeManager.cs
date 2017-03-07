@@ -17,9 +17,14 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 	public GameObject kingdomsParent;
 	public List<KingdomTileTest> kingdoms;
 
+	public static Dictionary<int, List<Royalty>> fullGenealogy;
+
 	void Awake(){
 		Instance = this;
+		fullGenealogy = new Dictionary<int, List<Royalty>>();
 	}
+
+
 
 	void Start(){
 		GridMap.Instance.GenerateGrid();
@@ -36,6 +41,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		}
 
 		this.GenerateKingdoms();
+		PoliticsPrototypeUIManager.Instance.LoadKingdoms();
 		StartWeekProgression();
 	}
 
@@ -86,5 +92,16 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
 		}
 	}
+
+	#region family tree
+	public void RegisterRoyalty(Royalty royalty){
+		if (fullGenealogy.ContainsKey (royalty.generation)) {
+			List<Royalty> allRoyaltiesInGeneration = fullGenealogy [royalty.generation];
+			allRoyaltiesInGeneration.Add(royalty);
+		} else {
+			fullGenealogy.Add (royalty.generation, new List<Royalty> (){ royalty });
+		}
+	}
+	#endregion
 
 }

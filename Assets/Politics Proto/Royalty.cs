@@ -49,6 +49,7 @@ public class Royalty {
 		this.kingdom.royaltyList.allRoyalties.Add (this);
 		ChangeLoyalty (this.kingdom.assignedLord);
 		ChangeHatred ();
+		PoliticsPrototypeManager.Instance.RegisterRoyalty(this);
 	}
 
 	private int GetID(){
@@ -112,5 +113,111 @@ public class Royalty {
 		this.birthMonth = month;
 		this.birthWeek = week;
 		this.birthYear = year;
+	}
+
+	internal bool IsRoyaltyCloseRelative(Royalty royalty){
+		if (royalty.id == this.father.id || royalty.id == this.mother.id) {
+			//royalty is father or mother
+			return true;
+		}
+
+		if(royalty.id == this.father.father.id || royalty.id == this.father.mother.id ||
+			royalty.id == this.mother.father.id || royalty.id == this.mother.mother.id){
+			//royalty is grand parent
+			return true;
+		}
+
+		for (int i = 0; i < this.father.children.Count; i++) {
+			if(royalty.id == this.father.children[i].id){
+				//royalty is sibling
+				return true;
+			}
+		}
+
+		for (int i = 0; i < this.father.father.children.Count; i++) {
+			if(royalty.id == this.father.father.children[i].id){
+				//royalty is uncle or aunt from fathers side
+				return true;
+			}
+		}
+
+		for (int i = 0; i < this.mother.father.children.Count; i++) {
+			if(royalty.id == this.mother.father.children[i].id){
+				//royalty is uncle or aunt from mothers side
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	internal void AttemptToMarry(){
+		if (this.gender == GENDER.FEMALE) {
+			Debug.Log ("Cannot trigger marriage on women");
+			return;
+		}
+
+		if (this.isMarried) {
+			Debug.Log ("Royalty is already married!");
+			return;
+		}
+		List<Royalty> elligibleBachelorettes = MarriageManager.Instance.GetElligibleBachelorettesForMarriage();
+
+		Royalty currentBachelor = this;
+		Royalty mostElligibleBride = null;
+		List<BRIDE_CRITERIA> mostElligibleBridesPoints = new List<BRIDE_CRITERIA>();
+		//find bride
+		for (int j = 0; j < elligibleBachelorettes.Count; j++) {
+			Royalty currentBachelorette = elligibleBachelorettes[j];
+			if (IsRoyaltyCloseRelative (currentBachelorette)) {
+				continue;
+			}
+			if (mostElligibleBride == null) {
+				mostElligibleBride = currentBachelorette;
+
+				if (currentBachelorette.loyalLord.id == currentBachelor.loyalLord.id) {
+					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.IS_LOYAL_TO_SAME_LORD);
+				}
+
+				if (currentBachelorette.kingdom.cities.Count > currentBachelor.kingdom.cities.Count) {
+					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.HAS_MORE_CITIES);
+				}
+
+				if (currentBachelor.hatedLord == null || currentBachelorette.kingdom.lord.id != currentBachelor.hatedLord.id) {
+					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.IS_NOT_FROM_HATED_KINGDOM);
+				}
+
+			} else {
+				List<BRIDE_CRITERIA> currentBacheloretteCriteria = new List<BRIDE_CRITERIA>();
+				if (currentBachelorette.loyalLord.id == currentBachelor.loyalLord.id) {
+					currentBacheloretteCriteria.Add (BRIDE_CRITERIA.IS_LOYAL_TO_SAME_LORD);
+				}
+
+				if (currentBachelorette.kingdom.cities.Count > currentBachelor.kingdom.cities.Count) {
+					currentBacheloretteCriteria.Add (BRIDE_CRITERIA.HAS_MORE_CITIES);
+				}
+
+				if (currentBachelor.hatedLord == null || currentBachelorette.kingdom.lord.id != currentBachelor.hatedLord.id) {
+					currentBacheloretteCriteria.Add (BRIDE_CRITERIA.IS_NOT_FROM_HATED_KINGDOM);
+				}
+
+				if (currentBacheloretteCriteria.Count > mostElligibleBridesPoints.Count) {
+					mostElligibleBride = currentBachelorette;
+					mostElligibleBridesPoints.Clear();
+					mostElligibleBridesPoints.AddRange (currentBacheloretteCriteria);
+				}
+			}
+
+			if (mostElligibleBridesPoints.Count >= 3) {
+				//best possible bride already found
+				break;
+			}
+		}
+
+		if (mostElligibleBride != null) {
+			MarriageManager.Instance.Marry (currentBachelor, mostElligibleBride);
+		} else {
+			Debug.Log ("Could not find bride for :" + currentBachelor.name);
+		}
 	}
 }
