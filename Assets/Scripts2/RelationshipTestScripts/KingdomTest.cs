@@ -490,4 +490,23 @@ public class KingdomTest{
 		}
 		return totalCitizenCount;
 	}
+
+	internal bool SuccessionRoyaltiesHasLoyaltyTo (Royalty lord){
+		for(int i = 0; i < this.royaltyList.successionRoyalties.Count; i++){
+			if(this.royaltyList.successionRoyalties[i].loyalLord.id == lord.id){
+				return true;
+			}
+		}
+		return false;
+	}
+	internal RelationshipKingdoms SearchRelationshipKingdomsById(int id){
+		if(this.relationshipKingdoms.Count > 0){
+			for(int i = 0; i < this.relationshipKingdoms.Count; i++){
+				if(this.relationshipKingdoms[i].kingdom.id == id){
+					return this.relationshipKingdoms [i];
+				}
+			}
+		}
+		return null;
+	}
  }

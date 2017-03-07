@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 
 [System.Serializable]
 public class Royalty {
@@ -22,6 +22,8 @@ public class Royalty {
 	public MONTH birthMonth;
 	public int birthWeek;
 	public int birthYear;
+	public int previousConversionMonth;
+	public int previousConversionYear;
 	public bool isIndependent;
 	public bool isMarried;
 	public bool isDirectDescendant;
@@ -50,7 +52,11 @@ public class Royalty {
 		this.isDirectDescendant = false;
 		this.isDead = false;
 		this.kingdom.royaltyList.allRoyalties.Add (this);
-		ChangeLoyalty (this.kingdom.assignedLord);
+		if(this.kingdom.assignedLord == null){
+			this.loyalLord = this;
+		}else{
+			this.loyalLord = this.kingdom.assignedLord;
+		}
 
 		PoliticsPrototypeManager.Instance.RegisterRoyalty(this);
 		SetLastID (this.id);
@@ -99,9 +105,13 @@ public class Royalty {
 	internal void ChangeLoyalty(Royalty newLoyalty){
 		if(newLoyalty == null){
 			this.loyalLord = this;
+			Debug.Log (this.name + " LOYALTY IS TO " + this.name);
 		}else{
 			this.loyalLord = newLoyalty;
+			Debug.Log (this.name + " LOYALTY IS TO " + newLoyalty.name);
 		}
+		this.previousConversionMonth = PoliticsPrototypeManager.Instance.month;
+		this.previousConversionYear = PoliticsPrototypeManager.Instance.year;
 
 	}
 
@@ -178,8 +188,135 @@ public class Royalty {
 			this.kingdom.AssignNewLord(this.kingdom.royaltyList.successionRoyalties[0]);
 		}
 	}
+		
+	internal void Assassination(){
+		List<RelationshipKingdoms> warRelations = this.kingdom.relationshipKingdoms.Where (x => x.isAtWar == true).ToList();
+		List<RelationshipKingdoms> peaceRelations = this.kingdom.relationshipKingdoms.Where (x => x.isAtWar == false).ToList();
 
+		if(warRelations.Count > 0){
+			KingdomTest targetKingdom = warRelations [UnityEngine.Random.Range (0, warRelations.Count)].kingdom;
+			if(targetKingdom.royaltyList.successionRoyalties[0].loyalLord.id == this.id){
+				Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT WAR...");
+				int assassinateChance = UnityEngine.Random.Range (0, 100);
+				if(assassinateChance < 20){
+					Assassinate (this, targetKingdom.assignedLord);
+				}
+			}else{
+				if(targetKingdom.SuccessionRoyaltiesHasLoyaltyTo(this)){
+					Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE NEXT IN LINE TO THE LORD AT WAR...");
+					int assassinateChance = UnityEngine.Random.Range (0, 100);
+					if(assassinateChance < 50){
+						Assassinate (this, targetKingdom.royaltyList.successionRoyalties[0]);
+					} 
+				}else{
+					Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT WAR...");
+					int assassinateChance = UnityEngine.Random.Range (0, 100);
+					if(assassinateChance < 20){
+						Assassinate (this, targetKingdom.assignedLord);
+					} 
+				}
+			}
+		}else{
+			if (peaceRelations.Count > 0) {
+				RelationshipKingdoms targetKingdom = peaceRelations [UnityEngine.Random.Range (0, peaceRelations.Count)];
+				if(targetKingdom.kingdom.royaltyList.successionRoyalties[0].loyalLord.id == this.id){
+					Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT PEACE...");
+					int assassinateChance = UnityEngine.Random.Range (0, 100);
+					if(assassinateChance < 20){
+						Assassinate (this, targetKingdom.kingdom.assignedLord);
+					}
+				}else{
+					if(targetKingdom.kingdom.SuccessionRoyaltiesHasLoyaltyTo(this)){
+						Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE NEXT IN LINE TO THE LORD AT PEACE...");
+						int assassinateChance = UnityEngine.Random.Range (0, 100);
+						if(assassinateChance < 50){
+							Assassinate (this, targetKingdom.kingdom.royaltyList.successionRoyalties[0]);
+						} 
+					}else{
+						Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT PEACE...");
+						int assassinateChance = UnityEngine.Random.Range (0, 100);
+						if(assassinateChance < 20){
+							Assassinate (this, targetKingdom.kingdom.assignedLord);
+						} 
+					}
+				}
 
+				int caughtChance = UnityEngine.Random.Range (0, 100);
+				if(caughtChance < 20){
+					Debug.Log (this.name + " GOT CAUGHT!");
+
+					targetKingdom.isAtWar = true;
+
+					RelationshipKingdoms relationFromTarget = targetKingdom.kingdom.SearchRelationshipKingdomsById (this.id);
+
+					if(relationFromTarget != null){
+						relationFromTarget.isAtWar = true;
+					}
+						
+				}
+			}
+		}
+	}
+	private void Assassinate(Royalty assassin, Royalty victim){
+		victim.kingdom.royaltyList.allRoyalties.Remove (victim);
+		victim.kingdom.royaltyList.successionRoyalties.Remove (victim);
+		victim.kingdom.AssignNewLord (victim.kingdom.royaltyList.successionRoyalties [0]);
+
+		Debug.Log (assassin.name + " of " + assassin.kingdom.kingdomName + " ASSASSINATED " + victim.name + " of " + victim.kingdom.kingdomName);
+	}
+
+	internal void Conversion(){
+		KingdomTest targetKingdom = this.kingdom.relationshipKingdoms [UnityEngine.Random.Range (0, this.kingdom.relationshipKingdoms.Count)].kingdom;
+		Royalty targetRoyalty = null;
+		int targetChance = UnityEngine.Random.Range (0, 100);
+		if(targetChance < 20){
+			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [0];
+		}else if(targetChance >= 21 && targetChance < 50){
+			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [1];
+		}else if(targetChance >= 51 && targetChance < 90){
+			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [1];
+		}else{
+			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [UnityEngine.Random.Range(4, targetKingdom.royaltyList.successionRoyalties.Count)];
+		}
+			
+		if(!targetRoyalty.trait.Contains(TRAIT.LOYAL)){
+			if(targetRoyalty.hatedLord.id != this.id){
+				if(this.previousConversionMonth == 0){
+					if(targetRoyalty.trait.Contains(TRAIT.TRAITOR)){
+						int conversionChance = UnityEngine.Random.Range (0, 100);
+						if(conversionChance < 80){
+							targetRoyalty.ChangeLoyalty (this);
+						}
+					}else{
+						int conversionChance = UnityEngine.Random.Range (0, 100);
+						if(conversionChance < 30){
+							targetRoyalty.ChangeLoyalty (this);
+						}
+					}
+				}else{
+					int monthDifference = PoliticsPrototypeManager.Instance.month - this.previousConversionMonth;
+					int yearDifference = PoliticsPrototypeManager.Instance.year - this.previousConversionYear;
+					int difference = monthDifference + (yearDifference * 12);
+
+					if(difference >= 3){
+						if(targetRoyalty.trait.Contains(TRAIT.TRAITOR)){
+							int conversionChance = UnityEngine.Random.Range (0, 100);
+							if(conversionChance < 80){
+								targetRoyalty.ChangeLoyalty (this);
+							}
+						}else{
+							int conversionChance = UnityEngine.Random.Range (0, 100);
+							if(conversionChance < 30){
+								targetRoyalty.ChangeLoyalty (this);
+							}
+						}	
+					}
+
+				}
+
+			}
+		} 
+	}
 	internal bool IsRoyaltyCloseRelative(Royalty royalty){
 		if (royalty.id == this.father.id || royalty.id == this.mother.id) {
 			//royalty is father or mother
