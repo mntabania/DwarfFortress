@@ -543,4 +543,8 @@ public class HexTile : MonoBehaviour {
 //			UserInterfaceManager.Instance.SetCityInfoToShow (gameObject.GetComponent<CityTileTest> ());
 		}
 	}
+
+	public void ToggleHighlight(){
+		gameObject.GetComponent<TweenAlpha>().enabled = !gameObject.GetComponent<TweenAlpha>().enabled;
+	}
 }

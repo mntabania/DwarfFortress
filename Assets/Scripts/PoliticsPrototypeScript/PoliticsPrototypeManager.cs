@@ -24,8 +24,6 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		fullGenealogy = new Dictionary<int, List<Royalty>>();
 	}
 
-
-
 	void Start(){
 		GridMap.Instance.GenerateGrid();
 		EquatorGenerator.Instance.GenerateEquator();
@@ -92,28 +90,24 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 
 		int numOfKingdomsToCreate = 4;
 		for (int i = 0; i < numOfKingdomsToCreate; i++) {
-			GameObject goKingdom = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
-			goKingdom.transform.parent = kingdomsParent.transform;
+			
 			List<CityTileTest> citiesForKingdom = new List<CityTileTest>();
 			for (int j = 0; j < 4; j++) {
 				int randomIndex = Random.Range(0, elligibleCities.Count);
 				citiesForKingdom.Add(elligibleCities[randomIndex].GetComponent<CityTileTest>());
 				elligibleCities.RemoveAt(randomIndex);
 			}
-			Color kingdomColor = Color.white;
-			if (i == 0) {
-				kingdomColor = Color.clear;
-			} else if (i == 1) {
-				kingdomColor = Color.black;
-			} else if (i == 2) {
-				kingdomColor = Color.magenta;
-			} else {
-				kingdomColor = Color.blue;
-			}
-			goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, citiesForKingdom, kingdomColor);
-			goKingdom.name = goKingdom.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
-			this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
+			CreateNewKingdom(citiesForKingdom);
 		}
+	}
+
+	public KingdomTest CreateNewKingdom(List<CityTileTest> cities){
+		GameObject goKingdom = (GameObject)GameObject.Instantiate (kingdomTilePrefab);
+		goKingdom.transform.parent = kingdomsParent.transform;
+		goKingdom.GetComponent<KingdomTileTest>().CreateKingdom (5f, RACE.ELVES, cities,  Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
+		goKingdom.name = goKingdom.GetComponent<KingdomTileTest> ().kingdom.kingdomName;
+		this.kingdoms.Add (goKingdom.GetComponent<KingdomTileTest>());
+		return goKingdom.GetComponent<KingdomTileTest>().kingdom;
 	}
 
 	#region family tree

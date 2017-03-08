@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 public class PoliticsPrototypeUIManager : MonoBehaviour {
 
@@ -35,6 +36,8 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	public UILabel lblPeaceTarget;
 	public UIPopupList peaceDropdownMenu;
 
+	public UILabel lblNumOfCitiesToRevolt;
+
 	private Royalty currentlySelectedRoyalty;
 	private KingdomTest currentlySelectedKingdom;
 
@@ -43,6 +46,11 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	}
 
 	public void LoadKingdoms(){
+		KingdomListItem[] kingdoms = kingdomListGrid.GetComponentsInChildren<KingdomListItem>();
+		for (int i = 0; i < kingdoms.Length; i++) {
+			Destroy(kingdoms [i].gameObject);
+		}
+
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
 			GameObject kingdomGO = Instantiate(kingdomListPrefab, kingdomListGrid.transform) as GameObject;
 			kingdomGO.transform.localPosition = Vector3.zero;
@@ -50,7 +58,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 			kingdomGO.GetComponentInChildren<UILabel>().text = PoliticsPrototypeManager.Instance.kingdoms[i].name;
 			kingdomGO.GetComponent<KingdomListItem>().kingdom = PoliticsPrototypeManager.Instance.kingdoms[i];
 		}
-		kingdomListGrid.GetComponent<UIGrid>().Reposition();
+		kingdomListGrid.GetComponent<UIGrid>().enabled = true;
 	}
 
 	public void HideShowKingdoms(){
@@ -78,8 +86,8 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		}
 
 		lblKingdomInfo.text = "";
-		lblKingdomName.text = kingdom.kingdomName;
-		lblKingdomInfo.text += "Current Lord: " + kingdom.assignedLord.name + "\n\n";
+		lblKingdomName.text = kingdom.kingdomName + "\t # of cities: " + kingdom.cities.Count;
+		lblKingdomInfo.text += "Current Lord: " + kingdom.assignedLord.name + "\n";
 		lblKingdomInfo.text += "Next in line: \n";
 		int succession = 5;
 		if (kingdom.royaltyList.successionRoyalties.Count < succession) {
@@ -89,6 +97,13 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		for (int i = 0; i < succession; i++) {
 			lblKingdomInfo.text += (i + 1).ToString () + ". " + kingdom.royaltyList.successionRoyalties [i].name + "\n";
 		}
+
+		lblKingdomInfo.text += "Kingdoms at war with: \n";
+
+		for (int i = 0; i < kingdom.kingdomsAtWarWith.Count; i++) {
+			lblKingdomInfo.text += (i+1).ToString() + ". " + kingdom.kingdomsAtWarWith[i].kingdom.kingdomName + "\n";
+		}
+
 		RoyaltyListItem[] children = royaltyGrid.GetComponentsInChildren<RoyaltyListItem>();
 		for (int i = 0; i < children.Length; i++) {
 			Destroy(children[i].gameObject);
@@ -207,7 +222,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 		for (int i = 0; i < target.relationshipKingdoms.Count; i++) {
 			if (target.relationshipKingdoms[i].kingdom.id == currentlySelectedKingdom.id) {
-				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = true;
+				target.relationshipKingdoms[i].isAtWar = true;
 				break;
 			}
 		}
@@ -227,7 +242,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 		for (int i = 0; i < target.relationshipKingdoms.Count; i++) {
 			if (target.relationshipKingdoms[i].kingdom.id == currentlySelectedKingdom.id) {
-				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = false;
+				target.relationshipKingdoms[i].isAtWar = false;
 				break;
 			}
 		}
@@ -235,6 +250,40 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		ShowKingdomInfo(currentlySelectedKingdom);
 	}
 
+	public void BackToKingdomWindow(){
+		ShowKingdomInfo (currentlySelectedKingdom);
+	}
+
+	public void StartRevolution(){
+		int numOfCitiesToRevolt = Int32.Parse(lblNumOfCitiesToRevolt.text);
+		if (numOfCitiesToRevolt > currentlySelectedKingdom.cities.Count) {
+			Debug.LogWarning ("The kingdom only has " + currentlySelectedKingdom.cities.Count.ToString () + " cities.");
+		} else {
+			if (numOfCitiesToRevolt == currentlySelectedKingdom.cities.Count) {
+				//Replace Lord
+				currentlySelectedKingdom.AssignNewLord(currentlySelectedKingdom.royaltyList.successionRoyalties[0]);
+				Debug.Log ("Revolution! Lord of: " + currentlySelectedKingdom.kingdomName + " was replaced");
+			} else {
+				List<CityTileTest> citiesForNewKingdom = new List<CityTileTest> ();
+				for (int i = 0; i < numOfCitiesToRevolt; i++) {
+					citiesForNewKingdom.Add (currentlySelectedKingdom.cities [i]);
+				}
+
+				currentlySelectedKingdom.RemoveCitiesFromKingdom(citiesForNewKingdom);
+				KingdomTest newKingdom =  PoliticsPrototypeManager.Instance.CreateNewKingdom (citiesForNewKingdom);
+				Debug.Log ("Revolution! New kingdom: " + newKingdom.kingdomName + " was created");
+				LoadKingdoms();
+			}
+
+			ShowKingdomInfo(currentlySelectedKingdom);
+		}
+	}
+
+	public void ToggleHighlightOfCities(){
+		for (int i = 0; i < currentlySelectedKingdom.cities.Count; i++) {
+			currentlySelectedKingdom.cities[i].hexTile.ToggleHighlight();
+		}
+	}
 
 	void Update(){
 		UpdateDate();

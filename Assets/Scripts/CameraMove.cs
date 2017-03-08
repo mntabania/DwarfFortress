@@ -4,7 +4,7 @@ using System.Collections;
 public class CameraMove : MonoBehaviour {
 
 	float minFov = 60f;
-	float maxFov = 120f;
+	float maxFov = 163f;
 	float sensitivity = 20f;
 
 	// Use this for initialization
