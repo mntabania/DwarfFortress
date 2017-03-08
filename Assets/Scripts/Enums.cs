@@ -306,6 +306,7 @@ public enum GENDER{
 }
 
 public enum MONTH{
+	NONE,
 	JANUARY,
 	FEBRUARY,
 	MARCH,

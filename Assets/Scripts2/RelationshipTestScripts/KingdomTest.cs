@@ -39,6 +39,10 @@ public class KingdomTest{
 		get{ return this.royaltyList.allRoyalties.Where(x => x.age >= 16 && x.gender == GENDER.FEMALE && !x.isMarried).ToList();}
 	}
 
+	public List<RelationshipKingdoms> kingdomsAtWarWith{
+		get{ return this.relationshipKingdoms.Where(x => x.isAtWar).ToList();}
+	}
+
 	protected int expansionChance;
 	protected const int defaultExpansionChance = 4;
 

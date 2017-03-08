@@ -28,8 +28,15 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	public UIGrid childrenGrid;
 	public Transform currentRoyaltyParent;
 	public UILabel lblCurrentLordInfo;
+	[Space(10)]
+	public UILabel lblWarTarget;
+	public UIPopupList warDropdownMenu;
+
+	public UILabel lblPeaceTarget;
+	public UIPopupList peaceDropdownMenu;
 
 	private Royalty currentlySelectedRoyalty;
+	private KingdomTest currentlySelectedKingdom;
 
 	void Awake(){
 		Instance = this;
@@ -57,6 +64,19 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	}
 
 	public void ShowKingdomInfo(KingdomTest kingdom){
+		currentlySelectedKingdom = kingdom;
+		warDropdownMenu.Clear();
+		peaceDropdownMenu.Clear();
+		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
+			if (PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.id != kingdom.id) {
+				warDropdownMenu.AddItem(PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.kingdomName);
+			}
+		}
+
+		for (int i = 0; i < kingdom.kingdomsAtWarWith.Count; i++) {
+			peaceDropdownMenu.AddItem(kingdom.kingdomsAtWarWith[i].kingdom.kingdomName);
+		}
+
 		lblKingdomInfo.text = "";
 		lblKingdomName.text = kingdom.kingdomName;
 		lblKingdomInfo.text += "Current Lord: " + kingdom.assignedLord.name + "\n\n";
@@ -173,6 +193,46 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	void UpdateDate(){
 		lblDate.text = ((MONTH)PoliticsPrototypeManager.Instance.month).ToString() + " " + PoliticsPrototypeManager.Instance.year.ToString() + "\n Week# " 
 			+ PoliticsPrototypeManager.Instance.week.ToString();
+	}
+
+	public void DeclareWar(){
+		KingdomTest target = PoliticsPrototypeManager.Instance.GetKingdomByName (lblWarTarget.text);
+
+		for (int i = 0; i < currentlySelectedKingdom.relationshipKingdoms.Count; i++) {
+			if (currentlySelectedKingdom.relationshipKingdoms[i].kingdom.id == target.id) {
+				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = true;
+				break;
+			}
+		}
+
+		for (int i = 0; i < target.relationshipKingdoms.Count; i++) {
+			if (target.relationshipKingdoms[i].kingdom.id == currentlySelectedKingdom.id) {
+				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = true;
+				break;
+			}
+		}
+
+		ShowKingdomInfo(currentlySelectedKingdom);
+	}
+
+	public void DeclarePeace(){
+		KingdomTest target = PoliticsPrototypeManager.Instance.GetKingdomByName (lblPeaceTarget.text);
+
+		for (int i = 0; i < currentlySelectedKingdom.relationshipKingdoms.Count; i++) {
+			if (currentlySelectedKingdom.relationshipKingdoms[i].kingdom.id == target.id) {
+				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = false;
+				break;
+			}
+		}
+
+		for (int i = 0; i < target.relationshipKingdoms.Count; i++) {
+			if (target.relationshipKingdoms[i].kingdom.id == currentlySelectedKingdom.id) {
+				currentlySelectedKingdom.relationshipKingdoms[i].isAtWar = false;
+				break;
+			}
+		}
+
+		ShowKingdomInfo(currentlySelectedKingdom);
 	}
 
 

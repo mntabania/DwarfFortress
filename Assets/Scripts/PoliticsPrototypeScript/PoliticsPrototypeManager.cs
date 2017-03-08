@@ -9,9 +9,9 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 	public delegate void TurnEndedDelegate();
 	public TurnEndedDelegate turnEnded;
 
-	public int month = 1;
-	public int week = 1;
-	public int year = 0;
+	public int month;
+	public int week;
+	public int year;
 
 	public GameObject kingdomTilePrefab;
 	public GameObject kingdomsParent;
@@ -140,6 +140,15 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 				this.kingdoms[i].kingdom.relationshipKingdoms.Add (new RelationshipKingdoms(newKingdom, DECISION.NEUTRAL, 0));
 			}
 		}
+	}
+
+	public KingdomTest GetKingdomByName(string name){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			if (this.kingdoms [i].kingdom.kingdomName == name) {
+				return this.kingdoms[i].kingdom;
+			}
+		}
+		return null;
 	}
 
 	internal void CreateInitialRelationshipsToKingdoms(){
