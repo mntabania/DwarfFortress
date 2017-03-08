@@ -189,19 +189,27 @@ public class KingdomTest{
 	}
 
 	internal void AssignNewLord(Royalty newLord){
-		if(newLord.loyalLord.id != this.assignedLord.id){
-			int assimilateChance = UnityEngine.Random.Range (0, 100);
-			if(assimilateChance < 35){
-				AssimilateKingdom (newLord.loyalLord.kingdom);
-				return;
+		if(newLord == null){
+			CreateInitialRoyalties ();
+		}else{
+			if(newLord.loyalLord.id != this.assignedLord.id){
+				int assimilateChance = UnityEngine.Random.Range (0, 100);
+				if(assimilateChance < 35){
+					AssimilateKingdom (newLord.loyalLord.kingdom);
+					return;
+				}else{
+					newLord.kingdom.SearchRelationshipKingdomsById (newLord.loyalLord.kingdom.id).isAtWar = false;
+					newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (newLord.kingdom.id).isAtWar = false;
+				}
 			}
+			this.assignedLord = newLord;
+			if(!this.assignedLord.isDirectDescendant){
+				RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
+				Utilities.ChangeDescendantsRecursively (this.assignedLord, true);
+			}
+			UpdateLordSuccession ();
 		}
-		this.assignedLord = newLord;
-		if(!this.assignedLord.isDirectDescendant){
-			RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
-			Utilities.ChangeDescendantsRecursively (this.assignedLord, true);
-		}
-		UpdateLordSuccession ();
+
 	}
 
 	internal void AssimilateKingdom(KingdomTest newKingdom){
