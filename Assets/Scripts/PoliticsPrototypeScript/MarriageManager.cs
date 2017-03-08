@@ -15,6 +15,10 @@ public class MarriageManager : MonoBehaviour {
 		marriageEvents += CheckForPregnancy;
 	}
 
+	void Start(){
+		PoliticsPrototypeManager.Instance.turnEnded += marriageEvents;
+	}
+
 	List<Royalty> GetElligibleBachelorsForMarriage(){
 		List<Royalty> elligibleBachelors = new List<Royalty>();
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
@@ -36,6 +40,9 @@ public class MarriageManager : MonoBehaviour {
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
 			for (int j = 0; j < PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.marriedCouples.Count; j++) {
 				MarriedCouple couple = PoliticsPrototypeManager.Instance.kingdoms [i].kingdom.marriedCouples [j];
+				if (couple.husband.isDead || couple.wife.isDead) {
+					continue;
+				}
 				if (couple.husband.age < 60 && couple.wife.age < 40 && couple.children.Count < 3 ) {
 					float chance = Random.Range(0f, 100f);
 					if (chance < couple.chanceForPregnancy) {
@@ -133,7 +140,8 @@ public class MarriageManager : MonoBehaviour {
 		}
 		father.AddChild (child);
 		mother.AddChild (child);
-		Debug.Log (father.name + " and " + mother.name + " had a baby, and named it :" + child.name);
+		child.AddParents(father, mother);
+		Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + father.name + " and " + mother.name + " had a baby, and named it :" + child.name);
 		if(child.isDirectDescendant){
 			child.kingdom.UpdateLordSuccession ();
 		}
@@ -154,7 +162,7 @@ public class MarriageManager : MonoBehaviour {
 	}
 
 	internal void Marry(Royalty husband, Royalty wife){
-		Debug.Log (husband.name + " got married to " + wife.name);
+		Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + husband.name + " got married to " + wife.name);
 		husband.spouse = wife;
 		wife.spouse = husband;
 		husband.isMarried = true;
@@ -164,6 +172,8 @@ public class MarriageManager : MonoBehaviour {
 
 		//the wife will transfer to the court of the husband
 		wife.kingdom = husband.kingdom;
+		wife.loyalLord = husband.kingdom.assignedLord;
+		husband.kingdom.royaltyList.allRoyalties.Add(wife);
 
 		husband.kingdom.marriedCouples.Add(new MarriedCouple (husband, wife));
 	}

@@ -20,6 +20,7 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	public UILabel lblKingdomInfo;
 	public UIGrid royaltyGrid;
 	public GameObject royaltyPrefab;
+	public UIButton revoltBtn;
 	[Space(10)]
 	public GameObject royaltyInfoWindowGO;
 	public Transform fatherParent;
@@ -29,14 +30,17 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	public UIGrid childrenGrid;
 	public Transform currentRoyaltyParent;
 	public UILabel lblCurrentLordInfo;
+	public UIButton marriageBtn;
+	public UIButton assassinationBtn;
+	public UIButton conversionBtn;
 	[Space(10)]
 	public UILabel lblWarTarget;
 	public UIPopupList warDropdownMenu;
-
 	public UILabel lblPeaceTarget;
 	public UIPopupList peaceDropdownMenu;
-
 	public UILabel lblNumOfCitiesToRevolt;
+	[Space(10)]
+	public UILabel lblPause;
 
 	private Royalty currentlySelectedRoyalty;
 	private KingdomTest currentlySelectedKingdom;
@@ -116,6 +120,13 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 			royaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(kingdom.royaltyList.allRoyalties[i]);
 
 		}
+
+		if (kingdom.cities.Count >= 4) {
+			revoltBtn.isEnabled = true;
+		} else {
+			revoltBtn.isEnabled = false;
+		}
+
 		royaltyGrid.GetComponent<UIGrid>().enabled = true;
 		kingdomInfoWindowGO.SetActive(true);
 		HideRoyaltyInfo();
@@ -135,6 +146,11 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		if (royalty.hatedLord != null) {
 			lblCurrentLordInfo.text += "Hates lord: " + royalty.hatedLord.name;
 		}
+		lblCurrentLordInfo.text += "\n Traits: ";
+		for (int i = 0; i < royalty.trait.Length; i++) {
+			lblCurrentLordInfo.text += royalty.trait[i].ToString() + ", "; 
+		}
+
 		currentlySelectedRoyalty = royalty;
 		HideKingdomInfo();
 		List<RoyaltyListItem> objectsToDestroy = royaltyInfoWindowGO.GetComponentsInChildren<RoyaltyListItem>(true).ToList();
@@ -189,6 +205,21 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		}
 		siblingsGrid.enabled = true;
 		childrenGrid.enabled = true;
+
+		if (currentlySelectedKingdom.assignedLord.id == royalty.id && royalty.trait.Contains (TRAIT.VICIOUS)) {
+			assassinationBtn.isEnabled = true;
+			conversionBtn.isEnabled = true;
+		} else {
+			assassinationBtn.isEnabled = false;
+			conversionBtn.isEnabled = false;
+		}
+
+		if (royalty.gender == GENDER.MALE && !royalty.isMarried && royalty.age >= 16) {
+			marriageBtn.isEnabled = true;
+		} else {
+			marriageBtn.isEnabled = false;
+		}
+
 		royaltyInfoWindowGO.SetActive(true);
 	}
 
@@ -256,12 +287,20 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 	public void StartRevolution(){
 		int numOfCitiesToRevolt = Int32.Parse(lblNumOfCitiesToRevolt.text);
+		if (numOfCitiesToRevolt <= 0) {
+			return;
+		}
 		if (numOfCitiesToRevolt > currentlySelectedKingdom.cities.Count) {
 			Debug.LogWarning ("The kingdom only has " + currentlySelectedKingdom.cities.Count.ToString () + " cities.");
 		} else {
 			if (numOfCitiesToRevolt == currentlySelectedKingdom.cities.Count) {
 				//Replace Lord
-				currentlySelectedKingdom.AssignNewLord(currentlySelectedKingdom.royaltyList.successionRoyalties[0]);
+				if (currentlySelectedKingdom.royaltyList.successionRoyalties.Count <= 0) {
+					currentlySelectedKingdom.AssignNewLord(null);
+				} else {
+					currentlySelectedKingdom.AssignNewLord(currentlySelectedKingdom.royaltyList.successionRoyalties[0]);
+				}
+
 				Debug.Log ("Revolution! Lord of: " + currentlySelectedKingdom.kingdomName + " was replaced");
 			} else {
 				List<CityTileTest> citiesForNewKingdom = new List<CityTileTest> ();
@@ -279,9 +318,30 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		}
 	}
 
+	public void TriggerAssasssination(){
+		if (currentlySelectedRoyalty.trait.Contains (TRAIT.VICIOUS)) {
+			currentlySelectedRoyalty.Assassination ();
+		}
+	}
+
+	public void TriggerConversion(){
+		if (currentlySelectedRoyalty.trait.Contains (TRAIT.VICIOUS)) {
+			currentlySelectedRoyalty.Conversion();
+		}
+	}
+
 	public void ToggleHighlightOfCities(){
 		for (int i = 0; i < currentlySelectedKingdom.cities.Count; i++) {
 			currentlySelectedKingdom.cities[i].hexTile.ToggleHighlight();
+		}
+	}
+
+	public void TogglePause(){
+		PoliticsPrototypeManager.Instance.TogglePause();
+		if (PoliticsPrototypeManager.Instance.isDayPaused) {
+			lblPause.text = "Unpause";
+		} else {
+			lblPause.text = "Pause";
 		}
 	}
 

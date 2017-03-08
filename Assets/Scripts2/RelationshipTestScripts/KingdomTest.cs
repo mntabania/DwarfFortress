@@ -95,9 +95,9 @@ public class KingdomTest{
 
 		this.assignedLord.isDirectDescendant = true;
 
-		father.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), father.age);
-		mother.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), mother.age);
-		this.assignedLord.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + this.assignedLord.age));
+		father.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), PoliticsPrototypeManager.Instance.year - father.age);
+		mother.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), PoliticsPrototypeManager.Instance.year - mother.age);
+		this.assignedLord.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - this.assignedLord.age));
 
 		father.AddChild (this.assignedLord);
 		mother.AddChild (this.assignedLord);
@@ -110,18 +110,18 @@ public class KingdomTest{
 			Royalty sibling = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
 			Royalty sibling2 = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
 
-			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling.age));
-			sibling2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling2.age));
+			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling.age));
+			sibling2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling2.age));
 
 		}else if(siblingsChance >= 50 && siblingsChance < 75){
 			Royalty sibling = MarriageManager.Instance.MakeBaby (father, mother, UnityEngine.Random.Range(0,this.assignedLord.age), false);
-			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + sibling.age));
+			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling.age));
 		}
 
 		int spouseChance = UnityEngine.Random.Range (0, 100);
 		if (spouseChance < 80) {
 			Royalty spouse = MarriageManager.Instance.CreateSpouse (this.assignedLord);
-			spouse.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (mother.age + spouse.age));
+			spouse.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - spouse.age));
 
 			int childChance = UnityEngine.Random.Range (0, 100);
 			if (childChance < 50) {
@@ -129,23 +129,23 @@ public class KingdomTest{
 					//NO CHILD
 				}else if(this.assignedLord.spouse.age == 17){
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
 
 				}else if(this.assignedLord.spouse.age == 18){
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
 					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
 
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
-					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child2.age));
 
 				}else{
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
 					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
 					Royalty child3 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 2, false);
 
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
-					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
-					child3.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child3.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child2.age));
+					child3.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child3.age));
 
 				}
 
@@ -154,14 +154,14 @@ public class KingdomTest{
 					//NO CHILD
 				}else if(this.assignedLord.spouse.age == 17){
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
 
 				}else{
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
 					Royalty child2 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 1, false);
 
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
-					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child2.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
+					child2.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child2.age));
 				}
 
 			} else if (childChance >= 70 && childChance < 90) {
@@ -169,11 +169,12 @@ public class KingdomTest{
 					//NO CHILD
 				}else{
 					Royalty child1 = MarriageManager.Instance.MakeBaby (this.assignedLord, this.assignedLord.spouse, 0, false);
-					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (0, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (spouse.age + child1.age));
+					child1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - child1.age));
 
 				}
 			}
 		}
+		this.royaltyList.allRoyalties = this.royaltyList.allRoyalties.Distinct().ToList();
 	}
 
 	internal void UpdateLordSuccession(){
@@ -192,7 +193,8 @@ public class KingdomTest{
 		if(newLord == null){
 			CreateInitialRoyalties ();
 		}else{
-			if(newLord.loyalLord.id != this.assignedLord.id){
+			//if not loyal to lord of your current kingdom
+			if(newLord.loyalLord.id != newLord.kingdom.assignedLord.id){
 				int assimilateChance = UnityEngine.Random.Range (0, 100);
 				if(assimilateChance < 35){
 					AssimilateKingdom (newLord.loyalLord.kingdom);
@@ -202,6 +204,7 @@ public class KingdomTest{
 					newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (newLord.kingdom.id).isAtWar = false;
 				}
 			}
+			RoyaltyEventDelegate.TriggerMassChangeLoyalty(newLord, this.assignedLord);
 			this.assignedLord = newLord;
 			if(!this.assignedLord.isDirectDescendant){
 				RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
@@ -224,6 +227,7 @@ public class KingdomTest{
 	internal void AddRoyaltyToKingdom(Royalty royalty){
 		this.royaltyList.allRoyalties.Add (royalty);
 		royalty.kingdom = this;
+		royalty.loyalLord = this.assignedLord;
 	}
 	internal void CreateInitialRelationshipsToKingdoms(){
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {

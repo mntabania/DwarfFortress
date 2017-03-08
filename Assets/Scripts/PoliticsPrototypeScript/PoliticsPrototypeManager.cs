@@ -19,6 +19,8 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 
 	public static Dictionary<int, List<Royalty>> fullGenealogy;
 
+	public bool isDayPaused = false;
+
 	void Awake(){
 		Instance = this;
 		fullGenealogy = new Dictionary<int, List<Royalty>>();
@@ -45,10 +47,13 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 	}
 
 	void StartWeekProgression(){
-		InvokeRepeating("StartTime", 0f, 1f);
+		InvokeRepeating("StartTime", 0f, 0.2f);
 	}
 
 	void StartTime(){
+		if (isDayPaused) {
+			return;
+		}
 		this.week += 1;
 		if (week > 4) {
 			this.week = 1;
@@ -149,5 +154,9 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		for (int i = 0; i < this.kingdoms.Count; i++) {
 			this.kingdoms [i].kingdom.CreateInitialRelationshipsToKingdoms ();
 		}
+	}
+
+	internal void TogglePause(){
+		isDayPaused = !isDayPaused;
 	}
 }

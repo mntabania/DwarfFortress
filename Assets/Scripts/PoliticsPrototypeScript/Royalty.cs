@@ -63,6 +63,7 @@ public class Royalty {
 
 		RoyaltyEventDelegate.onIncreaseIllnessAndAccidentChance += IncreaseIllnessAndAccidentChance;
 		RoyaltyEventDelegate.onChangeIsDirectDescendant += ChangeIsDirectDescendant;
+		RoyaltyEventDelegate.onMassChangeLoyalty += MassChangeLoyalty;
 		PoliticsPrototypeManager.Instance.turnEnded += TurnActions;
 	}
 
@@ -105,14 +106,24 @@ public class Royalty {
 	internal void ChangeLoyalty(Royalty newLoyalty){
 		if(newLoyalty == null){
 			this.loyalLord = this;
-			Debug.Log (this.name + " LOYALTY IS TO " + this.name);
+			Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " LOYALTY IS TO " + this.name);
 		}else{
 			this.loyalLord = newLoyalty;
-			Debug.Log (this.name + " LOYALTY IS TO " + newLoyalty.name);
+			Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " LOYALTY IS TO " + newLoyalty.name);
 		}
 		this.previousConversionMonth = PoliticsPrototypeManager.Instance.month;
 		this.previousConversionYear = PoliticsPrototypeManager.Instance.year;
 
+	}
+
+	internal void MassChangeLoyalty(Royalty newLoyalty, Royalty previousLoyalty){
+		if (previousLoyalty.id == this.loyalLord.id) {
+			if (this.kingdom.id != newLoyalty.kingdom.id) {
+				this.loyalLord = this.kingdom.assignedLord;
+			} else {
+				this.loyalLord = newLoyalty;
+			}
+		}
 	}
 
 	internal void ChangeHatred(){
@@ -148,7 +159,7 @@ public class Royalty {
 	internal void CheckAge(){
 		if((MONTH)PoliticsPrototypeManager.Instance.month == this.birthMonth && PoliticsPrototypeManager.Instance.week == this.birthWeek && PoliticsPrototypeManager.Instance.year > this.birthYear){
 			this.age += 1;
-			Debug.Log ("HAPPY BIRTHDAY " + this.name + "!!");
+			Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + "HAPPY BIRTHDAY " + this.name + "!!");
 		}
 	}
 	internal void DeathReasons(){
@@ -159,20 +170,20 @@ public class Royalty {
 		if(illness <= this.royaltyChances.illnessChance){
 			this.isDead = true;
 			Death ();
-			Debug.Log (this.name + " DIED OF ILLNESS!");
+			Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF ILLNESS!");
 		}else{
 			float accidents = UnityEngine.Random.Range (0f, 99f);
 			if(accidents <= this.royaltyChances.accidentChance){
 				this.isDead = true;
 				Death ();
-				Debug.Log (this.name + " DIED OF ACCIDENT!");
+				Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF ACCIDENT!");
 			}else{
 				if(this.age >= 60){
 					float oldAge = UnityEngine.Random.Range (0f, 99f);
 					if(oldAge <= this.royaltyChances.oldAgeChance){
 						this.isDead = true;
 						Death ();
-						Debug.Log (this.name + " DIED OF OLD AGE!");
+						Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF OLD AGE!");
 					}else{
 						this.royaltyChances.oldAgeChance += 0.05f;
 					}
@@ -183,9 +194,19 @@ public class Royalty {
 	internal void Death(){
 		this.kingdom.royaltyList.allRoyalties.Remove (this);
 		this.kingdom.royaltyList.successionRoyalties.Remove (this);
+		this.isDead = true;
+		RoyaltyEventDelegate.onIncreaseIllnessAndAccidentChance -= IncreaseIllnessAndAccidentChance;
+		RoyaltyEventDelegate.onChangeIsDirectDescendant -= ChangeIsDirectDescendant;
+		RoyaltyEventDelegate.onMassChangeLoyalty -= MassChangeLoyalty;
+		PoliticsPrototypeManager.Instance.turnEnded -= TurnActions;
+
 		if(this.id == this.kingdom.assignedLord.id){
 			//ASSIGN NEW LORD, SUCCESSION
-			this.kingdom.AssignNewLord(this.kingdom.royaltyList.successionRoyalties[0]);
+			if (this.kingdom.royaltyList.successionRoyalties.Count <= 0) {
+				this.kingdom.AssignNewLord (null);
+			} else {
+				this.kingdom.AssignNewLord (this.kingdom.royaltyList.successionRoyalties [0]);
+			}
 		}
 	}
 		
@@ -260,9 +281,14 @@ public class Royalty {
 	private void Assassinate(Royalty assassin, Royalty victim){
 		victim.kingdom.royaltyList.allRoyalties.Remove (victim);
 		victim.kingdom.royaltyList.successionRoyalties.Remove (victim);
-		victim.kingdom.AssignNewLord (victim.kingdom.royaltyList.successionRoyalties [0]);
 
-		Debug.Log (assassin.name + " of " + assassin.kingdom.kingdomName + " ASSASSINATED " + victim.name + " of " + victim.kingdom.kingdomName);
+		if (victim.kingdom.royaltyList.successionRoyalties.Count <= 0) {
+			victim.kingdom.AssignNewLord (null);
+		} else {
+			victim.kingdom.AssignNewLord (victim.kingdom.royaltyList.successionRoyalties [0]);
+		}
+
+		Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + assassin.name + " of " + assassin.kingdom.kingdomName + " ASSASSINATED " + victim.name + " of " + victim.kingdom.kingdomName);
 	}
 
 	internal void Conversion(){
@@ -270,83 +296,99 @@ public class Royalty {
 		Royalty targetRoyalty = null;
 		int targetChance = UnityEngine.Random.Range (0, 100);
 		if(targetChance < 20){
-			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [0];
+			if (targetKingdom.royaltyList.successionRoyalties.Count > 0) {
+				targetRoyalty = targetKingdom.royaltyList.successionRoyalties [0];
+			}
 		}else if(targetChance >= 21 && targetChance < 50){
-			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [1];
+			if (targetKingdom.royaltyList.successionRoyalties.Count > 1) {
+				targetRoyalty = targetKingdom.royaltyList.successionRoyalties [1];
+			}
 		}else if(targetChance >= 51 && targetChance < 90){
-			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [1];
+			if (targetKingdom.royaltyList.successionRoyalties.Count > 2) {
+				targetRoyalty = targetKingdom.royaltyList.successionRoyalties [2];
+			}
 		}else{
-			targetRoyalty = targetKingdom.royaltyList.successionRoyalties [UnityEngine.Random.Range(4, targetKingdom.royaltyList.successionRoyalties.Count)];
+			if (targetKingdom.royaltyList.successionRoyalties.Count > 3) {
+				targetRoyalty = targetKingdom.royaltyList.successionRoyalties [UnityEngine.Random.Range (4, targetKingdom.royaltyList.successionRoyalties.Count)];
+			}
 		}
 			
-		if(!targetRoyalty.trait.Contains(TRAIT.LOYAL)){
-			if(targetRoyalty.hatedLord.id != this.id){
-				if(this.previousConversionMonth == 0){
-					if(targetRoyalty.trait.Contains(TRAIT.TRAITOR)){
-						int conversionChance = UnityEngine.Random.Range (0, 100);
-						if(conversionChance < 80){
-							targetRoyalty.ChangeLoyalty (this);
+		if (targetRoyalty != null) {
+			if (!targetRoyalty.trait.Contains (TRAIT.LOYAL)) {
+				if (targetRoyalty.hatedLord == null || targetRoyalty.hatedLord.id != this.id) {
+					if (this.previousConversionMonth == 0) {
+						if (targetRoyalty.trait.Contains (TRAIT.TRAITOR)) {
+							int conversionChance = UnityEngine.Random.Range (0, 100);
+							if (conversionChance < 80) {
+								targetRoyalty.ChangeLoyalty (this);
+							}
+						} else {
+							int conversionChance = UnityEngine.Random.Range (0, 100);
+							if (conversionChance < 30) {
+								targetRoyalty.ChangeLoyalty (this);
+							}
 						}
-					}else{
-						int conversionChance = UnityEngine.Random.Range (0, 100);
-						if(conversionChance < 30){
-							targetRoyalty.ChangeLoyalty (this);
-						}
-					}
-				}else{
-					int monthDifference = PoliticsPrototypeManager.Instance.month - this.previousConversionMonth;
-					int yearDifference = PoliticsPrototypeManager.Instance.year - this.previousConversionYear;
-					int difference = monthDifference + (yearDifference * 12);
+					} else {
+						int monthDifference = PoliticsPrototypeManager.Instance.month - this.previousConversionMonth;
+						int yearDifference = PoliticsPrototypeManager.Instance.year - this.previousConversionYear;
+						int difference = monthDifference + (yearDifference * 12);
 
-					if(difference >= 3){
-						if(targetRoyalty.trait.Contains(TRAIT.TRAITOR)){
-							int conversionChance = UnityEngine.Random.Range (0, 100);
-							if(conversionChance < 80){
-								targetRoyalty.ChangeLoyalty (this);
-							}
-						}else{
-							int conversionChance = UnityEngine.Random.Range (0, 100);
-							if(conversionChance < 30){
-								targetRoyalty.ChangeLoyalty (this);
-							}
-						}	
+						if (difference >= 3) {
+							if (targetRoyalty.trait.Contains (TRAIT.TRAITOR)) {
+								int conversionChance = UnityEngine.Random.Range (0, 100);
+								if (conversionChance < 80) {
+									targetRoyalty.ChangeLoyalty (this);
+								}
+							} else {
+								int conversionChance = UnityEngine.Random.Range (0, 100);
+								if (conversionChance < 30) {
+									targetRoyalty.ChangeLoyalty (this);
+								}
+							}	
+						}
+
 					}
 
 				}
-
-			}
-		} 
+			} 
+		}
 	}
-	internal bool IsRoyaltyCloseRelative(Royalty royalty){
-		if (royalty.id == this.father.id || royalty.id == this.mother.id) {
+	internal bool IsRoyaltyCloseRelative(Royalty otherRoyalty){
+		if (otherRoyalty.id == this.father.id || otherRoyalty.id == this.mother.id) {
 			//royalty is father or mother
 			return true;
 		}
 
-		if(royalty.id == this.father.father.id || royalty.id == this.father.mother.id ||
-			royalty.id == this.mother.father.id || royalty.id == this.mother.mother.id){
-			//royalty is grand parent
-			return true;
+		if (this.father.father != null && this.father.mother != null && this.mother.father != null && this.mother.mother != null) {
+			if (otherRoyalty.id == this.father.father.id || otherRoyalty.id == this.father.mother.id ||
+			  otherRoyalty.id == this.mother.father.id || otherRoyalty.id == this.mother.mother.id) {
+				//royalty is grand parent
+				return true;
+			}
 		}
 
 		for (int i = 0; i < this.father.children.Count; i++) {
-			if(royalty.id == this.father.children[i].id){
+			if(otherRoyalty.id == this.father.children[i].id){
 				//royalty is sibling
 				return true;
 			}
 		}
 
-		for (int i = 0; i < this.father.father.children.Count; i++) {
-			if(royalty.id == this.father.father.children[i].id){
-				//royalty is uncle or aunt from fathers side
-				return true;
+		if (this.father.father != null) {
+			for (int i = 0; i < this.father.father.children.Count; i++) {
+				if (otherRoyalty.id == this.father.father.children [i].id) {
+					//royalty is uncle or aunt from fathers side
+					return true;
+				}
 			}
 		}
 
-		for (int i = 0; i < this.mother.father.children.Count; i++) {
-			if(royalty.id == this.mother.father.children[i].id){
-				//royalty is uncle or aunt from mothers side
-				return true;
+		if (this.mother.father != null) {
+			for (int i = 0; i < this.mother.father.children.Count; i++) {
+				if (otherRoyalty.id == this.mother.father.children [i].id) {
+					//royalty is uncle or aunt from mothers side
+					return true;
+				}
 			}
 		}
 
