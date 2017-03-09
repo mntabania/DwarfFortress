@@ -14,7 +14,7 @@ public class RoyaltyListItem : MonoBehaviour {
 
 	public void SetRoyalty(Royalty royalty){
 		this.royalty = royalty;
-		gameObject.GetComponentInChildren<UILabel>().text = royalty.name;
+		gameObject.GetComponentInChildren<UILabel>().text = royalty.name + " \n Location: " + royalty.kingdom.kingdomName ;
 		if (royalty.gender == GENDER.FEMALE) {
 			gameObject.GetComponentInChildren<UI2DSprite> ().sprite2D = femaleSprite;
 			gameObject.GetComponentInChildren<UI2DSprite> ().width = 24;

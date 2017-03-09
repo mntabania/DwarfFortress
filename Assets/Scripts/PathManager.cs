@@ -223,7 +223,7 @@ public class PathManager : MonoBehaviour {
 	 * Take into account which direction each path 
 	 * is going to.
 	 * */
-	void CreateLine(Tile currentTile, Tile nextTile) {
+	public void CreateLine(Tile currentTile, Tile nextTile) {
 		if (nextTile == null) {
 			return;
 		}

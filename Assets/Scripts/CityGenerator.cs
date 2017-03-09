@@ -21,6 +21,35 @@ public class CityGenerator : MonoBehaviour {
 	Line lastLine = null;
 	Dictionary<BIOMES, int> elligibleBiomes;
 
+	public void GenerateCitiesForTest(){
+		//Kingdom 1
+		SetTileAsCity(GridMap.Instance.GameBoard[21,30].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[18,33].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[14,32].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[14,37].hexTile);
+
+
+		//Kingdom 2
+		SetTileAsCity(GridMap.Instance.GameBoard[29,30].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[32,33].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[35,31].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[36,37].hexTile);
+
+
+		//Kingdom 3
+		SetTileAsCity(GridMap.Instance.GameBoard[29,23].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[29,16].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[33,14].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[37,14].hexTile);
+
+
+		//Kingdom 4
+		SetTileAsCity(GridMap.Instance.GameBoard[21,23].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[16,18].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[20,18].hexTile);
+		SetTileAsCity(GridMap.Instance.GameBoard[15,15].hexTile);
+
+	}
 
 	void Awake(){
 		Instance = this;
@@ -306,8 +335,12 @@ public class CityGenerator : MonoBehaviour {
 		tile.SetTileColor(Color.black);
 		tile.isCity = true;
 		tile.tile.canPass = false;
-		tile.gameObject.AddComponent<CityTile>();
-		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
+//		tile.gameObject.AddComponent<CityTile>();
+//		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
+
+		tile.gameObject.AddComponent<CityTileTest>();
+		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, null);
+
 		cities.Add(tile);
 	}
 

@@ -40,14 +40,17 @@ public class MarriageManager : MonoBehaviour {
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
 			for (int j = 0; j < PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.marriedCouples.Count; j++) {
 				MarriedCouple couple = PoliticsPrototypeManager.Instance.kingdoms [i].kingdom.marriedCouples [j];
-				if (couple.husband.isDead || couple.wife.isDead) {
+				if (couple.husband.isDead || couple.wife.isDead || couple.isPregnant) {
 					continue;
 				}
 				if (couple.husband.age < 60 && couple.wife.age < 40 && couple.children.Count < 3 ) {
 					float chance = Random.Range(0f, 100f);
 					if (chance < couple.chanceForPregnancy) {
 						couple.chanceForPregnancy = 0.5f;
-						MakeBaby(couple.husband, couple.wife);
+						Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + couple.husband.name + " and " + couple.wife.name + " will have a baby in 9 months");
+						couple.isPregnant = true;
+						PoliticsPrototypeManager.Instance.turnEnded += couple.pregnancyActions;
+//						MakeBaby(couple.husband, couple.wife);
 					} else {
 						couple.chanceForPregnancy += 0.5f;
 					}
@@ -141,7 +144,6 @@ public class MarriageManager : MonoBehaviour {
 		father.AddChild (child);
 		mother.AddChild (child);
 		child.AddParents(father, mother);
-		Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + father.name + " and " + mother.name + " had a baby, and named it :" + child.name);
 		if(child.isDirectDescendant){
 			child.kingdom.UpdateLordSuccession ();
 		}

@@ -286,11 +286,11 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 	}
 
 	public void StartRevolution(){
-		int numOfCitiesToRevolt = Int32.Parse(lblNumOfCitiesToRevolt.text);
+		int numOfCitiesToRevolt = 2;
 		if (numOfCitiesToRevolt <= 0) {
 			return;
 		}
-		if (numOfCitiesToRevolt > currentlySelectedKingdom.cities.Count) {
+		if (currentlySelectedKingdom.cities.Count < 4) {
 			Debug.LogWarning ("The kingdom only has " + currentlySelectedKingdom.cities.Count.ToString () + " cities.");
 		} else {
 			if (numOfCitiesToRevolt == currentlySelectedKingdom.cities.Count) {
@@ -304,13 +304,19 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 				Debug.Log ("Revolution! Lord of: " + currentlySelectedKingdom.kingdomName + " was replaced");
 			} else {
 				List<CityTileTest> citiesForNewKingdom = new List<CityTileTest> ();
-				for (int i = 0; i < numOfCitiesToRevolt; i++) {
-					citiesForNewKingdom.Add (currentlySelectedKingdom.cities [i]);
+				CityTileTest mainCity = currentlySelectedKingdom.cities [UnityEngine.Random.Range (0, currentlySelectedKingdom.cities.Count)];
+				citiesForNewKingdom.Add (mainCity);
+				for (int i = 0; i < mainCity.cityAttributes.connectedCities.Count; i++) {
+					if (mainCity.cityAttributes.connectedCities [i].cityAttributes.kingdomTile.kingdom.id == currentlySelectedKingdom.id) {
+						citiesForNewKingdom.Add (mainCity.cityAttributes.connectedCities [i]);
+						break;
+					}
 				}
 
 				currentlySelectedKingdom.RemoveCitiesFromKingdom(citiesForNewKingdom);
-				KingdomTest newKingdom =  PoliticsPrototypeManager.Instance.CreateNewKingdom (citiesForNewKingdom);
+				KingdomTest newKingdom =  PoliticsPrototypeManager.Instance.CreateNewKingdom (citiesForNewKingdom, UnityEngine.Random.ColorHSV(0f,1f,1f,1f,0.5f,1f));
 				Debug.Log ("Revolution! New kingdom: " + newKingdom.kingdomName + " was created");
+				PoliticsPrototypeManager.Instance.GenerateConnections();
 				LoadKingdoms();
 			}
 

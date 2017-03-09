@@ -504,9 +504,11 @@ public class KingdomTest{
 	}
 
 	internal bool SuccessionRoyaltiesHasLoyaltyTo (Royalty lord){
-		for(int i = 0; i < this.royaltyList.successionRoyalties.Count; i++){
-			if(this.royaltyList.successionRoyalties[i].loyalLord.id == lord.id){
-				return true;
+		if (this.royaltyList.successionRoyalties.Count > 0) {
+			for(int i = 0; i < this.royaltyList.successionRoyalties.Count; i++){
+				if(this.royaltyList.successionRoyalties[i].loyalLord.id == lord.id){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -520,5 +522,39 @@ public class KingdomTest{
 			}
 		}
 		return null;
+	}
+
+	internal void CheckForWars(){
+		if (this.cities.Count <= 0) {
+			PoliticsPrototypeManager.Instance.turnEnded -= CheckForWars;
+			PoliticsPrototypeManager.Instance.kingdoms.Remove(this.kingdomTile);
+		}
+		if (this.kingdomsAtWarWith.Count <= 0) {
+			return;
+		}
+		for (int i = 0; i < this.cities.Count; i++) {
+			for (int j = 0; j < this.cities[i].cityAttributes.connectedCities.Count; j++) {
+				CityTest connectedCity = this.cities[i].cityAttributes.connectedCities[j].cityAttributes;
+				if (connectedCity.kingdomTile.kingdom.id != this.id && 
+					SearchRelationshipKingdomsById(connectedCity.kingdomTile.kingdom.id).isAtWar) {
+					KingdomTest kingdomAtWarWith = connectedCity.kingdomTile.kingdom;
+					int chanceOfWar = Random.Range (0, 100);
+//					Debug.LogError(this.kingdomName + " is attempting to invade city " + connectedCity.cityName + " of kingdom " + connectedCity.kingdomTile.kingdom.kingdomName);
+					if (chanceOfWar < 5) {
+						//Invade City
+						Debug.LogError(this.kingdomName + " has invaded city " + connectedCity.cityName + " of kingdom " + connectedCity.kingdomTile.kingdom.kingdomName);
+						this.AddCityToKingdom(connectedCity.hexTile.GetCityTileTest());
+						kingdomAtWarWith.RemoveCitiesFromKingdom (new List<CityTileTest>(){connectedCity.hexTile.GetCityTileTest()});
+						int chanceOfPeace = Random.Range (0, 100);
+						if (chanceOfPeace < 15) {
+							Debug.LogError(this.kingdomName + " has declared peace with " + connectedCity.kingdomTile.kingdom.kingdomName);
+							this.SearchRelationshipKingdomsById(kingdomAtWarWith.id).isAtWar = false;
+							kingdomAtWarWith.SearchRelationshipKingdomsById(this.id).isAtWar = false;
+						}
+						break;
+					}
+				}
+			}
+		}
 	}
  }
