@@ -335,11 +335,11 @@ public class CityGenerator : MonoBehaviour {
 		tile.SetTileColor(Color.black);
 		tile.isCity = true;
 		tile.tile.canPass = false;
-//		tile.gameObject.AddComponent<CityTile>();
-//		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
+		tile.gameObject.AddComponent<CityTile>();
+		tile.gameObject.GetComponent<CityTile>().cityAttributes = new City(tile, tile.biomeType);
 
-		tile.gameObject.AddComponent<CityTileTest>();
-		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, null);
+//		tile.gameObject.AddComponent<CityTileTest>();
+//		tile.gameObject.GetComponent<CityTileTest>().cityAttributes = new CityTest(tile, null);
 
 		cities.Add(tile);
 	}

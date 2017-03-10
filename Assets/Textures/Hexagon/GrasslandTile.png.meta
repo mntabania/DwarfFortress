@@ -1,20 +1,22 @@
 fileFormatVersion: 2
-guid: 955dab349414a5f47b1d82f5e0fd35b4
-timeCreated: 1488337507
+guid: fcf4e7f5967e6f14c8ab9aaa99699060
+timeCreated: 1489118259
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: grassland_base
-    21300002: grassland_left_corner
-    21300004: grassland_right_corner
+    21300002: grassland_top_left
+    21300004: grassland_top_right
     21300006: grassland_left
     21300008: grassland_right
-    21300010: grassland_center_1
-    21300012: grassland_center_2
+    21300010: grassland_bot_left
+    21300012: grassland_bot_right
+    21300014: grassland_center_1
+    21300016: grassland_center_2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -66,14 +68,66 @@ TextureImporter:
         x: 4
         y: 663
         width: 396
-        height: 361
+        height: 357
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_left_corner
+      name: grassland_top_left
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 931
+        width: 200
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_top_right
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 932
+        width: 196
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_left
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 706
+        width: 14
+        height: 188
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_right
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 704
+        width: 14
+        height: 186
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grassland_bot_left
       rect:
         serializedVersion: 2
         x: 4
@@ -86,7 +140,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_right_corner
+      name: grassland_bot_right
       rect:
         serializedVersion: 2
         x: 211
@@ -99,39 +153,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: grassland_left
-      rect:
-        serializedVersion: 2
-        x: 4
-        y: 375
-        width: 14
-        height: 145
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: grassland_right
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 375
-        width: 14
-        height: 145
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
       name: grassland_center_1
       rect:
         serializedVersion: 2
-        x: 26
-        y: 292
-        width: 138
-        height: 48
+        x: 22
+        y: 231
+        width: 85
+        height: 29
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,10 +169,10 @@ TextureImporter:
       name: grassland_center_2
       rect:
         serializedVersion: 2
-        x: 18
-        y: 136
-        width: 140
-        height: 124
+        x: 22
+        y: 138
+        width: 78
+        height: 68
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

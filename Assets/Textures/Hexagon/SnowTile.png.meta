@@ -1,20 +1,23 @@
 fileFormatVersion: 2
-guid: d48d1319658a6304bbf3bf5dd9b1ceb0
-timeCreated: 1488337898
+guid: 596ad6e6a54e58e46ac848ccf4eb3b2b
+timeCreated: 1489118356
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: snow_base
-    21300002: snow_left_corner
-    21300004: snow_right_corner
+    21300002: snow_top_left
+    21300004: snow_top_right
     21300006: snow_left
     21300008: snow_right
-    21300010: snow_center_1
-    21300012: snow_center_2
+    21300010: snow_bot_left
+    21300012: snow_bot_right
+    21300014: snow_center_1
+    21300016: water_base
+    21300018: snow_center_2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -73,7 +76,59 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: snow_left_corner
+      name: snow_top_left
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 931
+        width: 198
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_top_right
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 931
+        width: 199
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_left
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 723
+        width: 13
+        height: 186
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_right
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 726
+        width: 14
+        height: 186
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: snow_bot_left
       rect:
         serializedVersion: 2
         x: 4
@@ -86,39 +141,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: snow_right_corner
+      name: snow_bot_right
       rect:
         serializedVersion: 2
         x: 211
         y: 529
         width: 198
         height: 127
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: snow_left
-      rect:
-        serializedVersion: 2
-        x: 4
-        y: 375
-        width: 14
-        height: 145
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: snow_right
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 375
-        width: 14
-        height: 145
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,6 +161,19 @@ TextureImporter:
         y: 303
         width: 80
         height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: water_base
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 145
+        width: 399
+        height: 359
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

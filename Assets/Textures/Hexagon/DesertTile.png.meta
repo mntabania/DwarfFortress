@@ -1,22 +1,25 @@
 fileFormatVersion: 2
-guid: c466a96600ef50946bee7ef3c184e621
-timeCreated: 1488337803
+guid: b01374fc4603b264b9228ac33feef59f
+timeCreated: 1489118711
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: desert_base
-    21300002: desert_left_corner
-    21300004: desert_right_corner
+    21300002: desert_top_left
+    21300004: desert_top_right
     21300006: desert_left
     21300008: desert_right
-    21300010: desert_center_2
-    21300012: desert_center_3
-    21300014: desert_center_4
-    21300016: desert_center_1
+    21300010: desert_bot_left
+    21300012: desert_bot_right
+    21300014: desert_center_1
+    21300016: desert_center_2
+    21300018: desert_center_3
+    21300020: DesertTile_14
+    21300022: desert_center_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -75,7 +78,59 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: desert_left_corner
+      name: desert_top_left
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 930
+        width: 199
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_top_right
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 928
+        width: 198
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_left
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 723
+        width: 16
+        height: 185
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_right
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 722
+        width: 15
+        height: 187
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: desert_bot_left
       rect:
         serializedVersion: 2
         x: 4
@@ -88,7 +143,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: desert_right_corner
+      name: desert_bot_right
       rect:
         serializedVersion: 2
         x: 211
@@ -101,26 +156,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: desert_left
+      name: desert_center_1
       rect:
         serializedVersion: 2
-        x: 4
-        y: 375
-        width: 14
-        height: 145
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: desert_right
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 375
-        width: 14
-        height: 145
+        x: 16
+        y: 273
+        width: 49
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,10 +185,10 @@ TextureImporter:
       name: desert_center_3
       rect:
         serializedVersion: 2
-        x: 16
-        y: 88
-        width: 121
-        height: 72
+        x: 17
+        y: 87
+        width: 124
+        height: 76
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,23 +198,10 @@ TextureImporter:
       name: desert_center_4
       rect:
         serializedVersion: 2
-        x: 16
-        y: 36
-        width: 43
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: desert_center_1
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 267
-        width: 64
-        height: 66
+        x: 19
+        y: 34
+        width: 45
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

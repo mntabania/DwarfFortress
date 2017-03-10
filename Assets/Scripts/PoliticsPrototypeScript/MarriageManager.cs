@@ -174,8 +174,9 @@ public class MarriageManager : MonoBehaviour {
 
 		//the wife will transfer to the court of the husband
 		wife.kingdom = husband.kingdom;
-		wife.loyalLord = husband.kingdom.assignedLord;
-		husband.kingdom.royaltyList.allRoyalties.Add(wife);
+//		wife.loyalLord = husband.kingdom.assignedLord;
+//		husband.kingdom.royaltyList.allRoyalties.Add(wife);
+//		wife.kingdom.royaltyList.allRoyalties.Remove(wife);
 
 		husband.kingdom.marriedCouples.Add(new MarriedCouple (husband, wife));
 	}

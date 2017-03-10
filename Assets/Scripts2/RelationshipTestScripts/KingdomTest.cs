@@ -175,6 +175,7 @@ public class KingdomTest{
 			}
 		}
 		this.royaltyList.allRoyalties = this.royaltyList.allRoyalties.Distinct().ToList();
+		UpdateLordSuccession();
 	}
 
 	internal void UpdateLordSuccession(){
@@ -193,23 +194,69 @@ public class KingdomTest{
 		if(newLord == null){
 			CreateInitialRoyalties ();
 		}else{
-			//if not loyal to lord of your current kingdom
-			if(newLord.loyalLord.id != newLord.kingdom.assignedLord.id){
-				int assimilateChance = UnityEngine.Random.Range (0, 100);
-				if(assimilateChance < 35){
-					AssimilateKingdom (newLord.loyalLord.kingdom);
+			if (newLord.isMarried) {
+				if (newLord.spouse.kingdom.assignedLord.id == newLord.spouse.id) {
+					AssimilateKingdom (newLord.spouse.kingdom);
 					return;
-				}else{
-					newLord.kingdom.SearchRelationshipKingdomsById (newLord.loyalLord.kingdom.id).isAtWar = false;
-					newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (newLord.kingdom.id).isAtWar = false;
+				} else {
+					if (newLord.kingdom.id != this.id) {
+						//if not loyal to lord of your current kingdom
+						if (newLord.loyalLord.id != this.assignedLord.id) {
+							int assimilateChance = UnityEngine.Random.Range (0, 100);
+							if (assimilateChance < 35) {
+								AssimilateKingdom (newLord.loyalLord.kingdom);
+								return;
+							} else {
+								this.SearchRelationshipKingdomsById (newLord.loyalLord.kingdom.id).isAtWar = false;
+								newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (this.id).isAtWar = false;
+							}
+						} 
+
+						//Transfer whole family to kingdom
+						newLord.spouse.kingdom = this;
+						newLord.spouse.loyalLord = newLord;
+						for (int i = 0; i < newLord.children.Count; i++) {
+							if (!newLord.children [i].isMarried) {
+								newLord.children [i].kingdom = this;
+								newLord.children [i].loyalLord = newLord;
+							}
+						}
+					} else {
+						//if not loyal to lord of your current kingdom
+						if(newLord.loyalLord.id != this.assignedLord.id){
+							int assimilateChance = UnityEngine.Random.Range (0, 100);
+							if(assimilateChance < 35){
+								AssimilateKingdom (newLord.loyalLord.kingdom);
+								return;
+							}else{
+								this.SearchRelationshipKingdomsById (newLord.loyalLord.kingdom.id).isAtWar = false;
+								newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (this.id).isAtWar = false;
+							}
+						}
+					}
+				}
+
+			} else {
+				//if not loyal to lord of your current kingdom
+				if(newLord.loyalLord.id != this.assignedLord.id){
+					int assimilateChance = UnityEngine.Random.Range (0, 100);
+					if(assimilateChance < 35){
+						AssimilateKingdom (newLord.loyalLord.kingdom);
+						return;
+					}else{
+						this.SearchRelationshipKingdomsById (newLord.loyalLord.kingdom.id).isAtWar = false;
+						newLord.loyalLord.kingdom.SearchRelationshipKingdomsById (this.id).isAtWar = false;
+					}
 				}
 			}
+
 			RoyaltyEventDelegate.TriggerMassChangeLoyalty(newLord, this.assignedLord);
-			this.assignedLord = newLord;
-			if(!this.assignedLord.isDirectDescendant){
-				RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
-				Utilities.ChangeDescendantsRecursively (this.assignedLord, true);
+			if(!newLord.isDirectDescendant){
+//				RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
+				Utilities.ChangeDescendantsRecursively (newLord, true);
+				Utilities.ChangeDescendantsRecursively (this.assignedLord, false);
 			}
+			this.assignedLord = newLord;
 			UpdateLordSuccession ();
 		}
 

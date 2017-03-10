@@ -1,21 +1,23 @@
 fileFormatVersion: 2
-guid: fd23d0750ad221648855680e32789141
-timeCreated: 1488337671
+guid: 5a72e927076e5694384426a9e5208f8c
+timeCreated: 1489117971
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: forest_base
     21300002: forest_center_2
-    21300004: forest_left_corner
-    21300006: forest_right_corner
-    21300008: forest_center_3
-    21300010: forest_left
-    21300012: forest_right
-    21300014: forest_center_1
+    21300004: forest_bot_left_corner
+    21300006: forest_bot_right_corner
+    21300008: forest_left
+    21300010: forest_right
+    21300012: forest_top_left_corner
+    21300014: forest_top_right_corner
+    21300016: forest_center_1
+    21300018: forest_center_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -77,9 +79,9 @@ TextureImporter:
       name: forest_center_2
       rect:
         serializedVersion: 2
-        x: 616
-        y: 671
-        width: 384
+        x: 564
+        y: 670
+        width: 380
         height: 350
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -87,7 +89,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_left_corner
+      name: forest_bot_left_corner
       rect:
         serializedVersion: 2
         x: 4
@@ -100,7 +102,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_right_corner
+      name: forest_bot_right_corner
       rect:
         serializedVersion: 2
         x: 211
@@ -113,26 +115,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_center_3
-      rect:
-        serializedVersion: 2
-        x: 612
-        y: 267
-        width: 380
-        height: 355
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
       name: forest_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 375
+        x: 512
+        y: 434
         width: 14
-        height: 145
+        height: 189
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,10 +131,36 @@ TextureImporter:
       name: forest_right
       rect:
         serializedVersion: 2
-        x: 33
-        y: 375
+        x: 551
+        y: 434
         width: 14
-        height: 145
+        height: 189
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_top_left_corner
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 399
+        width: 198
+        height: 91
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_top_right_corner
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 399
+        width: 200
+        height: 91
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,10 +170,23 @@ TextureImporter:
       name: forest_center_1
       rect:
         serializedVersion: 2
-        x: 5
+        x: 20
+        y: 16
+        width: 380
+        height: 356
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_center_3
+      rect:
+        serializedVersion: 2
+        x: 526
         y: 24
-        width: 424
-        height: 335
+        width: 420
+        height: 345
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

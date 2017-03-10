@@ -28,6 +28,8 @@ public class HexTile : MonoBehaviour {
 	public GameObject rightGround;
 	public GameObject bottomRightGround;
 	public GameObject centerPiece;
+	public GameObject topLeftGround;
+	public GameObject topRightGround;
 
 	public GameObject leftBorder;
 	public GameObject rightBorder;
@@ -153,13 +155,17 @@ public class HexTile : MonoBehaviour {
 			if (this.tile.Y % 2 == 0) {
 				if (difference.X == -1 && difference.Y == 1) {
 					//top left
-					if (neighbours[i].hexTile.biomeType != this.biomeType && neighbours[i].hexTile.elevationType != ELEVATION.WATER) {
-						this.topLeftBorder.SetActive (true);
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.topLeftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.topLeftBorder.SetActive(true);
 					}
 				} else if (difference.X == 0 && difference.Y == 1) {
 					//top right
-					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
-						this.topRightBorder.SetActive (true);
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.topRightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.topRightBorder.SetActive(true);
 					}
 				} else if (difference.X == 1 && difference.Y == 0) {
 					//right
@@ -193,13 +199,17 @@ public class HexTile : MonoBehaviour {
 			} else {
 				if (difference.X == 0 && difference.Y == 1) {
 					//top left
-					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
-						this.topLeftBorder.SetActive (true);
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.topLeftGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.topLeftBorder.SetActive(true);
 					}
 				} else if (difference.X == 1 && difference.Y == 1) {
 					//top right
-					if (neighbours [i].hexTile.biomeType != this.biomeType && neighbours [i].hexTile.elevationType != ELEVATION.WATER) {
-						this.topRightBorder.SetActive (true);
+					if (neighbours [i].hexTile.elevationType == ELEVATION.WATER) {
+						this.topRightGround.SetActive (true);
+					} else if (neighbours [i].hexTile.biomeType != this.biomeType) {
+						this.topRightBorder.SetActive(true);
 					}
 				} else if (difference.X == 1 && difference.Y == 0) {
 					//right
@@ -236,20 +246,23 @@ public class HexTile : MonoBehaviour {
 		}
 	}
 
-	public void SetTileSprites(Sprite baseSprite, Sprite leftSprite, Sprite rightSprite, Sprite leftCornerSprite, Sprite rightCornerSprite, Sprite[] centerSprite){
+	public void SetTileSprites(Sprite baseSprite, Sprite leftSprite, Sprite rightSprite, Sprite leftCornerSprite, Sprite rightCornerSprite, 
+		Sprite topLeftSprite, Sprite topRightSprite, Sprite[] centerSprite){
 		this.GetComponent<SpriteRenderer>().sprite = baseSprite;
 		this.leftGround.GetComponent<SpriteRenderer>().sprite = leftSprite;
 		this.rightGround.GetComponent<SpriteRenderer>().sprite = rightSprite;
 		this.bottomLeftGround.GetComponent<SpriteRenderer>().sprite = leftCornerSprite;
 		this.bottomRightGround.GetComponent<SpriteRenderer>().sprite = rightCornerSprite;
+		this.topLeftGround.GetComponent<SpriteRenderer> ().sprite = topLeftSprite;
+		this.topRightGround.GetComponent<SpriteRenderer> ().sprite = topRightSprite;
+
 		if (this.elevationType == ELEVATION.MOUNTAIN) {
 			this.centerPiece.SetActive(true);
 		} else {
-			if (this.biomeType == BIOMES.GRASSLAND) {
-				return;
-			} else if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST) {
+			if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST) {
 				this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
 				this.centerPiece.SetActive(true);
+				this.centerPiece.transform.localPosition = new Vector3 (0f, 0.37f, 0f);
 			} else {
 				int chanceForDetail = Random.Range (0, 100);
 				if (chanceForDetail < 25) {

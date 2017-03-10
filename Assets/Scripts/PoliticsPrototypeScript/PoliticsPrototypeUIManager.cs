@@ -114,7 +114,18 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		}
 
 		for (int i = 0; i < kingdom.royaltyList.allRoyalties.Count; i++) {
-			GameObject royaltyGO = Instantiate(royaltyPrefab, royaltyGrid.transform) as GameObject;
+			GameObject royaltyGO = null;
+			if (kingdom.royaltyList.allRoyalties[i].gender == GENDER.MALE && kingdom.royaltyList.allRoyalties[i].spouse != null && !kingdom.royaltyList.allRoyalties.Contains(kingdom.royaltyList.allRoyalties[i].spouse)) {
+				royaltyGO = Instantiate(royaltyPrefab, royaltyGrid.transform) as GameObject;
+				royaltyGO.transform.localPosition = Vector3.zero;
+				royaltyGO.transform.localScale = Vector3.one;
+				royaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(kingdom.royaltyList.allRoyalties[i].spouse);
+			}
+			if (kingdom.royaltyList.allRoyalties[i].kingdom.id != currentlySelectedKingdom.id) {
+				continue;
+			}
+
+			royaltyGO = Instantiate(royaltyPrefab, royaltyGrid.transform) as GameObject;
 			royaltyGO.transform.localPosition = Vector3.zero;
 			royaltyGO.transform.localScale = Vector3.one;
 			royaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(kingdom.royaltyList.allRoyalties[i]);
@@ -138,7 +149,8 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 	public void ShowRoyaltyInfo(Royalty royalty){
 		lblCurrentLordInfo.text = "";
-		lblCurrentLordInfo.text += "Age: " + royalty.age.ToString () + "\t Gender: " + royalty.gender.ToString () + "\n";
+		lblCurrentLordInfo.text += "Age: " + royalty.age.ToString () + "\t Gender: " + royalty.gender.ToString () + "\t Dead: " + royalty.isDead + "\n" +
+			"Illness Chance: " + royalty.royaltyChances.illnessChance.ToString() + "\t Accident Chance: " + royalty.royaltyChances.accidentChance.ToString() + "\n";
 		lblCurrentLordInfo.text += "Birthweek (WW/MM/YYYY): " + royalty.birthWeek.ToString() + "/" + royalty.birthMonth.ToString () + "/" + royalty.birthYear.ToString () + "\n";
 		if (royalty.loyalLord != null) {
 			lblCurrentLordInfo.text += "Loyal to: " + royalty.loyalLord.name + "\t";
