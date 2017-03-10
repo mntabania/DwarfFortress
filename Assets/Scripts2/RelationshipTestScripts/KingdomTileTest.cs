@@ -14,6 +14,12 @@ public class KingdomTileTest : MonoBehaviour {
 	//	public int performance;
 	//	public List<CityTile> cities;
 
+	[ContextMenu("Change Loyalty")]
+	public void ChangeLoyaltyForTesting(){
+		this.kingdom.royaltyList.successionRoyalties [2].ChangeLoyalty (PoliticsPrototypeManager.Instance.kingdoms [1].kingdom.assignedLord);
+		Debug.Log ("CHANGED LOYALTY: " + this.kingdom.royaltyList.successionRoyalties [0].loyalLord.name);
+	}
+
 	void Start(){
 //		GameManager.Instance.turnEnded += TurnActions;
 	}

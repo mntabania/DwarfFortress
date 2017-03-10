@@ -264,6 +264,9 @@ public class HexTile : MonoBehaviour {
 			}
 			this.centerPiece.SetActive(true);
 		} else {
+			if (this.biomeType == BIOMES.GRASSLAND) {
+				return;
+			}
 			if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST || this.biomeType == BIOMES.TUNDRA) {
 				this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
 				this.centerPiece.SetActive(true);

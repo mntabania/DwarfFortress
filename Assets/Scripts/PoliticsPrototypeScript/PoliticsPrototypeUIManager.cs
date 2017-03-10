@@ -115,12 +115,15 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 		for (int i = 0; i < kingdom.royaltyList.allRoyalties.Count; i++) {
 			GameObject royaltyGO = null;
-			if (kingdom.royaltyList.allRoyalties[i].gender == GENDER.MALE && kingdom.royaltyList.allRoyalties[i].spouse != null && !kingdom.royaltyList.allRoyalties.Contains(kingdom.royaltyList.allRoyalties[i].spouse)) {
-				royaltyGO = Instantiate(royaltyPrefab, royaltyGrid.transform) as GameObject;
-				royaltyGO.transform.localPosition = Vector3.zero;
-				royaltyGO.transform.localScale = Vector3.one;
-				royaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(kingdom.royaltyList.allRoyalties[i].spouse);
+			if (kingdom.royaltyList.allRoyalties[i].id == kingdom.assignedLord.id) {
+				if (kingdom.royaltyList.allRoyalties[i].spouse != null && !kingdom.royaltyList.allRoyalties[i].spouse.isDead && !kingdom.royaltyList.allRoyalties.Contains(kingdom.royaltyList.allRoyalties[i].spouse)) {
+					royaltyGO = Instantiate(royaltyPrefab, royaltyGrid.transform) as GameObject;
+					royaltyGO.transform.localPosition = Vector3.zero;
+					royaltyGO.transform.localScale = Vector3.one;
+					royaltyGO.GetComponent<RoyaltyListItem>().SetRoyalty(kingdom.royaltyList.allRoyalties[i].spouse);
+				}
 			}
+
 			if (kingdom.royaltyList.allRoyalties[i].kingdom.id != currentlySelectedKingdom.id) {
 				continue;
 			}
@@ -226,11 +229,11 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 			conversionBtn.isEnabled = false;
 		}
 
-		if (royalty.gender == GENDER.MALE && !royalty.isMarried && royalty.age >= 16) {
-			marriageBtn.isEnabled = true;
-		} else {
-			marriageBtn.isEnabled = false;
-		}
+//		if (royalty.gender == GENDER.MALE && !royalty.isMarried && royalty.age >= 16) {
+//			marriageBtn.isEnabled = true;
+//		} else {
+//			marriageBtn.isEnabled = false;
+//		}
 
 		royaltyInfoWindowGO.SetActive(true);
 	}
@@ -327,6 +330,8 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 
 				currentlySelectedKingdom.RemoveCitiesFromKingdom(citiesForNewKingdom);
 				KingdomTest newKingdom =  PoliticsPrototypeManager.Instance.CreateNewKingdom (citiesForNewKingdom, UnityEngine.Random.ColorHSV(0f,1f,1f,1f,0.5f,1f));
+				newKingdom.CreateInitialRelationshipsToKingdoms();
+				PoliticsPrototypeManager.Instance.AddRelationshipToOtherKingdoms(newKingdom);
 				Debug.Log ("Revolution! New kingdom: " + newKingdom.kingdomName + " was created");
 				PoliticsPrototypeManager.Instance.GenerateConnections();
 				LoadKingdoms();
@@ -361,6 +366,12 @@ public class PoliticsPrototypeUIManager : MonoBehaviour {
 		} else {
 			lblPause.text = "Pause";
 		}
+	}
+
+	public void TriggerNextSuccession(){
+		currentlySelectedKingdom.assignedLord.Death ();
+		ShowKingdomInfo(currentlySelectedKingdom);
+
 	}
 
 	void Update(){

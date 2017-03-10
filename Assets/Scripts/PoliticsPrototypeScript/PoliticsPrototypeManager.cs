@@ -53,44 +53,64 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		GridMap.Instance.GameBoard [21, 30].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
 			GridMap.Instance.GameBoard[18,33].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,32].hexTile.GetCityTileTest(), 
 			GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [18, 33].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,32].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,37].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,37].hexTile.GetCityTileTest()};
+
 		GridMap.Instance.GameBoard [14, 32].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[18,33].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,37].hexTile.GetCityTileTest(),
+			GridMap.Instance.GameBoard[16,18].hexTile.GetCityTileTest()};
+
 		GridMap.Instance.GameBoard [14, 37].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[18,33].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[18,33].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[14,32].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[36,37].hexTile.GetCityTileTest()};
 
 		//Kingdom 2
 		GridMap.Instance.GameBoard [29, 30].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
 			GridMap.Instance.GameBoard[32,33].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[35,31].hexTile.GetCityTileTest(),
 			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[29,23].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [32, 33].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
 			GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[36,37].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [35, 31].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[36,37].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[36,37].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[37,14].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [36, 37].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[32,33].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[35,31].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[32,33].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[35,31].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[14,37].hexTile.GetCityTileTest()};
 
 		//Kingdom 3
 		GridMap.Instance.GameBoard [29, 23].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[29,16].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[29,16].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[29,30].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[37,14].hexTile.GetCityTileTest()};
+
 		GridMap.Instance.GameBoard [29, 16].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
 			GridMap.Instance.GameBoard[29,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[33,14].hexTile.GetCityTileTest()};
+
 		GridMap.Instance.GameBoard [33, 14].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[29,16].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[37,14].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[29,16].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[37,14].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[15,15].hexTile.GetCityTileTest()};
+
 		GridMap.Instance.GameBoard [37, 14].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[33,14].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[33,14].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[29,23].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[35,31].hexTile.GetCityTileTest()};
 
 		//Kingdom 4
 		GridMap.Instance.GameBoard [21, 23].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
 			GridMap.Instance.GameBoard[16,18].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[20,18].hexTile.GetCityTileTest(),
 			GridMap.Instance.GameBoard[21,30].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[29,23].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [16, 18].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[20,18].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[15,15].hexTile.GetCityTileTest()
+			, GridMap.Instance.GameBoard[14,32].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [20, 18].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[16,18].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[15,15].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[21,23].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[15,15].hexTile.GetCityTileTest()};
+		
 		GridMap.Instance.GameBoard [15, 15].hexTile.GetCityTileTest ().cityAttributes.connectedCities = new List<CityTileTest> (){
-			GridMap.Instance.GameBoard[20,18].hexTile.GetCityTileTest()};
+			GridMap.Instance.GameBoard[20,18].hexTile.GetCityTileTest(), GridMap.Instance.GameBoard[16,18].hexTile.GetCityTileTest()};
 
 		for (int i = 0; i < CityGenerator.Instance.cities.Count; i++) {
 			HexTile currentTile = CityGenerator.Instance.cities [i];
@@ -120,7 +140,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 	}
 
 	void StartWeekProgression(){
-		InvokeRepeating("StartTime", 0f, 0.2f);
+		InvokeRepeating("StartTime", 0f, 1f);
 	}
 
 	void StartTime(){
@@ -170,14 +190,14 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			CityGenerator.Instance.cities [1].GetCityTileTest(),
 			CityGenerator.Instance.cities [2].GetCityTileTest(),
 			CityGenerator.Instance.cities [3].GetCityTileTest()
-		}, Color.black);
+		}, Color.red);
 
 		CreateNewKingdom (new List<CityTileTest> () {
 			CityGenerator.Instance.cities [4].GetCityTileTest(),
 			CityGenerator.Instance.cities [5].GetCityTileTest(),
 			CityGenerator.Instance.cities [6].GetCityTileTest(),
 			CityGenerator.Instance.cities [7].GetCityTileTest()
-		}, Color.magenta);
+		}, Color.black);
 
 		CreateNewKingdom (new List<CityTileTest> () {
 			CityGenerator.Instance.cities [8].GetCityTileTest(),
@@ -191,7 +211,7 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 			CityGenerator.Instance.cities [13].GetCityTileTest(),
 			CityGenerator.Instance.cities [14].GetCityTileTest(),
 			CityGenerator.Instance.cities [15].GetCityTileTest()
-		}, Color.magenta);
+		}, Color.yellow);
 
 //		List<HexTile> elligibleCities = new List<HexTile>(CityGenerator.Instance.cities);
 //
@@ -217,6 +237,11 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 //
 //			CreateNewKingdom(citiesForKingdom);
 //		}
+	}
+
+	public void MakeKingdomDead(KingdomTest kingdomToDie){
+		this.kingdoms.Remove (kingdomToDie.kingdomTile);
+		RemoveRelationshipToOtherKingdoms (kingdomToDie);
 	}
 
 	public KingdomTest CreateNewKingdom(List<CityTileTest> cities, Color kingdomColor){
@@ -251,6 +276,17 @@ public class PoliticsPrototypeManager : MonoBehaviour {
 		for (int i = 0; i < this.kingdoms.Count; i++) {
 			if (this.kingdoms[i].kingdom.id != newKingdom.id) {
 				this.kingdoms[i].kingdom.relationshipKingdoms.Add (new RelationshipKingdoms(newKingdom, DECISION.NEUTRAL, 0));
+			}
+		}
+	}
+
+	public void RemoveRelationshipToOtherKingdoms(KingdomTest kingdomToRemove){
+		for (int i = 0; i < this.kingdoms.Count; i++) {
+			for (int j = 0; j < this.kingdoms[i].kingdom.relationshipKingdoms.Count; j++) {
+				if (this.kingdoms[i].kingdom.relationshipKingdoms[j].kingdom.id == kingdomToRemove.id) {
+					this.kingdoms[i].kingdom.relationshipKingdoms.RemoveAt(j);
+					break;
+				}
 			}
 		}
 	}

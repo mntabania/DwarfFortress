@@ -49,7 +49,7 @@ public class KingdomTest{
 	protected List<CityTileTest> citiesOrderedByUnrest{
 		get{ return cities.OrderByDescending(x => x.cityAttributes.unrest).ToList(); }
 	}
-
+		
 	public KingdomTest(float populationGrowth, RACE race, List<CityTileTest> cities, Color tileColor, KingdomTileTest kingdomTile){
 		this.id = GetID() + 1;
 		this.kingdomName = "KINGDOM" + this.id;
@@ -84,6 +84,8 @@ public class KingdomTest{
 	}
 
 	internal void CreateInitialRoyalties(){
+		this.royaltyList.allRoyalties.Clear();
+		this.royaltyList.successionRoyalties.Clear();
 		GENDER gender = GENDER.MALE;
 		int randomGender = UnityEngine.Random.Range (0, 100);
 		if(randomGender < 20){
@@ -104,6 +106,30 @@ public class KingdomTest{
 		this.assignedLord.AddParents(father, mother);
 		MarriageManager.Instance.Marry(father, mother);
 
+//		if (this.id == 1) {
+//			Royalty spouse = MarriageManager.Instance.CreateSpouse (this.assignedLord);
+//			spouse.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - spouse.age));
+//
+//			Royalty lordChild = MarriageManager.Instance.MakeBaby (this.assignedLord, spouse, 16, false);
+//			lordChild.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - spouse.age));
+//			lordChild.gender = GENDER.MALE;
+//
+//
+//			Royalty sibling = MarriageManager.Instance.MakeBaby (father, mother, 30, false);
+//			sibling.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling.age));
+//			sibling.gender = GENDER.FEMALE;
+//
+//			Royalty sibling1 = MarriageManager.Instance.MakeBaby (father, mother, 30, false);
+//			sibling1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling.age));
+//			sibling1.gender = GENDER.MALE;
+//
+//			Royalty spouse1 = MarriageManager.Instance.CreateSpouse (sibling1);
+//			spouse1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - spouse.age));
+//
+//			Royalty siblingChild1 = MarriageManager.Instance.MakeBaby (sibling1, spouse1, 16, false);
+//			siblingChild1.AssignBirthday ((MONTH)(UnityEngine.Random.Range (1, System.Enum.GetNames (typeof(MONTH)).Length)), UnityEngine.Random.Range (1, 5), (PoliticsPrototypeManager.Instance.year - sibling.age));
+//			siblingChild1.gender = GENDER.FEMALE;
+//		}
 
 		int siblingsChance = UnityEngine.Random.Range (0, 100);
 		if(siblingsChance < 50){
@@ -249,7 +275,7 @@ public class KingdomTest{
 					}
 				}
 			}
-
+			newLord.loyalLord = newLord;
 			RoyaltyEventDelegate.TriggerMassChangeLoyalty(newLord, this.assignedLord);
 			if(!newLord.isDirectDescendant){
 //				RoyaltyEventDelegate.TriggerChangeIsDirectDescendant (false);
@@ -269,7 +295,8 @@ public class KingdomTest{
 		for (int i = 0; i < this.royaltyList.allRoyalties.Count; i++) {
 			newKingdom.AddRoyaltyToKingdom (this.royaltyList.allRoyalties [i]);
 		}
-		PoliticsPrototypeManager.Instance.kingdoms.Remove (this.kingdomTile);
+		PoliticsPrototypeManager.Instance.MakeKingdomDead(this);
+		PoliticsPrototypeUIManager.Instance.LoadKingdoms();
 	}
 	internal void AddRoyaltyToKingdom(Royalty royalty){
 		this.royaltyList.allRoyalties.Add (royalty);
@@ -574,7 +601,7 @@ public class KingdomTest{
 	internal void CheckForWars(){
 		if (this.cities.Count <= 0) {
 			PoliticsPrototypeManager.Instance.turnEnded -= CheckForWars;
-			PoliticsPrototypeManager.Instance.kingdoms.Remove(this.kingdomTile);
+			PoliticsPrototypeManager.Instance.MakeKingdomDead (this);
 		}
 		if (this.kingdomsAtWarWith.Count <= 0) {
 			return;

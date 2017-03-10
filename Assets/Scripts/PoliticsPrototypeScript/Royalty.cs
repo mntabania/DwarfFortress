@@ -31,12 +31,13 @@ public class Royalty {
 
 	public Royalty(KingdomTest kingdom, int age, GENDER gender, int generation){
 		this.id = GetID () + 1;
-		this.name = "ROYALTY" + this.id;
+		this.name = RandomNameGenerator.GenerateRandomName() + " " + this.id;
 		this.age = age;
 		this.gender = gender;
 		this.generation = generation;
 		this.kingdom = kingdom;
 		this.trait = GetTrait();
+//		this.trait = new TRAIT[]{TRAIT.VICIOUS, TRAIT.NONE};
 		this.loyalLord = null;
 		this.hatedLord = null;
 		this.father = null;
@@ -168,20 +169,17 @@ public class Royalty {
 		}
 		float illness = UnityEngine.Random.Range (0f, 99f);
 		if(illness <= this.royaltyChances.illnessChance){
-			this.isDead = true;
 			Death ();
 			Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF ILLNESS!");
 		}else{
 			float accidents = UnityEngine.Random.Range (0f, 99f);
 			if(accidents <= this.royaltyChances.accidentChance){
-				this.isDead = true;
 				Death ();
 				Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF ACCIDENT!");
 			}else{
 				if(this.age >= 60){
 					float oldAge = UnityEngine.Random.Range (0f, 99f);
 					if(oldAge <= this.royaltyChances.oldAgeChance){
-						this.isDead = true;
 						Death ();
 						Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + this.name + " DIED OF OLD AGE!");
 					}else{
@@ -221,20 +219,20 @@ public class Royalty {
 					Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT WAR...");
 					int assassinateChance = UnityEngine.Random.Range (0, 100);
 					if (assassinateChance < 20) {
-						Assassinate (this, targetKingdom.assignedLord);
+						Assassinate (this, targetKingdom.assignedLord, targetKingdom);
 					}
 				} else {
 					if (targetKingdom.SuccessionRoyaltiesHasLoyaltyTo (this)) {
 						Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE NEXT IN LINE TO THE LORD AT WAR...");
 						int assassinateChance = UnityEngine.Random.Range (0, 100);
 						if (assassinateChance < 50) {
-							Assassinate (this, targetKingdom.royaltyList.successionRoyalties [0]);
+							Assassinate (this, targetKingdom.royaltyList.successionRoyalties [0], targetKingdom);
 						} 
 					} else {
 						Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT WAR...");
 						int assassinateChance = UnityEngine.Random.Range (0, 100);
 						if (assassinateChance < 20) {
-							Assassinate (this, targetKingdom.assignedLord);
+							Assassinate (this, targetKingdom.assignedLord, targetKingdom);
 						} 
 					}
 				}
@@ -242,7 +240,7 @@ public class Royalty {
 				Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT WAR...");
 				int assassinateChance = UnityEngine.Random.Range (0, 100);
 				if (assassinateChance < 20) {
-					Assassinate (this, targetKingdom.assignedLord);
+					Assassinate (this, targetKingdom.assignedLord, targetKingdom);
 				} 
 			}
 		}else{
@@ -253,20 +251,20 @@ public class Royalty {
 						Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT PEACE...");
 						int assassinateChance = UnityEngine.Random.Range (0, 100);
 						if (assassinateChance < 20) {
-							Assassinate (this, targetKingdom.kingdom.assignedLord);
+							Assassinate (this, targetKingdom.kingdom.assignedLord, targetKingdom.kingdom);
 						}
 					} else {
 						if (targetKingdom.kingdom.SuccessionRoyaltiesHasLoyaltyTo (this)) {
 							Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE NEXT IN LINE TO THE LORD AT PEACE...");
 							int assassinateChance = UnityEngine.Random.Range (0, 100);
 							if (assassinateChance < 50) {
-								Assassinate (this, targetKingdom.kingdom.royaltyList.successionRoyalties [0]);
+								Assassinate (this, targetKingdom.kingdom.royaltyList.successionRoyalties [0], targetKingdom.kingdom);
 							} 
 						} else {
 							Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT PEACE...");
 							int assassinateChance = UnityEngine.Random.Range (0, 100);
 							if (assassinateChance < 20) {
-								Assassinate (this, targetKingdom.kingdom.assignedLord);
+								Assassinate (this, targetKingdom.kingdom.assignedLord, targetKingdom.kingdom);
 							} 
 						}
 					}
@@ -274,17 +272,16 @@ public class Royalty {
 					Debug.Log (this.name + " IS ATTEMPTING TO ASSASSINATE A LORD AT PEACE...");
 					int assassinateChance = UnityEngine.Random.Range (0, 100);
 					if (assassinateChance < 20) {
-						Assassinate (this, targetKingdom.kingdom.assignedLord);
+						Assassinate (this, targetKingdom.kingdom.assignedLord, targetKingdom.kingdom);
 					} 
 				}
 
 				int caughtChance = UnityEngine.Random.Range (0, 100);
 				if(caughtChance < 20){
 					Debug.Log (this.name + " GOT CAUGHT!");
-
 					targetKingdom.isAtWar = true;
 
-					RelationshipKingdoms relationFromTarget = targetKingdom.kingdom.SearchRelationshipKingdomsById (this.id);
+					RelationshipKingdoms relationFromTarget = targetKingdom.kingdom.SearchRelationshipKingdomsById (this.kingdom.id);
 
 					if(relationFromTarget != null){
 						relationFromTarget.isAtWar = true;
@@ -294,14 +291,18 @@ public class Royalty {
 			}
 		}
 	}
-	private void Assassinate(Royalty assassin, Royalty victim){
+	private void Assassinate(Royalty assassin, Royalty victim, KingdomTest targetKingdom){
+
 		victim.kingdom.royaltyList.allRoyalties.Remove (victim);
 		victim.kingdom.royaltyList.successionRoyalties.Remove (victim);
 
-		if (victim.kingdom.royaltyList.successionRoyalties.Count <= 0) {
-			victim.kingdom.AssignNewLord (null);
-		} else {
-			victim.kingdom.AssignNewLord (victim.kingdom.royaltyList.successionRoyalties [0]);
+		if (targetKingdom.assignedLord.id == victim.id){
+			if (victim.kingdom.royaltyList.successionRoyalties.Count <= 0) {
+				victim.kingdom.AssignNewLord (null);
+			} else {
+				victim.kingdom.AssignNewLord (victim.kingdom.royaltyList.successionRoyalties [0]);
+			}
+	
 		}
 
 		Debug.Log (PoliticsPrototypeManager.Instance.month + "/" + PoliticsPrototypeManager.Instance.week + "/" + PoliticsPrototypeManager.Instance.year + ": " + assassin.name + " of " + assassin.kingdom.kingdomName + " ASSASSINATED " + victim.name + " of " + victim.kingdom.kingdomName);
@@ -344,7 +345,7 @@ public class Royalty {
 			Debug.Log ("Attempting to convert " + targetRoyalty.name);
 			if (!targetRoyalty.trait.Contains (TRAIT.LOYAL)) {
 				if (targetRoyalty.hatedLord == null || targetRoyalty.hatedLord.id != this.id) {
-					if (this.previousConversionMonth == 0) {
+					if (targetRoyalty.previousConversionMonth == 0) {
 						if (targetRoyalty.trait.Contains (TRAIT.TRAITOR)) {
 							int conversionChance = UnityEngine.Random.Range (0, 100);
 							if (conversionChance < 80) {
@@ -357,8 +358,8 @@ public class Royalty {
 							}
 						}
 					} else {
-						int monthDifference = PoliticsPrototypeManager.Instance.month - this.previousConversionMonth;
-						int yearDifference = PoliticsPrototypeManager.Instance.year - this.previousConversionYear;
+						int monthDifference = PoliticsPrototypeManager.Instance.month - targetRoyalty.previousConversionMonth;
+						int yearDifference = PoliticsPrototypeManager.Instance.year - targetRoyalty.previousConversionYear;
 						int difference = monthDifference + (yearDifference * 12);
 
 						if (difference >= 3) {
@@ -383,6 +384,7 @@ public class Royalty {
 			Debug.LogWarning("No Conversion Target!");
 		}
 	}
+
 	internal bool IsRoyaltyCloseRelative(Royalty otherRoyalty){
 		if (otherRoyalty.id == this.father.id || otherRoyalty.id == this.mother.id) {
 			//royalty is father or mother
@@ -435,6 +437,11 @@ public class Royalty {
 			Debug.Log ("Royalty is already married!");
 			return;
 		}
+
+		if (this.age < 16) {
+			Debug.Log ("Royalties below age 16 can't be married!");
+			return;
+		}
 		List<Royalty> elligibleBachelorettes = MarriageManager.Instance.GetElligibleBachelorettesForMarriage();
 
 		Royalty currentBachelor = this;
@@ -449,7 +456,7 @@ public class Royalty {
 			if (mostElligibleBride == null) {
 				mostElligibleBride = currentBachelorette;
 
-				if (currentBachelorette.loyalLord.id == currentBachelor.loyalLord.id) {
+				if (currentBachelorette.kingdom.id == currentBachelor.loyalLord.kingdom.id) {
 					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.IS_LOYAL_TO_SAME_LORD);
 				}
 
@@ -457,7 +464,7 @@ public class Royalty {
 					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.HAS_MORE_CITIES);
 				}
 
-				if (currentBachelor.hatedLord == null || currentBachelorette.kingdom.lord.id != currentBachelor.hatedLord.id) {
+				if (currentBachelor.hatedLord == null || currentBachelorette.kingdom.id != currentBachelor.hatedLord.kingdom.id) {
 					mostElligibleBridesPoints.Add (BRIDE_CRITERIA.IS_NOT_FROM_HATED_KINGDOM);
 				}
 

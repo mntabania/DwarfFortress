@@ -32,7 +32,7 @@ public class MarriageManager : MonoBehaviour {
 		for (int i = 0; i < PoliticsPrototypeManager.Instance.kingdoms.Count; i++) {
 			elligibleBachelorettes.AddRange(PoliticsPrototypeManager.Instance.kingdoms[i].kingdom.elligibleBachelorettes);
 		}
-		return elligibleBachelorettes.OrderBy(x => x.age).ToList(); //younger women are prioritized
+		return elligibleBachelorettes.OrderBy(x => x.age).ThenByDescending(x => x.kingdom.cities.Count).ToList(); //younger women are prioritized and women with more cities
 	}
 
 
@@ -171,6 +171,11 @@ public class MarriageManager : MonoBehaviour {
 		wife.isMarried = true;
 		husband.isIndependent = true;
 		wife.isIndependent = true;
+
+		if (wife.kingdom.assignedLord.id == wife.id) {
+			//if wife is currently queen of a kingdom, the husband will recieve the kingdom
+			wife.kingdom.AssimilateKingdom (husband.kingdom);
+		}
 
 		//the wife will transfer to the court of the husband
 		wife.kingdom = husband.kingdom;
