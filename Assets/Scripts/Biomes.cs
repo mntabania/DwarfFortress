@@ -66,7 +66,11 @@ public class Biomes : MonoBehaviour {
 	public Sprite tundraRight;
 	public Sprite tundraLeftCorner;
 	public Sprite tundraRightCorner;
-	public Sprite tundraCenter;
+	public Sprite tundraCenter1;
+	public Sprite tundraCenter2;
+	public Sprite tundraCenter3;
+	public Sprite tundraTopLeft;
+	public Sprite tundraTopRight;
 	[Space(10)]
 	public Sprite snowLeft;
 	public Sprite snowRight;
@@ -108,7 +112,7 @@ public class Biomes : MonoBehaviour {
 				break;
 			case BIOMES.TUNDRA:
 				currentHexTile.SetTileSprites (tundraSprite, tundraLeft, tundraRight, tundraLeftCorner, tundraRightCorner,  
-					null, null, new Sprite[]{tundraCenter});
+					tundraTopLeft, tundraTopRight, new Sprite[]{tundraCenter1, tundraCenter2, tundraCenter3});
 				break;
 			case BIOMES.DESERT:
 				currentHexTile.SetTileSprites (desertSprite, desertLeft, desertRight, desertLeftCorner, desertRightCorner,  

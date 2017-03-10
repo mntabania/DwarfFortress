@@ -28,6 +28,7 @@ public class HexTile : MonoBehaviour {
 	public GameObject rightGround;
 	public GameObject bottomRightGround;
 	public GameObject centerPiece;
+	public GameObject extraCenterPiece;
 	public GameObject topLeftGround;
 	public GameObject topRightGround;
 
@@ -257,32 +258,38 @@ public class HexTile : MonoBehaviour {
 		this.topRightGround.GetComponent<SpriteRenderer> ().sprite = topRightSprite;
 
 		if (this.elevationType == ELEVATION.MOUNTAIN) {
+			if (this.biomeType == BIOMES.TUNDRA) {
+				this.extraCenterPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
+				this.extraCenterPiece.SetActive(true);
+			}
 			this.centerPiece.SetActive(true);
 		} else {
-			if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST) {
+			if (this.biomeType == BIOMES.WOODLAND || this.biomeType == BIOMES.FOREST || this.biomeType == BIOMES.TUNDRA) {
 				this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
 				this.centerPiece.SetActive(true);
-				this.centerPiece.transform.localPosition = new Vector3 (0f, 0.37f, 0f);
+				if (this.biomeType != BIOMES.TUNDRA) {
+					this.centerPiece.transform.localPosition = new Vector3 (0f, 0.37f, 0f);
+				}
 			} else {
 				int chanceForDetail = Random.Range (0, 100);
 				if (chanceForDetail < 25) {
 					this.centerPiece.GetComponent<SpriteRenderer>().sprite = centerSprite[Random.Range(0, centerSprite.Length)];
 					this.centerPiece.SetActive(true);
-					float randomXPosition = Random.Range(-1.30f, 1.30f);
-					float randomYPosition = Random.Range(-0.40f, 0.70f);
+					float randomXPosition = Random.Range (-1.30f, 1.30f);
+					float randomYPosition = Random.Range (-0.40f, 0.70f);
 					if (randomXPosition <= 0.45f && randomXPosition >= -0.45f) {
-						int chanceToModify = Random.Range(0, 100);
+						int chanceToModify = Random.Range (0, 100);
 						if (chanceToModify < 25) {
 							if (Mathf.Sign (randomYPosition) == 0) {
 								//negative
-								randomYPosition -= Random.Range(0.20f,0.40f);
+								randomYPosition -= Random.Range (0.20f, 0.40f);
 							} else {
 								//positive
-								randomYPosition += Random.Range(0.20f,0.40f);
+								randomYPosition += Random.Range (0.20f, 0.40f);
 							}
 						}
 					}
-					this.centerPiece.transform.localPosition = new Vector3(randomXPosition, randomYPosition, 0f);
+					this.centerPiece.transform.localPosition = new Vector3 (randomXPosition, randomYPosition, 0f);
 				}
 			}
 
