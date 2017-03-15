@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: b4a3f9130470d6e4e8d577b69def791c
-timeCreated: 1489118517
+guid: 34cc7b8609a722c4da6e68c8e99e2ab0
+timeCreated: 1489468563
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -8,12 +8,13 @@ TextureImporter:
     21300002: woodland_center_1
     21300004: woodland_bot_left
     21300006: woodland_bot_right
-    21300008: woodland_top_left
-    21300010: woodland_top_right
-    21300012: woodland_left
+    21300008: woodland_left
+    21300010: WoodlandTile_18
+    21300012: woodland_center_2
     21300014: woodland_right
-    21300016: woodland_center_3
-    21300018: woodland_center_2
+    21300016: woodland_top_left
+    21300018: woodland_top_right
+    21300020: woodland_center_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -40,7 +41,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: 16
+    aniso: -1
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
@@ -79,10 +80,10 @@ TextureImporter:
       name: woodland_center_1
       rect:
         serializedVersion: 2
-        x: 544
-        y: 669
-        width: 386
-        height: 337
+        x: 524
+        y: 672
+        width: 389
+        height: 347
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -93,7 +94,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 4
-        y: 529
+        y: 502
         width: 199
         height: 127
       alignment: 0
@@ -105,36 +106,10 @@ TextureImporter:
       name: woodland_bot_right
       rect:
         serializedVersion: 2
-        x: 211
-        y: 529
-        width: 198
-        height: 127
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: woodland_top_left
-      rect:
-        serializedVersion: 2
-        x: 4
-        y: 372
-        width: 200
-        height: 92
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: woodland_top_right
-      rect:
-        serializedVersion: 2
-        x: 222
-        y: 375
-        width: 196
-        height: 89
+        x: 215
+        y: 501
+        width: 201
+        height: 129
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,21 +120,8 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 4
-        y: 149
-        width: 16
-        height: 188
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: woodland_right
-      rect:
-        serializedVersion: 2
-        x: 400
-        y: 149
-        width: 16
+        y: 299
+        width: 20
         height: 186
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -167,13 +129,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: woodland_center_3
+      name: WoodlandTile_18
       rect:
         serializedVersion: 2
-        x: 530
-        y: 0
-        width: 396
-        height: 328
+        x: 44
+        y: 484
+        width: 4
+        height: 6
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -183,10 +145,62 @@ TextureImporter:
       name: woodland_center_2
       rect:
         serializedVersion: 2
-        x: 546
-        y: 333
+        x: 532
+        y: 364
+        width: 391
+        height: 303
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: woodland_right
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 302
+        width: 20
+        height: 182
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: woodland_top_left
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 174
+        width: 210
+        height: 107
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: woodland_top_right
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 184
+        width: 204
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: woodland_center_3
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 17
         width: 388
-        height: 330
+        height: 338
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

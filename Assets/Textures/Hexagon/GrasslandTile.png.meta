@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: fcf4e7f5967e6f14c8ab9aaa99699060
-timeCreated: 1489118259
+guid: 0a10b3c31a676d144b11087f53cdcefc
+timeCreated: 1489461032
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -39,7 +39,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: 16
+    aniso: -1
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
@@ -65,10 +65,10 @@ TextureImporter:
       name: grassland_base
       rect:
         serializedVersion: 2
-        x: 4
-        y: 663
+        x: 8
+        y: 656
         width: 396
-        height: 357
+        height: 359
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -78,10 +78,10 @@ TextureImporter:
       name: grassland_top_left
       rect:
         serializedVersion: 2
-        x: 492
-        y: 931
-        width: 200
-        height: 90
+        x: 431
+        y: 909
+        width: 210
+        height: 108
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -91,10 +91,10 @@ TextureImporter:
       name: grassland_top_right
       rect:
         serializedVersion: 2
-        x: 710
-        y: 932
-        width: 196
-        height: 89
+        x: 655
+        y: 919
+        width: 204
+        height: 97
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -104,10 +104,10 @@ TextureImporter:
       name: grassland_left
       rect:
         serializedVersion: 2
-        x: 492
-        y: 706
-        width: 14
-        height: 188
+        x: 432
+        y: 720
+        width: 20
+        height: 186
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,10 +117,10 @@ TextureImporter:
       name: grassland_right
       rect:
         serializedVersion: 2
-        x: 890
-        y: 704
-        width: 14
-        height: 186
+        x: 476
+        y: 716
+        width: 24
+        height: 184
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       name: grassland_bot_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 529
+        x: 8
+        y: 490
         width: 199
         height: 127
       alignment: 0
@@ -143,10 +143,10 @@ TextureImporter:
       name: grassland_bot_right
       rect:
         serializedVersion: 2
-        x: 211
-        y: 529
-        width: 198
-        height: 127
+        x: 215
+        y: 489
+        width: 201
+        height: 129
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,8 +169,8 @@ TextureImporter:
       name: grassland_center_2
       rect:
         serializedVersion: 2
-        x: 22
-        y: 138
+        x: 18
+        y: 136
         width: 78
         height: 68
       alignment: 0

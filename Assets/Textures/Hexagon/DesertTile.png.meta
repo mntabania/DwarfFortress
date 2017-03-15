@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: b01374fc4603b264b9228ac33feef59f
-timeCreated: 1489118711
+guid: 58bcfd0ae0445914188a643564151d87
+timeCreated: 1489469472
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -14,8 +14,7 @@ TextureImporter:
     21300014: desert_center_1
     21300016: desert_center_2
     21300018: desert_center_3
-    21300020: DesertTile_14
-    21300022: desert_center_4
+    21300020: desert_center_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -42,7 +41,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: 16
+    aniso: -1
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
@@ -68,8 +67,8 @@ TextureImporter:
       name: desert_base
       rect:
         serializedVersion: 2
-        x: 4
-        y: 663
+        x: 7
+        y: 660
         width: 396
         height: 357
       alignment: 0
@@ -81,12 +80,12 @@ TextureImporter:
       name: desert_top_left
       rect:
         serializedVersion: 2
-        x: 485
-        y: 930
-        width: 199
-        height: 90
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 478
+        y: 911
+        width: 206
+        height: 107
+      alignment: 9
+      pivot: {x: 0.5160608, y: 0.5000006}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -94,10 +93,10 @@ TextureImporter:
       name: desert_top_right
       rect:
         serializedVersion: 2
-        x: 699
-        y: 928
-        width: 198
-        height: 92
+        x: 692
+        y: 920
+        width: 206
+        height: 100
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -107,12 +106,12 @@ TextureImporter:
       name: desert_left
       rect:
         serializedVersion: 2
-        x: 484
-        y: 723
+        x: 478
+        y: 705
         width: 16
-        height: 185
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        height: 182
+      alignment: 9
+      pivot: {x: 0.6236534, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -120,9 +119,9 @@ TextureImporter:
       name: desert_right
       rect:
         serializedVersion: 2
-        x: 505
-        y: 722
-        width: 15
+        x: 512
+        y: 704
+        width: 20
         height: 187
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -133,10 +132,10 @@ TextureImporter:
       name: desert_bot_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 528
+        x: 7
+        y: 487
         width: 199
-        height: 128
+        height: 121
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,12 +145,12 @@ TextureImporter:
       name: desert_bot_right
       rect:
         serializedVersion: 2
-        x: 211
-        y: 529
-        width: 198
-        height: 127
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 217
+        y: 487
+        width: 199
+        height: 126
+      alignment: 9
+      pivot: {x: 0.5, y: 0.47146267}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -160,9 +159,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 273
-        width: 49
-        height: 60
+        y: 270
+        width: 50
+        height: 58
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -185,10 +184,10 @@ TextureImporter:
       name: desert_center_3
       rect:
         serializedVersion: 2
-        x: 17
-        y: 87
-        width: 124
-        height: 76
+        x: 15
+        y: 90
+        width: 117
+        height: 70
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -198,10 +197,10 @@ TextureImporter:
       name: desert_center_4
       rect:
         serializedVersion: 2
-        x: 19
-        y: 34
-        width: 45
-        height: 39
+        x: 16
+        y: 36
+        width: 43
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

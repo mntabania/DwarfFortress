@@ -1,20 +1,19 @@
 fileFormatVersion: 2
-guid: e80ce9c679482264aafcaa1025d95659
-timeCreated: 1489121847
+guid: dc388ae396de61c48a162add3994efc4
+timeCreated: 1489469757
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: tundra_base
     21300002: tundra_top_left
     21300004: tundra_top_right
-    21300006: tundra_left
-    21300008: tundra_right
+    21300006: tundra_right
+    21300008: tundra_left
     21300010: tundra_bot_left
     21300012: tundra_bot_right
     21300014: tundra_center_2
     21300016: tundra_center_1
-    21300018: TundraTile_43
-    21300020: tundra_center_3
+    21300018: tundra_center_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -67,8 +66,8 @@ TextureImporter:
       name: tundra_base
       rect:
         serializedVersion: 2
-        x: 4
-        y: 664
+        x: 10
+        y: 660
         width: 396
         height: 356
       alignment: 0
@@ -80,12 +79,12 @@ TextureImporter:
       name: tundra_top_left
       rect:
         serializedVersion: 2
-        x: 487
-        y: 931
-        width: 198
-        height: 90
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 452
+        y: 915
+        width: 203
+        height: 102
+      alignment: 9
+      pivot: {x: 0.51393825, y: 0.4722613}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -93,23 +92,10 @@ TextureImporter:
       name: tundra_top_right
       rect:
         serializedVersion: 2
-        x: 709
-        y: 931
-        width: 198
-        height: 90
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: tundra_left
-      rect:
-        serializedVersion: 2
-        x: 487
-        y: 731
-        width: 13
-        height: 189
+        x: 675
+        y: 919
+        width: 205
+        height: 98
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -119,12 +105,25 @@ TextureImporter:
       name: tundra_right
       rect:
         serializedVersion: 2
-        x: 524
-        y: 728
-        width: 14
-        height: 192
+        x: 512
+        y: 708
+        width: 20
+        height: 191
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tundra_left
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 713
+        width: 16
+        height: 180
+      alignment: 9
+      pivot: {x: 0.6550522, y: 0.49999967}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -132,10 +131,10 @@ TextureImporter:
       name: tundra_bot_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 528
-        width: 199
-        height: 132
+        x: 10
+        y: 479
+        width: 198
+        height: 126
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,12 +144,12 @@ TextureImporter:
       name: tundra_bot_right
       rect:
         serializedVersion: 2
-        x: 211
-        y: 529
-        width: 198
-        height: 127
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 222
+        y: 479
+        width: 199
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5047394, y: 0.49263287}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -158,10 +157,10 @@ TextureImporter:
       name: tundra_center_2
       rect:
         serializedVersion: 2
-        x: 516
-        y: 393
-        width: 369
-        height: 276
+        x: 560
+        y: 366
+        width: 357
+        height: 306
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -171,25 +170,12 @@ TextureImporter:
       name: tundra_center_1
       rect:
         serializedVersion: 2
-        x: 17
-        y: 87
-        width: 394
-        height: 258
+        x: 41
+        y: 27
+        width: 362
+        height: 300
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: TundraTile_43
-      rect:
-        serializedVersion: 2
-        x: 785
-        y: 197
-        width: 4
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
@@ -197,10 +183,10 @@ TextureImporter:
       name: tundra_center_3
       rect:
         serializedVersion: 2
-        x: 524
-        y: 54
-        width: 379
-        height: 295
+        x: 555
+        y: 32
+        width: 370
+        height: 300
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

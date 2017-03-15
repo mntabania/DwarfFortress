@@ -151,7 +151,8 @@ public class Biomes : MonoBehaviour {
 				break;
 			case ELEVATION.WATER:
 //				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().color = Color.blue;
-				GridMap.Instance.listHexes[i].GetComponent<SpriteRenderer>().sprite = waterSprite;
+				GridMap.Instance.listHexes [i].GetComponent<SpriteRenderer> ().sprite = waterSprite;
+				GridMap.Instance.listHexes [i].GetComponent<SpriteRenderer> ().sortingOrder = -1;
 				break;
 			}
 		}

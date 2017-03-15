@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 5a72e927076e5694384426a9e5208f8c
-timeCreated: 1489117971
+guid: c66d72d1aaf7702488b46ea2dbd1eb76
+timeCreated: 1489460918
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: forest_base
     21300002: forest_center_2
-    21300004: forest_bot_left_corner
-    21300006: forest_bot_right_corner
-    21300008: forest_left
-    21300010: forest_right
-    21300012: forest_top_left_corner
-    21300014: forest_top_right_corner
-    21300016: forest_center_1
-    21300018: forest_center_3
+    21300004: forest_top_left
+    21300006: forest_left
+    21300008: forest_right
+    21300010: forest_bot_left
+    21300012: forest_bot_right
+    21300014: forest_center_1
+    21300016: forest_center_3
+    21300018: forest_top_right
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -40,7 +40,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: 16
+    aniso: -1
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
@@ -66,10 +66,10 @@ TextureImporter:
       name: forest_base
       rect:
         serializedVersion: 2
-        x: 4
-        y: 663
+        x: 16
+        y: 648
         width: 396
-        height: 357
+        height: 358
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -89,26 +89,13 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_bot_left_corner
+      name: forest_top_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 529
-        width: 199
-        height: 127
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: forest_bot_right_corner
-      rect:
-        serializedVersion: 2
-        x: 211
-        y: 529
-        width: 198
-        height: 127
+        x: 16
+        y: 537
+        width: 202
+        height: 101
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,9 +105,9 @@ TextureImporter:
       name: forest_left
       rect:
         serializedVersion: 2
-        x: 512
-        y: 434
-        width: 14
+        x: 528
+        y: 407
+        width: 22
         height: 189
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -131,36 +118,36 @@ TextureImporter:
       name: forest_right
       rect:
         serializedVersion: 2
-        x: 551
-        y: 434
-        width: 14
-        height: 189
+        x: 568
+        y: 408
+        width: 24
+        height: 186
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_top_left_corner
+      name: forest_bot_left
       rect:
         serializedVersion: 2
-        x: 4
-        y: 399
-        width: 198
-        height: 91
+        x: 16
+        y: 396
+        width: 199
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: forest_top_right_corner
+      name: forest_bot_right
       rect:
         serializedVersion: 2
-        x: 209
-        y: 399
-        width: 200
-        height: 91
+        x: 226
+        y: 397
+        width: 199
+        height: 127
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -183,10 +170,23 @@ TextureImporter:
       name: forest_center_3
       rect:
         serializedVersion: 2
-        x: 526
-        y: 24
-        width: 420
-        height: 345
+        x: 537
+        y: 38
+        width: 404
+        height: 322
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: forest_top_right
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 538
+        width: 208
+        height: 103
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
