@@ -12,7 +12,7 @@ public class Army {
 	public ArmyStats armyStats;
 
 //comment
-	
+//comment 2	
 	public Army(CityTest city){
 //		this.id = GetID () + 1;
 //		this.name = "GENERAL" + this.id;
