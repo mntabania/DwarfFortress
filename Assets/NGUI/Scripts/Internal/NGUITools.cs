@@ -52,10 +52,8 @@ static public class NGUITools
 
 	static public bool fileAccess
 	{
-		get
-		{
-			return Application.platform != RuntimePlatform.WindowsWebPlayer &&
-				Application.platform != RuntimePlatform.OSXWebPlayer;
+		get {
+			return true; //Application.platform != RuntimePlatform.WindowsWebPlayer && Application.platform != RuntimePlatform.OSXWebPlayer;
 		}
 	}
 
