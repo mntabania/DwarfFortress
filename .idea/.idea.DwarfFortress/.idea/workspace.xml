@@ -20,108 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5bdfa64-31a7-4cf4-b57c-310dbbb535f0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Hexagon.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hexagon.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font (AlphaClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font (AlphaClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font (SoftClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font (SoftClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Dynamic Font.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Masked Colored.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Masked Colored.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (AlphaClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (AlphaClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (SoftClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (SoftClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (TextureClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored (TextureClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 1.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 1.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 3.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored 3.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Premultiplied Colored.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (AlphaClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (AlphaClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (SoftClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (SoftClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (TextureClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text (TextureClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 1.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 1.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 3.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text 3.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Text.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (AlphaClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (AlphaClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (AlphaClip) .shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (AlphaClip) .shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (SoftClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (SoftClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (TextureClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed) (TextureClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (Packed).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (SoftClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (SoftClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (TextureClip).shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored (TextureClip).shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 1.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 1.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 3.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored 3.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Colored.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 1.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 1.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 3.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked 3.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Masked.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 1.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 1.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 3.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed 3.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Resources/Shaders/Unlit - Transparent Packed.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Scripts/Editor/NGUIEditorExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Scripts/Editor/NGUIEditorExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Scripts/Internal/NGUITools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Scripts/Internal/NGUITools.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIInput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIPanel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Capture.JPG.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Capture.JPG.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/Bent_bow_0.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/Bent_bow_0.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/Coinstack-icon.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/Coinstack-icon.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/alchemist symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/alchemist symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/brawler symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/brawler symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/farmer symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/farmer symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/mage symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/mage symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/meat-outline-filled.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/meat-outline-filled.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/miner symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/miner symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/quarryman symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/quarryman symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/warrior symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/warrior symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Citizens/woodsman symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Citizens/woodsman symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/63078.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/63078.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/BottomLeft (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/BottomLeft (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/BottomRight (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/BottomRight (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/Left (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/Left (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/Right (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/Right (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/TopLeft (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/TopLeft (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/TopRight (2).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Borders/TopRight (2).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/DesertTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/DesertTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/ForestTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/ForestTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/GrasslandTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/GrasslandTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/Mountain.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/Mountain.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/DesertTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/DesertTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/ForestTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/ForestTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/GrasslandTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/GrasslandTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/Hexagon.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/Hexagon.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/SnowTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/SnowTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/TundraTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/TundraTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/WoodlandTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/WoodlandTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hex.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hex.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hex2.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hex2.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexdesert.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexdesert.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexforest.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexforest.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexgrass.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexgrass.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexsnow.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexsnow.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hextundra.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hextundra.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexwater.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexwater.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexwood.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/OldPlaceholders/hexwood.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/BottomLeftRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/BottomLeftRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/BottomRightRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/BottomRightRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/LeftRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/LeftRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/RightRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/RightRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/TopLeftRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/TopLeftRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/TopRightRoad.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/RoadAssets/TopRightRoad.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/SnowTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/SnowTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/TundraTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/TundraTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/WoodlandTile.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/WoodlandTile.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNorth.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNorth.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNortheast.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNortheast.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNorthwest.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadNorthwest.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSouth.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSouth.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSoutheast.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSoutheast.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSouthwest.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Hexagon/roadSouthwest.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Royalties/Female_Symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Royalties/Female_Symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Textures/Royalties/male_symbol.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Textures/Royalties/male_symbol.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/UnityAdsSettings.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/UnityConnectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/UnityConnectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts2/Army.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts2/Army.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,6 +36,7 @@
         <option value="$PROJECT_DIR$/Assets/NGUI/Scripts/Internal/NGUITools.cs" />
         <option value="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIInput.cs" />
         <option value="$PROJECT_DIR$/Assets/NGUI/Scripts/UI/UIPanel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts2/Army.cs" />
       </list>
     </option>
   </component>

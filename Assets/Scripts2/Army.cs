@@ -11,7 +11,8 @@ public class Army {
 	public int armyExperience;
 	public ArmyStats armyStats;
 
-
+//comment
+	
 	public Army(CityTest city){
 //		this.id = GetID () + 1;
 //		this.name = "GENERAL" + this.id;
